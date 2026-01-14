@@ -2,6 +2,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{disi-thesis}
 \usepackage{code-lstlistings}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
 \usepackage{notes}
 \usepackage{shortcuts}
 \usepackage{acronym}
@@ -10,6 +12,24 @@
 \usepackage{stackengine}
 \definecolor{LightGray}{gray}{0.97}
 \usepackage{minted}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, fit}
+
+\tikzset{
+  sysbox/.style={
+    draw, thick, rounded corners,
+    align=center,
+    minimum width=0.32\linewidth,
+    minimum height=3em
+  },
+  envbox/.style={
+    draw, thick, rounded corners,
+    align=center,
+    minimum width=0.32\linewidth,
+    minimum height=2.5em
+  },
+  sysarrow/.style={->, thick}
+}
 
 \school{\unibo}
 \programme{MSc in Computer Science and Engineering}
@@ -23,7 +43,18 @@
 \academicyear{2024-2025}
 
 % Definition of acronyms
-\acrodef{DES}{Discrete Event Simulation}
+% Fix: https://tex.stackexchange.com/questions/735500/problem-with-amsmath-cleveref-acronym
+\makeatletter
+\AtBeginDocument {
+  \def\ltx@label#1{\cref@label{#1}}
+}
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\acrodef{DES}{\emph{Discrete Event Simulation}}
+\acrodef{FEL}{\emph{Future Event List}}
+\acrodef{SSA}{\emph{Stochastic Simulation Algorithm}}
+\acrodef{PDF}{\emph{Probability Density Function}}
 
 \mainlinespacing{1.241} % line spacing in mainmatter, comment to default (1)
 

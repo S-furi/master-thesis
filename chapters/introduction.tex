@@ -1,3 +1,210 @@
 %!TEX root = ../thesis-main.tex
 
 \chapter{Introduction}\label{chap:introduction}
+The scientific method is characterised by the formulation of a \emph{theory}
+which needs to be proven as false or true. This forms the first scientific
+pillar, which is the theoretical assumption and knowledge used to describe a
+certain phenomena, a property or a behaviour. The process of gathering evidence
+to support the validity of the theory is what \emph{experiments} try to
+accomplish, namely a series of observations of the real world that confirm or
+refute the initial hypothesis. In the modern era of sciences, computer systems
+backs the vast majority of modern scientific discoveries, whether through the
+usage of the raw computing power (e.g. weather forecasting equations resolution
+through Massively Parallel Computers) of such systems or by exploiting virtual
+representations of the real world ~\cite{Post2005-kn}. With the widespread
+adoption of simulation and simulators in the scientific method, researchers are
+now considering simulation as the \emph{third pillar} of science which
+complements theory and experiments. Some argues that simulation cannot be
+compared to experimentation, while others claim that there is more in common
+between simulation and experimentation ~\cite{WinsbergEric2010Sita}.
+In the general scientific method framework, theory provides the model of the
+hypothesis, while through experiments some may validate those models against
+reality, while simulation can serve as sources of new insights or new
+hypothesis which will be tested experimentally. Therefore, simulation is
+essential in most scientific development workflows, and modern literature has
+plenty of successful applications of simulations in various fields from biology
+to physics and from chemistry to social sciences.
+
+\section{Simulation}\label{sec:simulation}
+A \emph{simulation} is the imitation of the operation of a real-world process
+or system over time ~\cite{BanksDESS10}. A simulation is built upon a
+\emph{model} described through a set of mathematical, logical and symbolical
+relationships between entities in the system. The model is then simulated
+inside the system over time, making it possibile for observers to make analysis
+and prediction of model's impact on system performance. Moreover, the model is
+defined as a representation of a system for the purpose of studying that system,
+meaning that the set of characteristics of the model will include only those
+details useful in expanding or exploring the knowledge of the original problem.
+Simulation can also serve the purpose in giving insights on the model's
+performance with respect to the system, actively driving the design process of
+such model before it is even built in reality. A \emph{system} in simulation
+terms, is defined as a set of objects which can interact with each other toward
+the accomplishment of some purpose. An important separation must be drawn in
+the boundary between the system and its environment, where the latter can
+influence the system (changes in the \emph{system environment}) and viceversa.
+
+%================================================================================================
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[
+			node distance=1.2em and 2em,
+			box/.style={
+					draw, thick, rounded corners,
+					align=center,
+					minimum width=0.32\linewidth,
+					minimum height=3em
+				},
+			smallbox/.style={
+					draw, thick, rounded corners,
+					align=center,
+					minimum width=0.32\linewidth,
+					minimum height=2.5em
+				},
+			arrow/.style={->, thick}
+		]
+
+		% Left column
+		\node[box] (attributes) {Attributes};
+		\node[box, below=of attributes] (activities) {Activities};
+		\node[
+			draw, rounded corners,
+			inner sep=1.2em,
+			fit=(attributes)(activities),
+			label={[anchor=north]north:\textbf{Entity}}
+		] (entity) {};
+
+		\node[
+			draw, rounded corners,
+			minimum width=0.32\linewidth,
+			minimum height=3em,
+			align=center,
+			below=2em of entity
+		] (entity2) {\textbf{Entity}};
+
+		% Right column
+		\node[box, right=4em of entity] (state) {State};
+		\node[box, below=3em of state] (endo) {Endogenous Events};
+
+		% System boundary
+		\node[
+			draw, thick, dashed, rounded corners,
+			fit=(entity)(entity2)(attributes)(activities)(state)(endo),
+			inner sep=1.2em,
+			label={[anchor=north west]north west:\textbf{System}}
+		] (system) {};
+
+		% Environment
+		\node[smallbox, above=5em of state] (exo) {Exogenous Events};
+
+		\node[
+			draw, thick, rounded corners,
+			fit=(system)(exo),
+			label={[anchor=north west]north west:\textbf{Environment}}
+		] (environment) {};
+
+		% Arrows
+		\draw[arrow] (entity) -- (state);
+		\draw[arrow] (attributes) -- (state);
+		\draw[arrow] (activities) -- (state);
+		\draw[arrow] (entity2) -- (state);
+
+		\draw[arrow] (endo) -- node[midway, right] {influence} (state);
+		\draw[arrow] (exo) -- node[midway, right] {influence} (state);
+
+		\draw[arrow, <->] (entity) -- node[midway, left] {interaction} (entity2);
+
+	\end{tikzpicture}
+	\caption{System, environment, and state evolution in discrete-event modeling.}
+	\label{fig:des-core}
+\end{figure}
+%================================================================================================
+
+Inside the environment, \emph{entities} interact with each other and can be
+described by a set of \emph{attributes} and their behaviour is represented by
+\emph{activities} which last over time. The set of variables on a certain time
+instant during a simulation is used to define the system \emph{state}, which in
+turn can be influenced by internal (\emph{endogenous}) or external
+(\emph{exogenous}) events. The interaction between the components is summarised
+in \Cref{fig:des-core}.
+
+Furthermore, a simulation could be characterised by the time span or the time
+instant in which a system is investigated, talking respectively about dynamic
+or static (Monte Carlo simulation) simulation models. In addition to that, some
+models may be represented by a deterministic set of input variables, whereas
+the vast majority of interesting problems may be expressed by means of
+stochastic models.
+
+\subsection{Discrete-Event System Simulation}\label{ssec:ddess}
+Discrete-Event System Simulation is the modeling of systems in which the state
+variable changes only at a discrete set of points in time. The model is
+evaluated by means of \emph{numerical methods}, i.e. system behaviours are
+approximated through computational procedures, rather than ``solving'' the
+equations representing system behaviours. Most applications of \ac{DES} deals
+exclusively with dynamic, stochastic systems that change in a discrete manner,
+i.e. the state variable changes only at a discrete set of points in time. Those
+points are represented by events occurring. This means that a \ac{DES} proceeds
+by producing a sequence of system snapshots that represent the evolution of the
+system through time including, for each $t$ so that $\text{CLOCK} = t$, the state
+at time $t$ along with the list of all activities in progress - the \ac{FEL}.
+
+\subsubsection{Event Scheduling}
+Event scheduling and the advancement of time is a mechanism to advance
+simulation time, while granting that the chronological order of events is
+correct In the context of stochastic discrete simulations, scheduling an event
+means inserting an event in the \ac{FEL} computing its duration by drawing or
+calculating a sample value from a statistical distribution. In this way at any
+given time the \ac{FEL} is strictly ordered by event time (i.e.
+chronologically). After the state is updated at the $t$-th snapshot, the
+$\text{CLOCK}$ advances at simulation time $\text{CLOCK} = t_1$, the next event
+is removed from the \ac{FEL} and executed, effectively creating the snapshot
+for time $t_1$. This procedure repeats until the simulation is over.
+
+While the event scheduling algorithm provides the logical framework for
+\ac{DES}, its computational \emph{efficiency} is governed by how the \ac{FEL}
+is managed. In systems with a massive number of events such as biochemical
+systems, the overhead of searching, updating and keeping the \ac{FEL} sorted
+becomes easily the primary bottleneck.
+
+\subsection{The Stochastic Simulation Algorithm}
+While general \ac{DES} frameworks often rely on empirical distributions for
+event timings, the \ac{SSA} ~\cite{GillespieESSCCR:1977} provides a physically
+grounded method for simulating the time-evolution of systems of \emph{chemical
+	reactions}. Chemical systems in the "direct method" follows the
+\emph{Markovian} property, which states that the probability of a reaction
+occurring depends only on the current state and not on the history of the
+system prior to that state. Assuming that the probability of any reaction
+occurring follows a Poisson process, the probability for any reaction to be the
+next one is computed using markovian rates, i.e.
+$$ P(\text{next} = \mu) = \frac{a_{\mu}}{\sum_j a_j} $$
+Having the markovian rate, the probability that a
+reaction occurs at time $\tau$ is its speed times the probability distribution,
+namely a negative exponential function whose exponent is the sum of the speeds
+of all reactions in the system.
+Moreover, the \emph{next reaction time} could
+be similarly computed as a derived from the aggregate propensity $\lambda =
+	\sum_j a_j$, and the probability that a reaction $R$ occurs in time $\tau$ i.e.
+the \ac{PDF} of the exponential distribution: $P(\tau) =
+	\lambda e ^{-\lambda \tau}$. Finally, it is possible to sample $\tau$  from
+the \ac{PDF} using the \emph{Inverse Transform Sampling} by picking a
+a uniformly distributed number $\rho \in [0, 1]$, then:
+
+$$ \tau = \frac{-\ln(\rho)}{\lambda} $$
+
+The algorithm can be summarised in the following pseudocode:
+
+\begin{algorithm}
+	\caption{Stochastic Simulation Algorithm}\label{alg:ssa}
+	\begin{algorithmic}[1]
+		\Procedure{SSA}{}
+		\State $T \gets 0$
+		\BState \emph{loop}:
+		\For{$r \in R$}
+		$\textit{compute } a_r$
+		\EndFor
+		\State Select next reaction $\mu$
+		\State $r \gets P(r=\mu) = \frac{a_r}{\sum_{j \in R}a_j} $
+		\State Execute the reaction
+		\State $T \gets T - \frac{\ln(1-r)}{\lambda}$
+		\EndProcedure
+	\end{algorithmic}
+\end{algorithm}
