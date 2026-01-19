@@ -1,0 +1,127 @@
+# Thesis Index
+
+- **Chapter 1: Introduction**
+    - **The importance of simulators in science**
+    - **Simulation and simulators**
+        - **Discrete-Event System Simulation**
+        - **The Stochastic Simulation Algorithm (Direct Method and *First Reaction Method*)**
+        - **SSA Optimisations (Gibson-Bruck's *Next Reaction Method*)**
+    - **Alchemist**
+        - **Architectural Drivers**
+        - **Metamodel**
+        - **Applications (Incarnations)**
+
+- **Chapter 2: Analysis**
+    - **Problem Analysis**
+        - **Alchemist's needs** (e.g. highly performant, extensible and general purpose, ...)
+        - **What optimisations are available for DESs in literature**
+        - **Analysis of the dependency graph data structure**
+            - **why and how this approach can be problematic**
+            - **limitations and workarounds** (if any?)
+    - **Motivations and goals**
+        - **Optimising (?) dependencies management among Alchemist's components**
+            - **Safety drivers**
+            - **Efficiency drivers** (if any, how to assess)
+            - **Ergonomics drivers** (if Rx patterns could be considered ergonomic...)
+    - **Requirements**
+        - **Business requirements**
+        - **Functional**
+        - **Non-Functional**
+        - **Implementation requirements**
+        - **Optional requirements** (?)
+    - **Requirement Analysis**
+        - **Dependencies management patterns**
+            - **Pull model: what that is, pros, cons**
+                - **Dependency Graph as a Pull model**
+                - **Exploiting lazy evaluation**
+            - **Push model**
+                - **The observer pattern**
+                - **Laziness and optimisations in push based model**
+            - **Mediator pattern (event based w/ event broker)** (?)
+                - **Use cases** (useful for Parallel DES / Distributed simulators)
+                - **Pros and cons**
+            - **Summary of approaches**
+        - **Eager vs. Lazy evaluation**
+            - **Reactive Programming and FRP**
+                - **motivations**
+            - **Lazy Evaluation**
+                - **Definition and widespread usage in FP**
+            - **Summary**
+                - **Differences**
+                - **Usage use cases**
+        - **Achieving Reactivity**
+            - **Reactive frameworks**
+                - **JavaRX**
+                - **Kotlin Flows** (reference needed to prior experiments)
+                - **In house solution**
+            - **Advantages and Disadvantages of a push based solution**
+                - **Performance pitfalls**
+            - **Memory management challenges**
+                - **How problem is tackled by reactive frameworks**
+        - **Summary of reactivity and alchemist needs/design/architecture**
+- **Chapter 3: Design**
+    - **Design overview**
+        - **(?) Roles and responsibilities of elements in current alchemist's structure** (as-is)
+        - **Roles and responsibilities of elements in Reactive Alchemist's structure** (to-be)
+        - **Lazy optimisation opportunities** (i.e. what could be lazy but what must be granted to be eager)
+    - **Detailed design: Toward a push model**
+        - **Toward an observable metamodel** (i.e. environment, neighborhoods, nodes)
+        - **Key reactive actors: condition and reaction**
+        - **How dependencies are managed**
+            - **dependencies declaration**
+            - **dependencies wiring**
+            - **dependencies life cycle**
+        - **Memory Leaks Avoidance strategies**
+        - **Reaction's Scheduling and Engine's role simplification**
+
+- **Chapter 4: Implementation and Testing**
+
+    - **Reactive APIs adoption plan:**
+        - **Incremental approach**
+            - **Motivations** (backward compatibility)
+            - **Cons** (technical debt++)
+        - **Non-backward compatible design**
+            - **Motivations**
+            - **Cons** (more error prone)
+        - **Selected Strategy: Parallel Coexistence**
+            - **Engine Abstraction**: Extraction of `AbstractEngine` to share common logic (time, scheduling, output) between implementations.
+            - **Dual Implementations**: Retention of the graph-based `Engine` alongside the new `ReactiveEngine`.
+            - **Benefit**: Allows gradual migration and comparative benchmarking without immediate breaking changes.
+
+    - **Alchemist observable framework**
+        - **Observable Core**
+            - `Observable<T>` interface and `MutableObservable<T>` for state management.
+            - `EventObservable` for signal-only events (Unit type).
+        - **Derived Observables**
+            - `DerivedObservable<T>` for lazy, cached computation of values dependent on other observables.
+            - Automatic subscription management (only listens when observed).
+        - **Observable Collections**
+            - `ObservableList`, `ObservableMap`, `ObservableSet` wrappers triggering updates on modification.
+        - **Extensions and Functional Composition**
+            - Rich set of functional operators: `map`, `flatMap`, `switchMap`, `combineLatest`, `merge`, `union`.
+            - Extension functions for `ObservableList` and `ObservableSet` to simplify collective observations.
+
+    - **Implementation highlights**
+        - **ReactiveEngine**: A scheduler-based engine that eliminates the dependency graph, relying on direct observable notifications for reaction scheduling.
+        - **Graph-less architecture**: Simplification of the core loop by removing the "build and traverse graph" phase.
+        - **Condition/Reaction Retrofitting**: Adapting existing model components to emit and react to observable events.
+        - **Incarnation Support**:
+            - **Biochemistry**: Full support for `Biomolecule` and concentration-based conditions.
+            - **Protelis**: Integration with `ComputationalRoundComplete` and program execution.
+            - **Sapere & Scafi**: Updates to LSA nodes and neighbor conditions to support the reactive model.
+
+    - **Unit tests and integration tests**
+        - **Observable Test Suite**: Verification of observable logic, lazy evaluation, and event propagation.
+        - **Engine Equivalence**: `TestEngineComparison` ensures `ReactiveEngine` produces results consistent with `Engine`.
+        - **Reactive Dependencies**: Tests for the new reactive dependency handling (`TestReactiveDependencies`).
+        - **Benchmarks**: (Planned) Stress tests and memory analysis.
+
+- **Chapter 5: Conclusions**
+    - **Future works**
+        - **Granting DES correctness**: with transactions (way of postpone observers callbacks
+            until parent event has finished execution (do not use singletons or thread local stuff))
+            or by means of static code analysis.
+        - **Exploit laziness**: keep scheduling eager, but evaluate and convert what can be lazy.
+        - **Optimisations**
+            - **Memory management**
+            - **Speed** (?)
