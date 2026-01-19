@@ -61,11 +61,13 @@
             - **Memory management challenges**
                 - **How problem is tackled by reactive frameworks**
         - **Summary of reactivity and alchemist needs/design/architecture**
+     
 - **Chapter 3: Design**
     - **Design overview**
         - **(?) Roles and responsibilities of elements in current alchemist's structure** (as-is)
         - **Roles and responsibilities of elements in Reactive Alchemist's structure** (to-be)
         - **Lazy optimisation opportunities** (i.e. what could be lazy but what must be granted to be eager)
+        - **Reactive framework core design**: keep dependencies architecture light through sort of CPS and callbacks
     - **Detailed design: Toward a push model**
         - **Toward an observable metamodel** (i.e. environment, neighborhoods, nodes)
         - **Key reactive actors: condition and reaction**
