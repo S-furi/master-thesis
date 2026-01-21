@@ -55,8 +55,8 @@
         - **Lazy Derivations** (The MobX/Dirty-bit Model)
         - **Complexity Analysis**
 
-    - **Challenges in Reactive DES**
-        - **Glitches and Unsafe Dependencies Avoidance** preventing redundant recomputations
+    - **Challenges in Reactive Frameworks Design**
+        - **Glitches and Unsafe Dependencies Avoidance** (i.e. preventing redundant recomputations, cyclic deps, ...)
         - **Memory and Lifecycle Management**
         - **Performance Pitfalls**
 
@@ -67,7 +67,7 @@
                 - **Kotlin Flows**
             - **In-house solution**
         - **DES requirements** (why a custom lightweight cps-like approach could fit best)
-        - **The Hybrid Proposal** eager rescheduling w/ lazy data propagation to grant DES correctness
+        - **The Hybrid Proposal** (i.e.eager rescheduling w/ lazy data propagation to grant DES correctness)
 
 - **Chapter 3: Designing a Reactive Architecture for Alchemist**
     - **Alchemist**
