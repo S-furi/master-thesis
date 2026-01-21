@@ -8,10 +8,10 @@
         - **System modelling concepts**
         - **Formal Definition of the Simulation Framework**
     - **Simulation Formalisms**
-        - **Discrete Time** Fixed Step DTSS
-        - **Differential Equation** Continuous DESS
-        - **Discrete Event** DEVS
-        - **Multi-Agent Based Simulation**. MABS, autonomy and emergence
+        - **Discrete Time** (Fixed Step DTSS)
+        - **Differential Equation** (Continuous DESS)
+        - **Discrete Event** (DEVS)
+        - **Multi-Agent Based Simulation** (MABS, autonomy and emergence)
 
     - **The Dependency Problem**
         - **Manual Dependency Tracking: The Stochastic Simulation Algorithm** (Direct Method and *First Reaction Method*)
