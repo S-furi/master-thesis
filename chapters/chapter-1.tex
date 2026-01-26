@@ -29,7 +29,8 @@ to physics and from chemistry to social sciences.
 \subsection{The Simulation Framework}
 
 \section{Simulation Formalisms}
-\subsection{Discrete Time Simulators}
+
+\subsection{Discrete Time Simulators}\label{ssec:dts}
 
 The Discrete Time Model assumes a \emph{stepwise} mode of execution where, at a
 particular time instant, the model is in a particular state and it defines how
@@ -49,11 +50,91 @@ $t$ with the following functions:
 \end{subequations}
 Starting from an initial state $q(0)$, we determine the \emph{state trajectory}
 $q(0), q(1), \dots$ by applying the \emph{state transition function}
-\eqref{eq:state_transition} ; similarly, by applying the \emph{output function}
+\eqref{eq:state_transition}; similarly, by applying the \emph{output function}
 \eqref{eq:output_transition} to the initial state, we obtain the \emph{output
 trajectory}.
 
-\ac{DES}
+\paragraph{Cellular Automata as Discrete Time Models:}
 
-\subsection{Differential Equation Simulators}
-\subsection{Discrete Event Simulators}
+With these simple functions a wide spectrum of potentially interesting and
+arbitrary complex models could be created. A notable example of modeling and
+thereafter simulating models defined through simple state transition and output
+functions are \emph{Cellular Automata} ~\cite{Neumann:66}. A
+cellular automaton has a set of \emph{cells} (potentially infinite) spatially
+located in a grid-like space, where each one of them could have a finite set of
+states determined by a set of state transition functions identical for each
+cell. State transition functions could be influenced by the
+\emph{neighbourhood} of the cell, which most of the time is defined as the set
+of cells located nearest in the geometrical sense.
+
+The basic procedure for simulating a cellular automaton is by means of the
+discrete time simulation algorithm: at each time tick, every cell of the
+environment is scanned and the state transition function is applied,
+effectively changing states for those cells whose state transition function
+produced a new state different from its current. When all next states have been
+computed, the current configuration of all cells constitute the new global
+state, and the global tick can advance.
+
+It is rather obvious that either for infinite environment or for particularly
+large and complex cellular automata, this approach is unfeasible. If at each
+time step we could, instead, ``predict'' which cells could change in the next
+time step, the amount of state computation for each step is dramatically
+reduced (e.g. in Conway's Game of Life). We could define which cells will
+change in the next time step as the cells whose neighboring cells have not
+changed at the current state transition time. This key idea is behind the
+Discrete Event Simulation algorithm, which focuses on processing events (a cell
+state change which will trigger a computation of new possibile states for its
+neighbours) rather than single cells.
+
+\subsection{Differential Equation Simulators}\label{ssec:dess}
+
+Unlike Discrete Time Models and Discrete Event Models (discussed later in
+\Cref{ssec:devs}) where state changes happen at specific time instants, in
+Differential Equations Models the next state is not specified directly but a
+\emph{rate of change} of the state variables is used to express the evolution
+of the model through time. This means that at any particular time instant $t$,
+given a state $z$ and an input value $u$, we only know the rate of change of
+the state, defined as:
+%
+\begin{equation}
+	\frac{dz}{dt} = f(z, u)
+\end{equation}
+%
+Typically continuous time systems are expressed by using several state
+variables, meaning that a continuous time model is formed by a set of \ac{ODE}.
+Therefore we can express the \emph{state equation} representation of \ac{ODE}
+as:
+%
+\begin{equation}
+	\frac{d\mathbf{z}(t)}{dt} = \mathbf{f}(\mathbf{z}(t), \mathbf{u}(t))
+\end{equation}
+%
+where $\mathbf{z}(t) \triangleq [z_1(t), z_2(t), \dots, z_n(t)]^T$ is the state
+vector, the input vector $\mathbf{u}(t) \triangleq [u_1(t), u_2(t), \dots,
+u_n(t)]$ and $\mathbf{f} \triangleq [f_1, f_2, \dots, f_n]$ is the vector of
+differential equations.
+
+To obtain the state trajectory, the \ac{ODE} must be solved. Solving an
+\ac{ODE} \emph{analytically} is often impossible, especially for non-linear
+systems. Therefore, simulations utilize numerical integration methods (e.g.
+Euler's method, Runge-Kutta for one-step methods, ...). It is also important to
+note that because digital computers operate in discrete steps, simulating a
+Differential Equation System effectively reduces it to a form of Discrete Time
+System. The numerical solver discretises time into small steps $\Delta t$,
+calculating ~\cite{cellier2006continuous}:
+%
+\begin{equation}
+    \mathbf{z}(t + \Delta t) \approx \mathbf{z}(t) + \mathbf{f}(\mathbf{z}(t), \mathbf{u}(t)) \cdot \Delta t
+\end{equation}
+%
+Thus, in the context of computer simulation, DESS is often treated as a
+special, computationally intensive case of discrete time simulation
+~\cite{law2007simulation} with a very fine temporal granularity.
+
+\subsection{Discrete Event Simulators}\label{ssec:devs}
+
+\subsection{Multi Agent-based Modeling and Simulation}
+
+\subsection{Deterministic and Stochastic Simulation}
+
+\subsection{Summary and Comparison}
