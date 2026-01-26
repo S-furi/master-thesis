@@ -6,7 +6,6 @@
 \usepackage[noend]{algpseudocode}
 \usepackage{notes}
 \usepackage{shortcuts}
-%\usepackage{acronym}
 \usepackage{float}
 \usepackage{subfig}
 \usepackage{stackengine}
@@ -42,22 +41,13 @@
 \session{IV}
 \academicyear{2024-2025}
 
-% Definition of acronyms
-% Fix: https://tex.stackexchange.com/questions/735500/problem-with-amsmath-cleveref-acronym
 \makeatletter
-\AtBeginDocument {
-  \def\ltx@label#1{\cref@label{#1}}
-}
 \def\BState{\State\hskip-\ALG@thistlm}
 \makeatother
 
-\acrodef{DES}{\emph{Discrete Event Simulation}}
-\acrodef{FEL}{\emph{Future Event List}}
-\acrodef{SSA}{\emph{Stochastic Simulation Algorithm}}
-\acrodef{PDF}{\emph{Probability Density Function}}
-\acrodef{IPQ}{\emph{Indexed Priority Queue}}
-
 \mainlinespacing{1.241} % line spacing in mainmatter, comment to default (1)
+
+\input{acronyms}
 
 \begin{document}
 
@@ -68,6 +58,7 @@
 \tableofcontents
 \listoffigures
 \lstlistoflistings
+\printacronyms
 %----------------------------------------------------------------------------------------
 
 \mainmatter
