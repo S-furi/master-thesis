@@ -1,5 +1,5 @@
 %!TEX root = ../thesis-main.tex
-\chapter{An Introduction to Simulation}\label{chap:introduction}
+\chapter{An Introduction to Simulation}\label{ch:introduction}
 The scientific method is characterised by the formulation of a \emph{theory}
 which needs to be proven as false or true. This forms the first scientific
 pillar, which is the theoretical assumption and knowledge used to describe a
@@ -24,301 +24,36 @@ essential in most scientific development workflows, and modern literature has
 plenty of successful applications of simulations in various fields from biology
 to physics and from chemistry to social sciences.
 
-\section{Simulation}\label{sec:simulation}
-A \emph{simulation} is the imitation of the operation of a real-world process
-or system over time ~\cite{BanksDESS10}. A simulation is built upon a
-\emph{model} described through a set of mathematical, logical and symbolical
-relationships between entities in the system. The model is then simulated
-inside the system over time, making it possibile for observers to make analysis
-and prediction of model's impact on system performance. Moreover, the model is
-defined as a representation of a system for the purpose of studying that system,
-meaning that the set of characteristics of the model will include only those
-details useful in expanding or exploring the knowledge of the original problem.
-Simulation can also serve the purpose in giving insights on the model's
-performance with respect to the system, actively driving the design process of
-such model before it is even built in reality. A \emph{system} in simulation
-terms, is defined as a set of objects which can interact with each other toward
-the accomplishment of some purpose. An important separation must be drawn in
-the boundary between the system and its environment, where the latter can
-influence the system (changes in the \emph{system environment}) and viceversa.
+\section{Simulation and Modelling}
+\subsection{System Modelling concepts}
+\subsection{The Simulation Framework}
 
-%================================================================================================
-\begin{figure}[h]
-	\centering
-	\begin{tikzpicture}[
-			node distance=1.2em and 2em,
-			box/.style={
-					draw, thick, rounded corners,
-					align=center,
-					minimum width=0.32\linewidth,
-					minimum height=3em
-				},
-			smallbox/.style={
-					draw, thick, rounded corners,
-					align=center,
-					minimum width=0.32\linewidth,
-					minimum height=2.5em
-				},
-			arrow/.style={->, thick}
-		]
+\section{Simulation Formalisms}
+\subsection{Discrete Time Simulators}
 
-		% Left column
-		\node[box] (attributes) {Attributes};
-		\node[box, below=of attributes] (activities) {Activities};
-		\node[
-			draw, rounded corners,
-			inner sep=1.2em,
-			fit=(attributes)(activities),
-			label={[anchor=north]north:\textbf{Entity}}
-		] (entity) {};
+The Discrete Time Model assumes a \emph{stepwise} mode of execution where, at a
+particular time instant, the model is in a particular state and it defines how
+this state changes. Based on its current state and the current input, the model
+can determine which will be its state and output in the next time instant.
+\emph{Time} in discrete time models advances in discrete steps of integers
+multiple of some basic period such as 1 second, 1 day or 1 year.
 
-		\node[
-			draw, rounded corners,
-			minimum width=0.32\linewidth,
-			minimum height=3em,
-			align=center,
-			below=2em of entity
-		] (entity2) {\textbf{Entity}};
+A discrete time model determines its next state and output at a given time
+$t$ with the following functions:
 
-		% Right column
-		\node[box, right=4em of entity] (state) {State};
-		\node[box, below=3em of state] (endo) {Endogenous Events};
+\begin{subequations}
+	 \begin{align}
+		q(t + 1) & = \delta(q(t), x(t)) \label{eq:state_transition} \\
+		y(t) & = \lambda(q(t), x(t)) \label{eq:output_transition}
+	 \end{align}
+\end{subequations}
+Starting from an initial state $q(0)$, we determine the \emph{state trajectory}
+$q(0), q(1), \dots$ by applying the \emph{state transition function}
+\eqref{eq:state_transition} ; similarly, by applying the \emph{output function}
+\eqref{eq:output_transition} to the initial state, we obtain the \emph{output
+trajectory}.
 
-		% System boundary
-		\node[
-			draw, thick, dashed, rounded corners,
-			fit=(entity)(entity2)(attributes)(activities)(state)(endo),
-			inner sep=1.2em,
-			label={[anchor=north west]north west:\textbf{System}}
-		] (system) {};
+\ac{DES}
 
-		% Environment
-		\node[smallbox, above=5em of state] (exo) {Exogenous Events};
-
-		\node[
-			draw, thick, rounded corners,
-			fit=(system)(exo),
-			label={[anchor=north west]north west:\textbf{Environment}}
-		] (environment) {};
-
-		% Arrows
-		\draw[arrow] (entity) -- (state);
-		\draw[arrow] (attributes) -- (state);
-		\draw[arrow] (activities) -- (state);
-		\draw[arrow] (entity2) -- (state);
-
-		\draw[arrow] (endo) -- node[midway, right] {influence} (state);
-		\draw[arrow] (exo) -- node[midway, right] {influence} (state);
-
-		\draw[arrow, <->] (entity) -- node[midway, left] {interaction} (entity2);
-
-	\end{tikzpicture}
-	\caption{System, environment, and state evolution in discrete-event modeling.}
-	\label{fig:des-core}
-\end{figure}
-%================================================================================================
-
-Inside the environment, \emph{entities} interact with each other and can be
-described by a set of \emph{attributes} and their behaviour is represented by
-\emph{activities} which last over time. The set of variables on a certain time
-instant during a simulation is used to define the system \emph{state}, which in
-turn can be influenced by internal (\emph{endogenous}) or external
-(\emph{exogenous}) events. The interaction between the components is summarised
-in \Cref{fig:des-core}.
-
-Furthermore, a simulation could be characterised by the time span or the time
-instant in which a system is investigated, talking respectively about dynamic
-or static (Monte Carlo simulation) simulation models. In addition to that, some
-models may be represented by a deterministic set of input variables, whereas
-the vast majority of interesting problems may be expressed by means of
-stochastic models.
-
-\subsection{Discrete-Event System Simulation}\label{ssec:ddess}
-Discrete-Event System Simulation is the modeling of systems in which the state
-variable changes only at a discrete set of points in time. The model is
-evaluated by means of \emph{numerical methods}, i.e. system behaviours are
-approximated through computational procedures, rather than ``solving'' the
-equations representing system behaviours. Most applications of \ac{DES} deals
-exclusively with dynamic, stochastic systems that change in a discrete manner,
-i.e. the state variable changes only at a discrete set of points in time. Those
-points are represented by events occurring. This means that a \ac{DES} proceeds
-by producing a sequence of system snapshots that represent the evolution of the
-system through time including, for each $t$ so that $\text{CLOCK} = t$, the state
-at time $t$ along with the list of all activities in progress - the \ac{FEL}.
-
-\subsubsection{Event Scheduling}
-Event scheduling and the advancement of time is a mechanism to advance
-simulation time, while granting that the chronological order of events is
-correct In the context of stochastic discrete simulations, scheduling an event
-means inserting an event in the \ac{FEL} computing its duration by drawing or
-calculating a sample value from a statistical distribution. In this way at any
-given time the \ac{FEL} is strictly ordered by event time (i.e.
-chronologically). After the state is updated at the $t$-th snapshot, the
-$\text{CLOCK}$ advances at simulation time $\text{CLOCK} = t_1$, the next event
-is removed from the \ac{FEL} and executed, effectively creating the snapshot
-for time $t_1$. This procedure repeats until the simulation is over.
-
-While the event scheduling algorithm provides the logical framework for
-\ac{DES}, its computational \emph{efficiency} is governed by how the \ac{FEL}
-is managed. In systems with a massive number of events such as biochemical
-systems, the overhead of searching, updating and keeping the \ac{FEL} sorted
-becomes easily the primary bottleneck.
-
-\subsection{The Stochastic Simulation Algorithm}
-While general \ac{DES} frameworks often rely on empirical distributions for
-event timings, the \ac{SSA}~\cite{GillespieESSCCR:1977} provides a physically
-grounded method for simulating the time-evolution of chemical reaction networks.
-The "Direct Method" of the \ac{SSA} relies on the \emph{Markovian} property:
-the probability of a reaction occurring depends solely on the current
-molecular population (the state) rather than the history of the system.
-
-In this framework, each reaction $R_\mu$ is assigned a \emph{propensity function}
-$a_\mu$. Assuming the system is well-stirred and at constant volume, the
-time to the next reaction $\tau$ is an exponential random variable with
-a cumulative rate equal to the aggregate propensity $\lambda = \sum_j a_j$.
-The \ac{PDF} of this timing is given by:
-
-\begin{equation}\label{eq:nextreactiontime}
-	P(\tau) = \lambda e^{-\lambda \tau}
-\end{equation}
-
-The specific reaction $\mu$ that occurs at that time is a discrete random variable
-chosen with probability:
-
-\begin{equation}\label{eq:nextreactionprobability}
-	P(\text{reaction} = \mu) = \frac{a_{\mu}}{\lambda}
-\end{equation}
-
-To simulate this, two independent random numbers $r_1, r_2 \in (0, 1]$ are
-sampled from a uniform distribution. The time step is then computed via the
-\emph{Inverse Transform Sampling} as $\tau = -\ln(r_1)/\lambda$, while $\mu$ is
-the smallest integer satisfying $\sum_{j=1}^{\mu} a_j > r_2 \lambda$.
-
-\subsubsection{Optimising \ac{SSA}}
-
-The \ac{SSA} can be then summarised in \Cref{alg:ssa}. Right away some performance
-issues arise by looking at the pseudocode:
-\begin{itemize}
-	\item Every propensity $a_j$ is recomputed even if the reaction did not
-	      involve those species;
-	\item All propensities have to be summed all together at every step;
-	\item If reactions are stored in a list-like structure, finding the
-	      next reaction $\mu$ to execute is done with linear complexity.
-\end{itemize}
-
-\begin{algorithm}
-	\caption{Stochastic Simulation Algorithm (Direct Method)}\label{alg:ssa}
-	\begin{algorithmic}[1]
-		\Procedure{SSA}{initial state $\mathbf{x}$, time $T_{end}$}
-		\State $t \gets 0$
-		\While{$t < T_{end}$}
-		\For{each reaction $R_j$}
-		\State Calculate propensity $a_j$ based on $\mathbf{x}$
-		\EndFor
-		\State $\lambda \gets \sum a_j$
-		\State Sample $r_1, r_2 \sim \text{Uniform}(0, 1)$
-		\State $\tau \gets \frac{-\ln(r_1)}{\lambda}$ \Comment{Time to next event}
-		\State Find smallest $\mu$ such that $\sum_{j=1}^{\mu} a_j > r_2 \lambda$ \Comment{Select event}
-		\State Update state $\mathbf{x}$ according to reaction $R_\mu$
-		\State $t \gets t + \tau$
-		\EndWhile
-		\EndProcedure
-	\end{algorithmic}
-\end{algorithm}
-
-In short, \ac{SSA} complexity is $O(M)$ with $M$ being the number of reactions
-in the system. In addition to that, the direct method takes time proportional
-to the number of reactions to calculate $\lambda$ and to generate a random number
-according to \Cref{eq:nextreactionprobability}.
-
-\paragraph{Optimising propensity updates}
-It is possibile to optimise the execution of such algorithm by noting that,
-in most systems, chemical reactions are \emph{sparse}, hence only a small
-subset of propensities may change from step to step. If a reaction
-$A$ consumes species $X$, only those concentration that also use $X$ will be
-affected. It is possible to model such influence relationships among reactions
-by means of a \emph{Dependency Graph} $\mathcal{G} = (V, E)$ where:
-\begin{itemize}
-	\item $V$ is the set of reactions;
-	\item An edge $e_{i,j} \in E$ exists from $R_i \in V$ to $R_j \in V$ if the
-	      execution of the reaction $R_i$ changes the set of substances involved
-	      in $R_j$.
-\end{itemize}
-With this data structure we cut the cost of updating $M = |V|$ propensities at
-every iteration with just a small constant number of them.
-
-\paragraph{Optimising scheduling}
-As already said, a major bottleneck in simulating such systems is the \ac{FEL}
-management: in both the direct method and in the \emph{First Reaction
-	Method}~\cite{GILLESPIE1976403} linear scans are performed to find the
-next reaction $\mu$ to execute, where in the latter the reaction with
-the smallest \emph{putative time} $\tau_j$ should be chosen.
-Starting from this idea, in ~\cite{GibsonBruckEESSCSMSMC:2000} the \emph{Next Reaction
-	Method} is presented by introducing four important properties:
-\begin{enumerate}
-	\item The propensity function $a_j$ is stored along with the putative time
-	      $\tau_j$. If $a_j$ is not recomputed, nor does $\tau_j$;
-	\item A dependency graph $\mathcal{G} = (V, E)$ is stored which will help
-	      telling precisely which set of reactants to change when a given
-	      reaction is executed.
-	\item The list-like data structure backing the \ac{FEL} is replaced with an
-	      \ac{IPQ}: it is a binary heap combined with a map,
-	      which maximises efficiency for sparse operations and a small number of
-	      updates, granting $O(1)$ access and a sorting cost of $O(\log M)$.
-	\item \emph{Random number reuse}: This property addresses the computational
-	      cost of generating high-quality random numbers (could be the most heavy
-	      task in simulation). In the direct method, every step requires two new
-	      random numbers. In the Next Reaction Method, if a reaction $R_j$ is
-	      \emph{not} affected by the execution of $R_\mu$, its absolute putative
-	      time $T_j$ is simply kept in the \ac{FEL}. However, if $R_j$ is
-	      affected (its propensity changes from $a_j$ to $a_j^{new}$), its new
-	      putative time $T_j^{new}$ is rescaled to maintain statistical
-	      exactness:
-		  \begin{equation}\label{eq:rand_reuse}
-			  T_j^{new} = t + \frac{a_j}{a_j^{new}} (T_j^{old} - t)
-		  \end{equation}
-	      This transformation preserves the Markovian property because the
-	      exponential distribution is memoryless. Therefore, a new random number
-	      is only required for the reaction that just fired, while all others are
-	      updated algebraically.
-\end{enumerate}
-With the above elements, the \emph{Next Reaction Method} transform a linear,
-brute-force search into a targeted, logarithmic update cycle. Through the
-Dependency Graph it is possibile to identify which reactions in the \ac{IPQ}
-need to be modified when a reaction executes. With the latter it is possibile
-to perform a lookup of a given reaction in constant time, and update its
-putative time using \Cref{eq:rand_reuse} which drastically reduce the time
-spent in computing new random values. Finally, the heap structure of the
-\ac{IPQ} restores the chronological order of the \ac{FEL} in logarithmic time,
-ensuring the positioning of the next event at the root of the tree.
-
-\begin{algorithm}
-	\caption{Next Reaction Method (Gibson-Bruck)}\label{alg:gibson_bruck}
-	\begin{algorithmic}[1]
-		\Procedure{NextReactionMethod}{initial state $\mathbf{x}$, dependency graph $\mathcal{G}$}
-		\State $t \gets 0$
-		\State Generate $a_j$ and putative times $T_j$ for all $R_j$ \Comment{Initial expensive step}
-		\State Build \texttt{\ac{IPQ}} containing all $T_j$
-		\While{$t < T_{end}$}
-		\State $(\mu, T_{\mu}) \gets \texttt{\ac{IPQ}.top()}$ \Comment{$O(1)$ access to next event}
-		\State $t \gets T_{\mu}$ \Comment{Advance CLOCK to absolute event time}
-		\State Update state $\mathbf{x}$ according to reaction $R_{\mu}$
-		\State Sample new $r$ and update $T_{\mu} = t - \frac{\ln(r)}{a_{\mu}}$ \Comment{New time only for reaction that fired}
-
-		\For{each reaction $R_j$ in $\mathcal{G}$ affected by $R_{\mu}$}
-		\If{$j \neq \mu$}
-		\State $a_j^{new} \gets \text{update propensity using } \mathbf{x}$
-		\State $T_j \gets t + \frac{a_j^{old}}{a_j^{new}}(T_j - t)$ \Comment{Reuse/rescale random numbers}
-		\State \texttt{\ac{IPQ}.update}($j, T_j$) \Comment{$O(\log M)$ heap maintenance}
-		\EndIf
-		\EndFor
-		\EndWhile
-		\EndProcedure
-	\end{algorithmic}
-\end{algorithm}
-
-A simplified version of the algorithm is then presented in
-\Cref{alg:gibson_bruck}, which shows that for each step we pay $O(\log M)$ for
-the heap updates and $O(\text{deg}(\mathcal{G}))$ for the dependency graph
-traversal. 
-
+\subsection{Differential Equation Simulators}
+\subsection{Discrete Event Simulators}
