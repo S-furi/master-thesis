@@ -132,6 +132,32 @@ special, computationally intensive case of discrete time simulation
 ~\cite{law2007simulation} with a very fine temporal granularity.
 
 \subsection{Discrete Event Simulators}\label{ssec:devs}
+Discrete-Event System Simulation is the modeling of systems in which the state
+variable changes only at a discrete set of points in time. The model is
+evaluated by means of \emph{numerical methods}, namely the system behaviour is
+approximated through computational procedures, rather than solving it
+analytically. Most applications of \ac{DES} deals exclusively with dynamic,
+stochastic systems that change in a discrete manner, i.e. the state variable
+changes only at a discrete set of points in time. Those points are represented
+by events occurring. This means that a \ac{DES} proceeds by producing a
+sequence of system snapshots that represent the evolution of the system through
+time including, for each $t$ so that $\text{CLOCK} = t$, the state at time $t$
+along with the list of all activities in progress - the \ac{FEL} ~\cite{BanksDESS10}.
+
+\paragraph{Event Scheduling:}
+Event scheduling and the advancement of time is a mechanism to advance
+simulation time, while granting that the chronological order of events is
+correct. While in some cases it is straightforward to define the event times
+like in an event-based version of Game of Life ~\cite{Zeigler:2000}, in general
+this will not always be feasible. A common approach in the context of
+stochastic discrete simulations is to schedule an event by inserting an it
+in the \ac{FEL} computing its duration by drawing or calculating a sample value
+from a statistical distribution. In this way at any given time the \ac{FEL} is
+strictly ordered by event time (i.e. chronologically). After the state is
+updated at the $t$-th snapshot, the $\text{CLOCK}$ advances at simulation time
+$\text{CLOCK} = t_1$, the next event is removed from the \ac{FEL} and executed,
+effectively creating the snapshot for time $t_1$. This procedure repeats until
+the simulation is over.
 
 \subsection{Multi Agent-based Modeling and Simulation}
 
