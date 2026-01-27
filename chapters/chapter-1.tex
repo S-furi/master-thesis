@@ -25,8 +25,57 @@ plenty of successful applications of simulations in various fields from biology
 to physics and from chemistry to social sciences.
 
 \section{Simulation and Modelling}
+
 \subsection{System Modelling concepts}
+
+Systems modeling and more in general system theory, is very important in
+numerous problem areas, most notably in the study and understand of
+unpredictable phenomena or large-scale and complex systems through a precise,
+general and elegant mathematical theory capable of being both concerned in the
+goal seeking and with the input-output causal representation
+~\cite{mesarovic1975general}.
+
+A framework of modeling and simulation define entities and their relationships as illustrated
+in \Cref{fig:ms_framework}. 
+%
+\includediagram[0.8\linewidth]{figures/diagrams/entities_ms.tex}{The Modeling and Simulation Framework.}{fig:ms_framework}
+%
+\begin{itemize}
+	\item the \emph{source system} is the real or virtual environment under
+		study, serving as the source of behavioural data.
+	\item the \emph{model} is a set of instructions, rules, equations or
+		constraints which form a logical representation of the system;
+	\item the \emph{simulation} is the computational device (e.g. an
+		algorithm) that interprets the model's instructions to generate
+		state trajectories over time;
+	\item the \emph{experimental frame} is a specification of the
+		conditions under which the system is observed or experimented
+		with.
+\end{itemize}
+A fundamental concept linking these entities is the \emph{State}. According to
+~\cite{Zeigler:2000}, the state of a system at a given time $t$ is defined as
+the information required to determine the system's output and future behaviour,
+under the assumption that future inputs are know.
+
 \subsection{The Simulation Framework}
+[definition of the simulation framework]
+
+We could define the general simulation framework formally by means of the \emph{general system tuple}~\cite{Zeigler:2000}:
+\begin{equation}
+	S = \langle T, X, Y, Q, \Omega, \delta, \lambda \rangle
+\end{equation}
+Where:
+
+\begin{itemize}
+	\item $T$: \emph{Time Base}, whether $T \in \mathbb{R}$ or $T \in \mathbb{Z}$;
+	\item $X$: the set of \emph{Input Values};
+	\item $Y$: the set of \emph{Output Values};
+	\item $Q$: the set of \emph{States};
+	\item $\Omega$: the set of admissible \emph{Input Segments} (functions of time);
+	\item $\delta : Q \times \Omega \rightarrow Q $: the \emph{state transition function};
+	\item $\lambda : Q \times X \rightarrow Y$: the \emph{output function}.
+\end{itemize}
+[continue here]
 
 \section{Simulation Formalisms}
 
@@ -192,13 +241,24 @@ stochastic process.
 
 
 \subsection{Deterministic and Stochastic Simulation}
-If the simulated model does not contain any probabilistic components, we talk about
-deterministic simulation. In such models the output is determined once the set of input
-quantities and relationships in the model have been specified.
-On the other hand, when some random input components are introduced, these give
-raise to stochastic simulation models. Thanks to stochastic models, the output of
-a stochastic simulation is itself random and therefore should be treated as only
-an estimate of the true characteristics of the model.
+If the simulated model does not contain any probabilistic components, we talk
+about \emph{deterministic} simulation. In such models the output is determined
+once the set of input quantities and relationships in the model have been
+specified. Hence, given a set of initial conditions and inputs, the output
+trajectory is unique and reproducible. On the other hand, \emph{stochastic
+simulation} introduces probabilistic elements: here the evolution is not a
+single path but a realisation of a stochastic process. Stochasticity is
+essential in systems where "average" behaviour (e.g. modeled by differential
+equations) fails to capture reality. This can occur in \emph{low-granularity}
+regimes, such as chemical reactions or particular \ac{MABS} scenario with
+sparse populations, where fluctuations and rare events drive the system
+dynamics.
+
+In the context of Discrete Event Simulation, stochasticity typically manifests
+in the Time Advance function $\text{ta}(s)$. The duration of a state is not
+fixed but drawn from a probability distribution (commonly Exponential for
+memoryless processes), making the event scheduling itself probabilistic (more
+on this in \Cref{ssec:mdt}).
 
 \subsection{Summary and Comparison}
 
@@ -217,3 +277,6 @@ an estimate of the true characteristics of the model.
         \bottomrule
     \end{tabular}
 \end{table}
+
+\section{The Dependency Problem}
+\subsection{Manual Dependency Tracking}\label{ssec:mdt}
