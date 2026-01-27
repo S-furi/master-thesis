@@ -132,35 +132,88 @@ special, computationally intensive case of discrete time simulation
 ~\cite{law2007simulation} with a very fine temporal granularity.
 
 \subsection{Discrete Event Simulators}\label{ssec:devs}
-Discrete-Event System Simulation is the modeling of systems in which the state
-variable changes only at a discrete set of points in time. The model is
-evaluated by means of \emph{numerical methods}, namely the system behaviour is
-approximated through computational procedures, rather than solving it
-analytically. Most applications of \ac{DES} deals exclusively with dynamic,
-stochastic systems that change in a discrete manner, i.e. the state variable
-changes only at a discrete set of points in time. Those points are represented
-by events occurring. This means that a \ac{DES} proceeds by producing a
-sequence of system snapshots that represent the evolution of the system through
-time including, for each $t$ so that $\text{CLOCK} = t$, the state at time $t$
-along with the list of all activities in progress - the \ac{FEL} ~\cite{BanksDESS10}.
+While Discrete Time models advance in fixed steps, Discrete Event models are
+characterised by a continuous time base where state changes occur only at
+discrete instants called \emph{events}. Between two consecutive events, the
+system's state remains unchanged, allowing the simulator to jump over periods
+of inactivity, making \ac{DES} highly efficient for sparse systems.
 
-\paragraph{Event Scheduling:}
-Event scheduling and the advancement of time is a mechanism to advance
-simulation time, while granting that the chronological order of events is
-correct. While in some cases it is straightforward to define the event times
-like in an event-based version of Game of Life ~\cite{Zeigler:2000}, in general
-this will not always be feasible. A common approach in the context of
-stochastic discrete simulations is to schedule an event by inserting an it
-in the \ac{FEL} computing its duration by drawing or calculating a sample value
-from a statistical distribution. In this way at any given time the \ac{FEL} is
-strictly ordered by event time (i.e. chronologically). After the state is
-updated at the $t$-th snapshot, the $\text{CLOCK}$ advances at simulation time
-$\text{CLOCK} = t_1$, the next event is removed from the \ac{FEL} and executed,
-effectively creating the snapshot for time $t_1$. This procedure repeats until
-the simulation is over.
+A Discrete Event System (DEVS) can be specified as:
+%
+\begin{equation}
+	M = \langle X, S, Y, \delta_{\text{int}}, \delta_{\text{ext}}, \lambda, \text{ta} \rangle
+\end{equation}
+%
+Where the key components distinguishing from DTSS and DESS are:
+\begin{itemize}
+	\item \textbf{Time Advance} $\text{ta}: S \rightarrow \mathbb{R}^+_{0,
+		\infty}$: a function returning the system remains in a
+		particular state if no external events occur, defining the
+		lifespan of a state. If $\text{ta}(s) = 0$ the state is so
+		short that no other event can intervene (\emph{transitory
+		state}), whereas $\text{ta}(s) = \infty$ means that the system
+		remains in $s$ indefinitely, unless interrupted by an external
+		event;
+	\item \textbf{Internal Transition} $\delta_{\text{int}}: S \rightarrow S$: this
+		function dictates the new state $s' : \delta_{\text{int}}(s) =
+		s'$ after the time $\text{ta}(s)$ has elapsed (autonomous state
+		change);
+	\item \textbf{External Transition} $\delta_{\text{ext}}: Q \times X
+		\rightarrow S$: given the total state set $Q = \{ (s, e) : s
+		\in S, 0 \leq e \leq \text{ta}(s)\}$, this function dictates
+		the new state $s' = \delta_{\text{ext}}(s, x, e)$ when an input
+		$x$ is received in state $s$ after elapsed time $e$.
+\end{itemize}
+Through this formal definition we can highlight that time in DEVS is not a
+global ticker, but a derived property of the system's state via the time
+advance function.
+
+\paragraph{DES Simulation Mechanism (Event Scheduling):} To execute a formal
+DEVS model on a digital computer, the most common approach is by the
+\emph{Event Scheduling} method ~\cite{BanksDESS10}. The simulator maintains a
+strictly ordered data queue known as the \ac{FEL}, which stores pending events
+ordered by their execution time.
+The execution proceeds as a sequence of system \emph{snapshots}:
+%
+\begin{enumerate}
+	\item The clock is advanced to the time of the imminent event at the head of the \ac{FEL};
+	\item The event is removed from the \ac{FEL} and executed (either applying $\delta_{\text{int}}$ or $\delta_{\text{ext}}$);
+	\item The execution may generate new events or cancel or update existing ones by updating the contents of the \ac{FEL};
+	\item The process repeats until \ac{FEL} is empty or a termination condition occurs.
+\end{enumerate}
+%
+Most application of \ac{DES} deal with dynamic, stochastic systems (e.g.
+chemicals systems). In these cases the time advance $\text{ta}(s)$ often
+involves drawing a sample from a statistical distribution (e.g. exponential
+distribution for arrival times), making the state trajectory a realisation of a
+stochastic process.
 
 \subsection{Multi Agent-based Modeling and Simulation}
 
+
 \subsection{Deterministic and Stochastic Simulation}
+If the simulated model does not contain any probabilistic components, we talk about
+deterministic simulation. In such models the output is determined once the set of input
+quantities and relationships in the model have been specified.
+On the other hand, when some random input components are introduced, these give
+raise to stochastic simulation models. Thanks to stochastic models, the output of
+a stochastic simulation is itself random and therefore should be treated as only
+an estimate of the true characteristics of the model.
 
 \subsection{Summary and Comparison}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Comparison of Simulation Formalisms}
+    \label{tab:sim_comparison}
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Feature} & \textbf{DTSS} & \textbf{DESS} & \textbf{DEVS} \\
+        \midrule
+        \textbf{Time Advance} & Fixed Step ($\Delta t$) & Fixed/Variable Step & Event-Driven (Jumps) \\
+        \textbf{State Change} & Discrete & Continuous & Discrete \\
+        \textbf{Computation} & Regular / Predictable & Intensive (Solver) & Activity-Dependent \\
+        \textbf{Best For} & Cellular Automata, physics & Mechanics, Fluids & Queues, Chemistry, Logic \\
+        \bottomrule
+    \end{tabular}
+\end{table}
