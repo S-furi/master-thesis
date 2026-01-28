@@ -317,3 +317,126 @@
             primaryClass = {q-fin.TR},
 }
 
+
+@article{Gillespie2001ACSSCRS,
+            author = {Gillespie, Daniel T.},
+            title = {Approximate accelerated stochastic simulation of chemically
+                     reacting systems},
+            journal = {The Journal of Chemical Physics},
+            volume = {115},
+            number = {4},
+            pages = {1716-1733},
+            year = {2001},
+            month = {07},
+            abstract = {The stochastic simulation algorithm (SSA) is an
+                        essentially exact procedure for numerically simulating
+                        the time evolution of a well-stirred chemically reacting
+                        system. Despite recent major improvements in the
+                        efficiency of the SSA, its drawback remains the great
+                        amount of computer time that is often required to
+                        simulate a desired amount of system time. Presented here
+                        is the “τ-leap” method, an approximate procedure that in
+                        some circumstances can produce significant gains in
+                        simulation speed with acceptable losses in accuracy. Some
+                        primitive strategies for control parameter selection and
+                        error mitigation for the τ-leap method are described, and
+                        simulation results for two simple model systems are
+                        exhibited. With further refinement, the τ-leap method
+                        should provide a viable way of segueing from the exact
+                        SSA to the approximate chemical Langevin equation, and
+                        thence to the conventional deterministic reaction rate
+                        equation, as the system size becomes larger.},
+            issn = {0021-9606},
+            doi = {10.1063/1.1378322},
+            url = {https://doi.org/10.1063/1.1378322},
+            eprint = {
+                      https://pubs.aip.org/aip/jcp/article-pdf/115/4/1716/19076619/1716_1_online.pdf
+                      },
+}
+
+@article{Fujimoto1990PDES,
+            author = {Fujimoto, Richard M.},
+            title = {Parallel discrete event simulation},
+            year = {1990},
+            issue_date = {Oct. 1990},
+            publisher = {Association for Computing Machinery},
+            address = {New York, NY, USA},
+            volume = {33},
+            number = {10},
+            issn = {0001-0782},
+            url = {https://doi.org/10.1145/84537.84545},
+            doi = {10.1145/84537.84545},
+            abstract = {Parallel discrete event simulation (PDES), sometimes
+                        called distributed simulation, refers to the execution of
+                        a single discrete event simulation program on a parallel
+                        computer. PDES has attracted a considerable amount of
+                        interest in recent years. From a pragmatic standpoint,
+                        this interest arises from the fact that large simulations
+                        in engineering, computer science, economics, and military
+                        applications, to mention a few, consume enormous amounts
+                        of time on sequential machines. From an academic point of
+                        view, parallel simulation is interesting because it
+                        represents a problem domain that often contains
+                        substantial amounts of parallelism (e.g., see [59]), yet
+                        paradoxically, is surprisingly difficult to parallelize
+                        in practice. A sufficiently general solution to the PDES
+                        problem may lead to new insights in parallel computation
+                        as a whole. Historically, the irregular, data-dependent
+                        nature of PDES programs has identified it as an
+                        application where vectorization techniques using
+                        supercomputer hardware provide little benefit [14].A
+                        discrete event simulation model assumes the system being
+                        simulated only changes state at discrete points in
+                        simulated time. The simulation model jumps from one state
+                        to another upon the occurrence of an event. For example,
+                        a simulator of a store-and-forward communication network
+                        might include state variables to indicate the length of
+                        message queues, the status of communication links (busy
+                        or idle), etc. Typical events might include arrival of a
+                        message at some node in the network, forwarding a message
+                        to another network node, component failures, etc.We are
+                        especially concerned with the simulation of asynchronous
+                        systems where events are not synchronized by a global
+                        clock, but rather, occur at irregular time intervals. For
+                        these systems, few simulator events occur at any single
+                        point in simulated time; therefore parallelization
+                        techniques based on lock-step execution using a global
+                        simulation clock perform poorly or require assumptions in
+                        the timing model that may compromise the fidelity of the
+                        simulation. Concurrent execution of events at different
+                        points in simulated time is required, but as we shall
+                        soon see, this introduces interesting synchronization
+                        problems that are at the heart of the PDES problem.This
+                        article deals with the execution of a simulation program
+                        on a parallel computer by decomposing the simulation
+                        application into a set of concurrently executing
+                        processes. For completeness, we conclude this section by
+                        mentioning other approaches to exploiting parallelism in
+                        simulation problems.Comfort and Shepard et al. have
+                        proposed using dedicated functional units to implement
+                        specific sequential simulation functions, (e.g., event
+                        list manipulation and random number generation [20, 23,
+                        47]). This method can provide only a limited amount of
+                        speedup, however. Zhang, Zeigler, and Concepcion use the
+                        hierarchical decomposition of the simulation model to
+                        allow an event consisting of several subevents to be
+                        processed concurrently [21, 98]. A third alternative is
+                        to execute independent, sequential simulation programs on
+                        different processors [11, 39]. This replicated trials
+                        approach is useful if the simulation is largely
+                        stochastic and one is performing long simulation runs to
+                        reduce variance, or if one is attempting to simulate a
+                        specific simulation problem across a large number of
+                        different parameter settings. However, one drawback with
+                        this approach is that each processor must contain
+                        sufficient memory to hold the entire simulation.
+                        Furthermore, this approach is less suitable in a design
+                        environment where results of one experiment are used to
+                        determine the experiment that should be performed next
+                        because one must wait for a sequential execution to be
+                        completed before results are obtained.},
+            journal = {Commun. ACM},
+            month = oct,
+            pages = {30–53},
+            numpages = {24},
+}

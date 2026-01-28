@@ -63,7 +63,7 @@ inputs are known.
 To make these notions precise, we introduce a general, formal description of a
 system and its evolution in time. In particular, we adopt the \emph{System
 Specification Tuple}~\cite{Zeigler:2000}, which provides a compact definition
-of time, inputs, outputs, states, and the functions that govern state
+of time, inputs, outputs, states and the functions that govern state
 transitions and output generation:
 \begin{equation}\label{eq:sys_spec_tup}
 	S = \langle T, X, Y, Q, \Omega, \delta, \lambda \rangle
@@ -362,7 +362,202 @@ passing and resource updates). In this sense, \ac{MABS} can be viewed as an
 enhances \emph{DES} with a structuring principle that is particularly well
 suited to modeling high interactive systems.
 
-\section{The Dependency Problem}
+\section{Dependency Management in Simulation Algorithms}
 
-\subsection{Manual Dependency Tracking}\label{ssec:mdt}
+[TEMPORARY]
+While the event scheduling algorithm provides the logical framework for
+\ac{DES}, its computational \emph{efficiency} is governed by how the \ac{FEL}
+is managed. In systems with a massive number of events such as biochemical
+systems, the overhead of searching, updating and keeping the \ac{FEL} sorted
+becomes easily the primary bottleneck.
 
+\subsection{Manual Dependency Tracking: The Stochastic Simulation Algorithm}\label{ssec:mdt}
+While general \ac{DES} frameworks often rely on empirical distributions for
+event timings, the \ac{SSA}~\cite{GillespieESSCCR:1977} provides a physically
+grounded method for simulating the time-evolution of chemical reaction networks.
+The "Direct Method" of the \ac{SSA} relies on the \emph{Markovian} property:
+the probability of a reaction occurring depends solely on the current
+molecular population (the state) rather than the history of the system.
+
+In this framework, each reaction $R_\mu$ is assigned a \emph{propensity function}
+$a_\mu$. Assuming the system is well-stirred and at constant volume, the
+time to the next reaction $\tau$ is an exponential random variable with
+a cumulative rate equal to the aggregate propensity $\lambda = \sum_j a_j$.
+The \ac{PDF} of this timing is given by:
+
+\begin{equation}\label{eq:nextreactiontime}
+	P(\tau) = \lambda e^{-\lambda \tau}
+\end{equation}
+
+The specific reaction $\mu$ that occurs at that time is a discrete random variable
+chosen with probability:
+
+\begin{equation}\label{eq:nextreactionprobability}
+	P(\text{reaction} = \mu) = \frac{a_{\mu}}{\lambda}
+\end{equation}
+
+To simulate this, two independent random numbers $r_1, r_2 \in (0, 1]$ are
+sampled from a uniform distribution. The time step is then computed via the
+\emph{Inverse Transform Sampling} as $\tau = -\ln(r_1)/\lambda$, while $\mu$ is
+the smallest integer satisfying $\sum_{j=1}^{\mu} a_j > r_2 \lambda$.
+
+\subsubsection{\ac{SSA} Optimisation}
+
+The \ac{SSA} can be then summarised in \Cref{alg:ssa}. Right away some performance
+issues arise by looking at the pseudocode:
+\begin{itemize}
+	\item Every propensity $a_j$ is recomputed even if the reaction did not
+	      involve those species;
+	\item All propensities have to be summed all together at every step;
+	\item If reactions are stored in a list-like structure, finding the
+	      next reaction $\mu$ to execute is done with linear complexity.
+\end{itemize}
+
+\begin{algorithm}
+	\caption{Stochastic Simulation Algorithm (Direct Method)}\label{alg:ssa}
+	\begin{algorithmic}[1]
+		\Procedure{SSA}{initial state $\mathbf{x}$, time $T_{end}$}
+		\State $t \gets 0$
+		\While{$t < T_{end}$}
+		\For{each reaction $R_j$}
+		\State Calculate propensity $a_j$ based on $\mathbf{x}$
+		\EndFor
+		\State $\lambda \gets \sum a_j$
+		\State Sample $r_1, r_2 \sim \text{Uniform}(0, 1)$
+		\State $\tau \gets \frac{-\ln(r_1)}{\lambda}$ \Comment{Time to next event}
+		\State Find smallest $\mu$ such that $\sum_{j=1}^{\mu} a_j > r_2 \lambda$ \Comment{Select event}
+		\State Update state $\mathbf{x}$ according to reaction $R_\mu$
+		\State $t \gets t + \tau$
+		\EndWhile
+		\EndProcedure
+	\end{algorithmic}
+\end{algorithm}
+
+In short, \ac{SSA} complexity is $O(M)$ with $M$ being the number of reactions
+in the system. In addition to that, the direct method takes time proportional
+to the number of reactions to calculate $\lambda$ and to generate a random number
+according to \Cref{eq:nextreactionprobability}.
+
+\paragraph{Optimising propensity updates}
+It is possibile to optimise the execution of such algorithm by noting that,
+in most systems, chemical reactions are \emph{sparse}, hence only a small
+subset of propensities may change from step to step. If a reaction
+$A$ consumes species $X$, only those concentration that also use $X$ will be
+affected. It is possible to model such influence relationships among reactions
+by means of a \emph{Dependency Graph} $\mathcal{G} = (V, E)$ where:
+\begin{itemize}
+	\item $V$ is the set of reactions;
+	\item An edge $e_{i,j} \in E$ exists from $R_i \in V$ to $R_j \in V$ if the
+	      execution of the reaction $R_i$ changes the set of substances involved
+	      in $R_j$.
+\end{itemize}
+With this data structure we cut the cost of updating $M = |V|$ propensities at
+every iteration with just a small constant number of them.
+
+\paragraph{Optimising scheduling}
+As already said, a major bottleneck in simulating such systems is the \ac{FEL}
+management: in both the direct method and in the \emph{First Reaction
+	Method}~\cite{GILLESPIE1976403} linear scans are performed to find the
+next reaction $\mu$ to execute, where in the latter the reaction with
+the smallest \emph{putative time} $\tau_j$ should be chosen.
+Starting from this idea, in ~\cite{GibsonBruckEESSCSMSMC:2000} the \emph{Next Reaction
+	Method} is presented by introducing four important properties:
+\begin{enumerate}
+	\item The propensity function $a_j$ is stored along with the putative time
+	      $\tau_j$. If $a_j$ is not recomputed, nor does $\tau_j$;
+	\item A dependency graph $\mathcal{G} = (V, E)$ is stored which will help
+	      telling precisely which set of reactants to change when a given
+	      reaction is executed.
+	\item The list-like data structure backing the \ac{FEL} is replaced with an
+	      \ac{IPQ}: it is a binary heap combined with a map,
+	      which maximises efficiency for sparse operations and a small number of
+	      updates, granting $O(1)$ access and a sorting cost of $O(\log M)$.
+	\item \emph{Random number reuse}: This property addresses the computational
+	      cost of generating high-quality random numbers (could be the most heavy
+	      task in simulation). In the direct method, every step requires two new
+	      random numbers. In the Next Reaction Method, if a reaction $R_j$ is
+	      \emph{not} affected by the execution of $R_\mu$, its absolute putative
+	      time $T_j$ is simply kept in the \ac{FEL}. However, if $R_j$ is
+	      affected (its propensity changes from $a_j$ to $a_j^{new}$), its new
+	      putative time $T_j^{new}$ is rescaled to maintain statistical
+	      exactness:
+		  \begin{equation}\label{eq:rand_reuse}
+			  T_j^{new} = t + \frac{a_j}{a_j^{new}} (T_j^{old} - t)
+		  \end{equation}
+	      This transformation preserves the Markovian property because the
+	      exponential distribution is memoryless. Therefore, a new random number
+	      is only required for the reaction that just fired, while all others are
+	      updated algebraically.
+\end{enumerate}
+With the above elements, the \emph{Next Reaction Method} transform a linear,
+brute-force search into a targeted, logarithmic update cycle. Through the
+Dependency Graph it is possibile to identify which reactions in the \ac{IPQ}
+need to be modified when a reaction executes. With the latter it is possibile
+to perform a lookup of a given reaction in constant time, and update its
+putative time using \Cref{eq:rand_reuse} which drastically reduce the time
+spent in computing new random values. Finally, the heap structure of the
+\ac{IPQ} restores the chronological order of the \ac{FEL} in logarithmic time,
+ensuring the positioning of the next event at the root of the tree.
+
+\begin{algorithm}
+	\caption{Next Reaction Method (Gibson-Bruck)}\label{alg:gibson_bruck}
+	\begin{algorithmic}[1]
+		\Procedure{NextReactionMethod}{initial state $\mathbf{x}$, dependency graph $\mathcal{G}$}
+		\State $t \gets 0$
+		\State Generate $a_j$ and putative times $T_j$ for all $R_j$ \Comment{Initial expensive step}
+		\State Build \texttt{\ac{IPQ}} containing all $T_j$
+		\While{$t < T_{end}$}
+		\State $(\mu, T_{\mu}) \gets \texttt{\ac{IPQ}.top()}$ \Comment{$O(1)$ access to next event}
+		\State $t \gets T_{\mu}$ \Comment{Advance CLOCK to absolute event time}
+		\State Update state $\mathbf{x}$ according to reaction $R_{\mu}$
+		\State Sample new $r$ and update $T_{\mu} = t - \frac{\ln(r)}{a_{\mu}}$ \Comment{New time only for reaction that fired}
+
+		\For{each reaction $R_j$ in $\mathcal{G}$ affected by $R_{\mu}$}
+		\If{$j \neq \mu$}
+		\State $a_j^{new} \gets \text{update propensity using } \mathbf{x}$
+		\State $T_j \gets t + \frac{a_j^{old}}{a_j^{new}}(T_j - t)$ \Comment{Reuse/rescale random numbers}
+		\State \texttt{\ac{IPQ}.update}($j, T_j$) \Comment{$O(\log M)$ heap maintenance}
+		\EndIf
+		\EndFor
+		\EndWhile
+		\EndProcedure
+	\end{algorithmic}
+\end{algorithm}
+
+A simplified version of the algorithm is then presented in
+\Cref{alg:gibson_bruck}, which shows that for each step we pay $O(\log M)$ for
+the heap updates and $O(\text{deg}(\mathcal{G}))$ for the dependency graph
+traversal. 
+
+\subsection{Synchronisation-based Approaches}
+
+As discussed in the previous section, computer simulation means generating the
+behaviour of a model as specified by its dynamic definition, starting from an
+initial state. Until now, the simulation algorithm assumed to generate and
+execute the model in a sequential fashion. However, components of a model could
+be independent of one another, and it does not matter if the behaviours of the
+two components are generated in strict sequential order. Model components can
+run independently for a limited amount of time until, eventually, an event
+makes them dependant on one another. In general, when one component may
+directly or indirectly influence another component, there is a causal
+dependency of events. To guarantee execution correctness, the generation of
+states must preserve what is called \emph{causality}. Moreover,
+~\cite{Fujimoto1990PDES} states that correct simulation happens under the
+\emph{causality constraint}, namely when each modular component of a model
+processes the events in non-decreasing timestamp order. From this constraint
+follows that for \ac{PDES} simulation, some could either strictly avoid
+violating the causality constraint, defining what is known as
+\emph{Conservative \ac{PDES}} (\Cref{sssec:conservative_pdes}), while other
+approaches known as \emph{Speculative} (\Cref{sssec:speculative_pdes}) have an
+optimistic approach which temporarily violate the constraint but then will
+detect and repair the violations.
+
+
+With the raising interest in \ac{PDES}
+
+\subsubsection{Conservative Parallel Execution}\label{sssec:conservative_pdes}
+
+\subsubsection{Speculative Execution}\label{sssec:speculative_pdes}
+
+\subsection{Approximation-based Approaches}
+\subsubsection{$\tau$-Leaping}

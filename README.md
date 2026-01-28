@@ -14,7 +14,7 @@
         - **Multi-Agent Based Simulation** (MABS, autonomy and emergence)
         - **Deterministic and Stochastic Simulation**
 
-    - **The Dependency Problem**
+    - **Dependency Management in Simulation Algorithms**
         - **Manual Dependency Tracking: The Stochastic Simulation Algorithm** (Direct Method and *First Reaction Method*)
             - **SSA Optimisations (Gibson-Bruck's *Next Reaction Method*)**
         - **Synchronisation-based approaches**
