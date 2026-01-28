@@ -1,50 +1,52 @@
 %!TEX root = ../thesis-main.tex
 \chapter{An Introduction to Simulation}\label{ch:introduction}
-The scientific method is characterised by the formulation of a \emph{theory}
-which needs to be proven as false or true. This forms the first scientific
-pillar, which is the theoretical assumption and knowledge used to describe a
-certain phenomena, a property or a behaviour. The process of gathering evidence
-to support the validity of the theory is what \emph{experiments} try to
-accomplish, namely a series of observations of the real world that confirm or
-refute the initial hypothesis. In the modern era of sciences, computer systems
-backs the vast majority of modern scientific discoveries, whether through the
-usage of the raw computing power (e.g. weather forecasting equations resolution
-through Massively Parallel Computers) of such systems or by exploiting virtual
-representations of the real world ~\cite{Post2005-kn}. With the widespread
-adoption of simulation and simulators in the scientific method, researchers are
-now considering simulation as the \emph{third pillar} of science which
-complements theory and experiments. Some argues that simulation cannot be
-compared to experimentation, while others claim that there is more in common
-between simulation and experimentation ~\cite{WinsbergEric2010Sita}.
-In the general scientific method framework, theory provides the model of the
-hypothesis, while through experiments some may validate those models against
-reality, while simulation can serve as sources of new insights or new
-hypothesis which will be tested experimentally. Therefore, simulation is
-essential in most scientific development workflows, and modern literature has
-plenty of successful applications of simulations in various fields from biology
-to physics and from chemistry to social sciences.
+The scientific method begins with the formulation of a \emph{theory}, a
+hypothesis that can, in principle, be falsified or corroborated. This
+constitutes the first scientific pillar: the theoretical assumptions and
+knowledge used to describe a phenomenon, a property, or a behaviour. The
+process of gathering evidence to assess a theory is the role of
+\emph{experiments}, namely a series of observations of the real world that
+confirm or refute the initial hypothesis. In the modern era, computer systems
+underpin a large fraction of scientific discovery, whether by providing raw
+computing power (e.g. solving weather-forecasting equations on massively
+parallel computers) or by enabling virtual representations of the real
+world~\cite{Post2005-kn}. With the widespread adoption of simulation and
+simulators, researchers increasingly view simulation as a \emph{third pillar}
+of science, complementing theory and experiments. Some argue that simulation
+cannot be compared to experimentation, while others claim that the two share
+important commonalities~\cite{WinsbergEric2010Sita}.
 
-\section{Simulation and Modelling}
+Within this framework, theory provides models for hypotheses, experiments
+validate those models against reality, and simulation can generate new insights
+or new hypotheses to be tested experimentally. Simulation is therefore essential in
+many scientific workflows, and the literature reports successful applications
+across disciplines, from biology to physics and from chemistry to the social
+sciences.
 
-\subsection{System Modelling concepts}
+\section{Simulation and modeling}
+As noted above, simulation allows researchers to investigate systems that are
+too complex for analytical solutions, or too dangerous, expensive, or slow to
+study in the real world. To build a valid simulation, however, one must
+first establish a rigorous mathematical foundation for representing reality.
 
-Systems modeling and more in general system theory, is very important in
-numerous problem areas, most notably in the study and understand of
-unpredictable phenomena or large-scale and complex systems through a precise,
-general and elegant mathematical theory capable of being both concerned in the
-goal seeking and with the input-output causal representation
-~\cite{mesarovic1975general}.
+\subsection{System modeling concepts}
 
-A framework of modeling and simulation define entities and their relationships as illustrated
-in \Cref{fig:ms_framework}. 
+Systems modeling, and general systems theory more broadly, provide the
+conceptual basis for understanding complex phenomena. They enable a precise and
+general mathematical representation of systems, emphasising both input--output
+\emph{causal} relationships and goal-seeking behaviours~\cite{mesarovic1975general}.
+
+According to the framework established by ~\cite{Zeigler:2000}, a simulation
+study involves four distinct entities and their relationships, as illustrated
+in \Cref{fig:ms_framework}:
 %
 \includediagram[0.8\linewidth]{figures/diagrams/entities_ms.tex}{The Modeling and Simulation Framework.}{fig:ms_framework}
 %
 \begin{itemize}
 	\item the \emph{source system} is the real or virtual environment under
 		study, serving as the source of behavioural data.
-	\item the \emph{model} is a set of instructions, rules, equations or
-		constraints which form a logical representation of the system;
+	\item the \emph{model} is a set of instructions, rules, equations, or
+		constraints that form a logical representation of the system;
 	\item the \emph{simulation} is the computational device (e.g. an
 		algorithm) that interprets the model's instructions to generate
 		state trajectories over time;
@@ -52,19 +54,21 @@ in \Cref{fig:ms_framework}.
 		conditions under which the system is observed or experimented
 		with.
 \end{itemize}
-A fundamental concept linking these entities is the \emph{State}. According to
-~\cite{Zeigler:2000}, the state of a system at a given time $t$ is defined as
-the information required to determine the system's output and future behaviour,
-under the assumption that future inputs are know.
+A fundamental concept linking these entities is the \emph{state}. The state of a
+system at a given time $t$ is defined as the information required to determine
+the system's output and future behaviour, under the assumption that future
+inputs are known.
 
 \subsection{The Simulation Framework}
-[definition of the simulation framework]
-
-We could define the general simulation framework formally by means of the \emph{general system tuple}~\cite{Zeigler:2000}:
-\begin{equation}
+To make these notions precise, we introduce a general, formal description of a
+system and its evolution in time. In particular, we adopt the \emph{System
+Specification Tuple}~\cite{Zeigler:2000}, which provides a compact definition
+of time, inputs, outputs, states, and the functions that govern state
+transitions and output generation:
+\begin{equation}\label{eq:sys_spec_tup}
 	S = \langle T, X, Y, Q, \Omega, \delta, \lambda \rangle
 \end{equation}
-Where:
+where:
 
 \begin{itemize}
 	\item $T$: \emph{Time Base}, whether $T \in \mathbb{R}$ or $T \in \mathbb{Z}$;
@@ -75,9 +79,31 @@ Where:
 	\item $\delta : Q \times \Omega \rightarrow Q $: the \emph{state transition function};
 	\item $\lambda : Q \times X \rightarrow Y$: the \emph{output function}.
 \end{itemize}
-[continue here]
+
+\paragraph{State Trajectories and Behaviour:}\label{par:state_trajectories} The
+primary goal of a \emph{simulator} is to compute the evolution over time of the
+system specified by \eqref{eq:sys_spec_tup}. Starting from an initial state
+$q_0 \in Q$ at time $t_0$ and given an input segment $\omega \in \Omega$, the
+simulation applies the transition function $\delta$ to generate a \emph{state
+trajectory}, i.e. a sequence or function describing the evolution of $q(t)$ for
+all $t \in T$. Similarly, by applying the output function $\lambda$, the
+simulation generates the \emph{output trajectory}.
 
 \section{Simulation Formalisms}
+
+Depending on a simulator's purpose and constituent elements, different
+formalisms arise primarily from how the time base $T$ is defined and how the
+state-transition function $\delta$ is evaluated. In particular, we distinguish
+between simulators whose time progression and function evaluation happen
+\emph{continuously} (differential-equation models, \Cref{ssec:dess}), in fixed
+steps (discrete-time models, \Cref{ssec:dts}), or by jumping between relevant
+instants (discrete-event models, \Cref{ssec:devs}). Moreover, depending on the
+model's nature, the simulation output may be governed by probabilistic
+processes (\Cref{ssec:det_stoch_sim}). Finally, when a model involves many
+interacting components and non-trivial environmental coupling, so that
+behaviour may emerge from these interactions, an agent-oriented approach
+(\Cref{ssec:mabs}) can provide an appropriate modeling and simulation
+formalism.
 
 \subsection{Discrete Time Simulators}\label{ssec:dts}
 
@@ -131,9 +157,9 @@ time step, the amount of state computation for each step is dramatically
 reduced (e.g. in Conway's Game of Life). We could define which cells will
 change in the next time step as the cells whose neighboring cells have not
 changed at the current state transition time. This key idea is behind the
-Discrete Event Simulation algorithm, which focuses on processing events (a cell
-state change which will trigger a computation of new possibile states for its
-neighbours) rather than single cells.
+Discrete Event Simulation (\Cref{ssec:devs}) algorithm, which focuses on
+processing events (a cell state change which will trigger a computation of new
+possibile states for its neighbours) rather than single cells.
 
 \subsection{Differential Equation Simulators}\label{ssec:dess}
 
@@ -196,7 +222,7 @@ A Discrete Event System (DEVS) can be specified as:
 Where the key components distinguishing from DTSS and DESS are:
 \begin{itemize}
 	\item \textbf{Time Advance} $\text{ta}: S \rightarrow \mathbb{R}^+_{0,
-		\infty}$: a function returning the system remains in a
+		\infty}$: a function returning the time the system remains in a
 		particular state if no external events occur, defining the
 		lifespan of a state. If $\text{ta}(s) = 0$ the state is so
 		short that no other event can intervene (\emph{transitory
@@ -204,8 +230,7 @@ Where the key components distinguishing from DTSS and DESS are:
 		remains in $s$ indefinitely, unless interrupted by an external
 		event;
 	\item \textbf{Internal Transition} $\delta_{\text{int}}: S \rightarrow S$: this
-		function dictates the new state $s' : \delta_{\text{int}}(s) =
-		s'$ after the time $\text{ta}(s)$ has elapsed (autonomous state
+		function dictates the new state $s' = \delta_{\text{int}}(s)$ after the time $\text{ta}(s)$ has elapsed (autonomous state
 		change);
 	\item \textbf{External Transition} $\delta_{\text{ext}}: Q \times X
 		\rightarrow S$: given the total state set $Q = \{ (s, e) : s
@@ -237,10 +262,36 @@ involves drawing a sample from a statistical distribution (e.g. exponential
 distribution for arrival times), making the state trajectory a realisation of a
 stochastic process.
 
-\subsection{Multi Agent-based Modeling and Simulation}
+\subsection{Multi Agent-based Modeling and Simulation}\label{ssec:mabs}
 
+\ac{MABS} (often also referred to as agent-based modeling and simulation) is a
+modeling approach in which a system is described as a population of
+interacting \emph{agents} situated in an \emph{environment}. Each agent is
+characterised by its own state and by behavioural rules that map observations
+into actions. The system-level behaviour is not prescribed directly; instead,
+it emerges from local interactions among agents and between agents and their
+environment~\cite{MacalNorth2010ABMS,Bonabeau2002ABM}.
 
-\subsection{Deterministic and Stochastic Simulation}
+From a \emph{simulation} perspective, many agent-based models can be executed
+using the same core mechanism discussed for \ac{DES}: the simulator maintains a
+global notion of time and progresses by processing scheduled \emph{events}
+(e.g. message deliveries, agent activations, resource arrivals,
+perception--action updates). When an event is processed, one or more agents
+update their state and may schedule future events. In this view, \ac{MABS} can
+be interpreted as a form of \ac{DES} in which the state-transition logic is
+distributed across autonomous entities, and event generation is driven by
+interaction and communication patterns rather than by a single central
+process~\cite{MacalNorth2010ABMS,Byrd2019ABIDES}.
+
+A practical challenge in \ac{MABS} is that model specifications often mix
+structural elements (agents, environment, interaction topology) with explicit
+execution semantics (process ordering and scheduling). To improve
+reproducibility, several works advocate standardised descriptions of
+agent-based models that explicitly include the \emph{process overview and
+scheduling} component, making simulation semantics comparable across
+implementations~\cite{GRIMM2006115}.
+
+\subsection{Deterministic and Stochastic Simulation}\label{ssec:det_stoch_sim}
 If the simulated model does not contain any probabilistic components, we talk
 about \emph{deterministic} simulation. In such models the output is determined
 once the set of input quantities and relationships in the model have been
@@ -262,21 +313,56 @@ on this in \Cref{ssec:mdt}).
 
 \subsection{Summary and Comparison}
 
-\begin{table}[htbp]
-    \centering
-    \caption{Comparison of Simulation Formalisms}
-    \label{tab:sim_comparison}
-    \begin{tabular}{lccc}
-        \toprule
-        \textbf{Feature} & \textbf{DTSS} & \textbf{DESS} & \textbf{DEVS} \\
-        \midrule
-        \textbf{Time Advance} & Fixed Step ($\Delta t$) & Fixed/Variable Step & Event-Driven (Jumps) \\
-        \textbf{State Change} & Discrete & Continuous & Discrete \\
-        \textbf{Computation} & Regular / Predictable & Intensive (Solver) & Activity-Dependent \\
-        \textbf{Best For} & Cellular Automata, physics & Mechanics, Fluids & Queues, Chemistry, Logic \\
-        \bottomrule
-    \end{tabular}
-\end{table}
+This section introduces simulation as a methodological tool and established the
+conceptual vocabulary required for studying simulation rigorously by
+introducing the relationship between a source system, a model, a simulator and
+an experimental frame. Central to this view is the notion of \emph{state},
+which provides the minimal information required to determine future behaviour
+(given future inputs) and consequently, to define state and output
+trajectories.
+
+At the level of execution semantics, the formalisms discussed above can be
+understood primarily as different ways of structuring time and evalueating
+state changes:
+\begin{itemize}
+	\item \emph{Discrete-time simulation} (DTSS) advances time in fixed
+		time steps and updated the state at every tick;
+	\item \emph{Differential-equation simulation} (DESS) describes
+		evolution via rate equations in continuous time, ultimately
+		reduced to a discretised stepping procedure due to the usage of
+		numerical integration;
+	\item \emph{Discrete-event simulation} (DEVS/DES) advances time by
+		jumping to the next event time, leaving the state unchanged
+		between events.
+\end{itemize}
+
+Among these alternatives, \ac{DES} provides a particularly convenient
+foundation for complex and stochastic systems. First, it avoids unnecessary
+computation by skipping periods of inactivity, which is essential when state
+changes are sparse. Second, it offers a clear separation between model dynamics
+and execution through mechanisms such as event scheduling and the \ac{FEL}.
+Finally, stochasticity is naturally expressed in terms of random event times
+and random event outcomes: in many applications, arrival processes, service
+times, communication delays and other sources of uncertainty map directly to
+the scheduling and processing of events.
+
+A further advantage of the discrete-event formalism is its unifying role: by
+treating advance as a state-dependent property and by representing updates as
+event occurrences, the DEVS framework can accommodate discretised
+continuous-time models and fixed-step discrete-time models withing a common
+event based semantics~\cite{Zeigler:2000}. This perspective makes DES a neutral
+``core'' formalism for simulation on digital computers, while still covering
+behaviours typically introduced via DTSS or DESS.
+
+Finally, agent-based modeling and simulation can be interpreted as an
+agent-oriented specification layered on top of a DES execution semantics.
+Agents encapsulate local state and decision rule, while interaction and
+coordination are realised through discrete events (e.g. activations, message
+passing and resource updates). In this sense, \ac{MABS} can be viewed as an
+enhances \emph{DES} with a structuring principle that is particularly well
+suited to modeling high interactive systems.
 
 \section{The Dependency Problem}
+
 \subsection{Manual Dependency Tracking}\label{ssec:mdt}
+
