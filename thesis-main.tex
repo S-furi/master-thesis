@@ -15,7 +15,7 @@
 \usepackage{minted}
 \usepackage{tikz}
 \usepackage{amssymb}
-\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, fit}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, fit, shapes.multipart, backgrounds, shadows}
 
 \tikzset{
   sysbox/.style={
@@ -62,7 +62,6 @@
 \tableofcontents
 \listoffigures
 \lstlistoflistings
-\printacronyms
 %----------------------------------------------------------------------------------------
 
 \mainmatter
@@ -74,8 +73,6 @@
 \input{chapters/chapter-5.tex}
 
 \backmatter
-
-\nocite{*} % Remove this as soon as you have the first citation
 
 \bibliographystyle{alpha}
 \bibliography{bibliography}

@@ -3,10 +3,10 @@
 The scientific method begins with the formulation of a \emph{theory}, a
 hypothesis that can, in principle, be falsified or corroborated. This
 constitutes the first scientific pillar: the theoretical assumptions and
-knowledge used to describe a phenomenon, a property, or a behaviour. The
-process of gathering evidence to assess a theory is the role of
-\emph{experiments}, namely a series of observations of the real world that
-confirm or refute the initial hypothesis. In the modern era, computer systems
+knowledge used to describe a phenomenon, a property, or a behaviour.
+\emph{Experiments} constitute the process of gathering evidence to assess a
+theory, through a series of observations of the real world that confirm or
+refute the initial hypothesis. In the modern era, computer systems
 underpin a large fraction of scientific discovery, whether by providing raw
 computing power (e.g. solving weather-forecasting equations on massively
 parallel computers) or by enabling virtual representations of the real
@@ -17,10 +17,10 @@ cannot be compared to experimentation, while others claim that the two share
 important commonalities~\cite{WinsbergEric2010Sita}.
 
 Within this framework, theory provides models for hypotheses, experiments
-validate those models against reality, and simulation can generate new insights
+validate those models against reality and simulation can generate new insights
 or new hypotheses to be tested experimentally. Simulation is therefore essential in
-many scientific workflows, and the literature reports successful applications
-across disciplines, from biology to physics and from chemistry to the social
+many scientific workflows and the literature reports successful applications
+across disciplines, from biology to physics and from chemistry to social
 sciences.
 
 \section{Simulation and modeling}
@@ -44,15 +44,15 @@ in \Cref{fig:ms_framework}:
 %
 \begin{itemize}
 	\item the \emph{source system} is the real or virtual environment under
-		study, serving as the source of behavioural data.
+	      study, serving as the source of behavioural data.
 	\item the \emph{model} is a set of instructions, rules, equations, or
-		constraints that form a logical representation of the system;
+	      constraints that form a logical representation of the system;
 	\item the \emph{simulation} is the computational device (e.g. an
-		algorithm) that interprets the model's instructions to generate
-		state trajectories over time;
+	      algorithm) that interprets the model's instructions to generate
+	      state trajectories over time;
 	\item the \emph{experimental frame} is a specification of the
-		conditions under which the system is observed or experimented
-		with.
+	      conditions under which the system is observed or experimented
+	      with.
 \end{itemize}
 A fundamental concept linking these entities is the \emph{state}. The state of a
 system at a given time $t$ is defined as the information required to determine
@@ -62,7 +62,7 @@ inputs are known.
 \subsection{The Simulation Framework}
 To make these notions precise, we introduce a general, formal description of a
 system and its evolution in time. In particular, we adopt the \emph{System
-Specification Tuple}~\cite{Zeigler:2000}, which provides a compact definition
+	Specification Tuple}~\cite{Zeigler:2000}, which provides a compact definition
 of time, inputs, outputs, states and the functions that govern state
 transitions and output generation:
 \begin{equation}\label{eq:sys_spec_tup}
@@ -85,7 +85,7 @@ primary goal of a \emph{simulator} is to compute the evolution over time of the
 system specified by \eqref{eq:sys_spec_tup}. Starting from an initial state
 $q_0 \in Q$ at time $t_0$ and given an input segment $\omega \in \Omega$, the
 simulation applies the transition function $\delta$ to generate a \emph{state
-trajectory}, i.e. a sequence or function describing the evolution of $q(t)$ for
+	trajectory}, i.e. a sequence or function describing the evolution of $q(t)$ for
 all $t \in T$. Similarly, by applying the output function $\lambda$, the
 simulation generates the \emph{output trajectory}.
 
@@ -118,16 +118,16 @@ A discrete time model determines its next state and output at a given time
 $t$ with the following functions:
 
 \begin{subequations}
-	 \begin{align}
-		q(t + 1) & = \delta(q(t), x(t)) \label{eq:state_transition} \\
-		y(t) & = \lambda(q(t), x(t)) \label{eq:output_transition}
-	 \end{align}
+	\begin{align}
+		q(t + 1) & = \delta(q(t), x(t)) \label{eq:state_transition}   \\
+		y(t)     & = \lambda(q(t), x(t)) \label{eq:output_transition}
+	\end{align}
 \end{subequations}
 Starting from an initial state $q(0)$, we determine the \emph{state trajectory}
 $q(0), q(1), \dots$ by applying the \emph{state transition function}
 \eqref{eq:state_transition}; similarly, by applying the \emph{output function}
 \eqref{eq:output_transition} to the initial state, we obtain the \emph{output
-trajectory}.
+	trajectory}.
 
 \paragraph{Cellular Automata as Discrete Time Models:}
 
@@ -155,7 +155,7 @@ large and complex cellular automata, this approach is unfeasible. If at each
 time step we could, instead, ``predict'' which cells could change in the next
 time step, the amount of state computation for each step is dramatically
 reduced (e.g. in Conway's Game of Life). We could define which cells will
-change in the next time step as the cells whose neighboring cells have not
+change in the next time step as the cells whose neighbouring cells have not
 changed at the current state transition time. This key idea is behind the
 Discrete Event Simulation (\Cref{ssec:devs}) algorithm, which focuses on
 processing events (a cell state change which will trigger a computation of new
@@ -186,7 +186,7 @@ as:
 %
 where $\mathbf{z}(t) \triangleq [z_1(t), z_2(t), \dots, z_n(t)]^T$ is the state
 vector, the input vector $\mathbf{u}(t) \triangleq [u_1(t), u_2(t), \dots,
-u_n(t)]$ and $\mathbf{f} \triangleq [f_1, f_2, \dots, f_n]$ is the vector of
+		u_n(t)]$ and $\mathbf{f} \triangleq [f_1, f_2, \dots, f_n]$ is the vector of
 differential equations.
 
 To obtain the state trajectory, the \ac{ODE} must be solved. Solving an
@@ -199,7 +199,7 @@ System. The numerical solver discretises time into small steps $\Delta t$,
 calculating ~\cite{cellier2006continuous}:
 %
 \begin{equation}
-    \mathbf{z}(t + \Delta t) \approx \mathbf{z}(t) + \mathbf{f}(\mathbf{z}(t), \mathbf{u}(t)) \cdot \Delta t
+	\mathbf{z}(t + \Delta t) \approx \mathbf{z}(t) + \mathbf{f}(\mathbf{z}(t), \mathbf{u}(t)) \cdot \Delta t
 \end{equation}
 %
 Thus, in the context of computer simulation, DESS is often treated as a
@@ -222,21 +222,21 @@ A Discrete Event System (DEVS) can be specified as:
 Where the key components distinguishing from DTSS and DESS are:
 \begin{itemize}
 	\item \textbf{Time Advance} $\text{ta}: S \rightarrow \mathbb{R}^+_{0,
-		\infty}$: a function returning the time the system remains in a
-		particular state if no external events occur, defining the
-		lifespan of a state. If $\text{ta}(s) = 0$ the state is so
-		short that no other event can intervene (\emph{transitory
-		state}), whereas $\text{ta}(s) = \infty$ means that the system
-		remains in $s$ indefinitely, unless interrupted by an external
-		event;
+		      \infty}$: a function returning the time the system remains in a
+	      particular state if no external events occur, defining the
+	      lifespan of a state. If $\text{ta}(s) = 0$ the state is so
+	      short that no other event can intervene (\emph{transitory
+		      state}), whereas $\text{ta}(s) = \infty$ means that the system
+	      remains in $s$ indefinitely, unless interrupted by an external
+	      event;
 	\item \textbf{Internal Transition} $\delta_{\text{int}}: S \rightarrow S$: this
-		function dictates the new state $s' = \delta_{\text{int}}(s)$ after the time $\text{ta}(s)$ has elapsed (autonomous state
-		change);
+	      function dictates the new state $s' = \delta_{\text{int}}(s)$ after the time $\text{ta}(s)$ has elapsed (autonomous state
+	      change);
 	\item \textbf{External Transition} $\delta_{\text{ext}}: Q \times X
-		\rightarrow S$: given the total state set $Q = \{ (s, e) : s
-		\in S, 0 \leq e \leq \text{ta}(s)\}$, this function dictates
-		the new state $s' = \delta_{\text{ext}}(s, x, e)$ when an input
-		$x$ is received in state $s$ after elapsed time $e$.
+		      \rightarrow S$: given the total state set $Q = \{ (s, e) : s
+		      \in S, 0 \leq e \leq \text{ta}(s)\}$, this function dictates
+	      the new state $s' = \delta_{\text{ext}}(s, e, x)$ when an input
+	      $x$ is received in state $s$ after elapsed time $e$.
 \end{itemize}
 Through this formal definition we can highlight that time in DEVS is not a
 global ticker, but a derived property of the system's state via the time
@@ -288,7 +288,7 @@ structural elements (agents, environment, interaction topology) with explicit
 execution semantics (process ordering and scheduling). To improve
 reproducibility, several works advocate standardised descriptions of
 agent-based models that explicitly include the \emph{process overview and
-scheduling} component, making simulation semantics comparable across
+	scheduling} component, making simulation semantics comparable across
 implementations~\cite{GRIMM2006115}.
 
 \subsection{Deterministic and Stochastic Simulation}\label{ssec:det_stoch_sim}
@@ -297,7 +297,7 @@ about \emph{deterministic} simulation. In such models the output is determined
 once the set of input quantities and relationships in the model have been
 specified. Hence, given a set of initial conditions and inputs, the output
 trajectory is unique and reproducible. On the other hand, \emph{stochastic
-simulation} introduces probabilistic elements: here the evolution is not a
+	simulation} introduces probabilistic elements: here the evolution is not a
 single path but a realisation of a stochastic process. Stochasticity is
 essential in systems where "average" behaviour (e.g. modeled by differential
 equations) fails to capture reality. This can occur in \emph{low-granularity}
@@ -326,14 +326,14 @@ understood primarily as different ways of structuring time and evalueating
 state changes:
 \begin{itemize}
 	\item \emph{Discrete-time simulation} (DTSS) advances time in fixed
-		time steps and updated the state at every tick;
+	      time steps and updated the state at every tick;
 	\item \emph{Differential-equation simulation} (DESS) describes
-		evolution via rate equations in continuous time, ultimately
-		reduced to a discretised stepping procedure due to the usage of
-		numerical integration;
+	      evolution via rate equations in continuous time, ultimately
+	      reduced to a discretised stepping procedure due to the usage of
+	      numerical integration;
 	\item \emph{Discrete-event simulation} (DEVS/DES) advances time by
-		jumping to the next event time, leaving the state unchanged
-		between events.
+	      jumping to the next event time, leaving the state unchanged
+	      between events.
 \end{itemize}
 
 Among these alternatives, \ac{DES} provides a particularly convenient
@@ -364,12 +364,21 @@ suited to modeling high interactive systems.
 
 \section{Dependency Management in Simulation Algorithms}
 
-[TEMPORARY]
-While the event scheduling algorithm provides the logical framework for
-\ac{DES}, its computational \emph{efficiency} is governed by how the \ac{FEL}
-is managed. In systems with a massive number of events such as biochemical
-systems, the overhead of searching, updating and keeping the \ac{FEL} sorted
-becomes easily the primary bottleneck.
+The discrete-event paradigm reduces simulation to repeatedly selecting the next
+scheduled event, applying a state transition and updating the set of future
+scheduled events. In practice, the computational cost of this loop is often
+dominated not by the event handlers themselves, but by their \emph{dependency
+management}, namely \emph{what} must be recomputed after a state change and
+\emph{which} future events are affected.
+
+This section focuses on algorithmic mechanisms that exploit sparsity in those
+dependencies to reduce overhead. We first discuss the \ac{SSA}, where
+dependencies arise from reaction stoichiometry and only a small subset of
+propensities must be updated after each reaction. Then we broaden the notion of
+dependency to \emph{causal dependencies} introduced by parallel and distributed
+execution: once the event list and the state are partitioned across multiple
+workers, simulation correctness depends on enforcing a strict causal ordering
+and execution of events. 
 
 \subsection{Manual Dependency Tracking: The Stochastic Simulation Algorithm}\label{ssec:mdt}
 While general \ac{DES} frameworks often rely on empirical distributions for
@@ -481,9 +490,9 @@ Starting from this idea, in ~\cite{GibsonBruckEESSCSMSMC:2000} the \emph{Next Re
 	      affected (its propensity changes from $a_j$ to $a_j^{new}$), its new
 	      putative time $T_j^{new}$ is rescaled to maintain statistical
 	      exactness:
-		  \begin{equation}\label{eq:rand_reuse}
-			  T_j^{new} = t + \frac{a_j}{a_j^{new}} (T_j^{old} - t)
-		  \end{equation}
+	      \begin{equation}\label{eq:rand_reuse}
+		      T_j^{new} = t + \frac{a_j}{a_j^{new}} (T_j^{old} - t)
+	      \end{equation}
 	      This transformation preserves the Markovian property because the
 	      exponential distribution is memoryless. Therefore, a new random number
 	      is only required for the reaction that just fired, while all others are
@@ -527,37 +536,210 @@ ensuring the positioning of the next event at the root of the tree.
 A simplified version of the algorithm is then presented in
 \Cref{alg:gibson_bruck}, which shows that for each step we pay $O(\log M)$ for
 the heap updates and $O(\text{deg}(\mathcal{G}))$ for the dependency graph
-traversal. 
+traversal.
 
 \subsection{Synchronisation-based Approaches}
 
-As discussed in the previous section, computer simulation means generating the
-behaviour of a model as specified by its dynamic definition, starting from an
-initial state. Until now, the simulation algorithm assumed to generate and
-execute the model in a sequential fashion. However, components of a model could
-be independent of one another, and it does not matter if the behaviours of the
-two components are generated in strict sequential order. Model components can
-run independently for a limited amount of time until, eventually, an event
-makes them dependant on one another. In general, when one component may
-directly or indirectly influence another component, there is a causal
-dependency of events. To guarantee execution correctness, the generation of
+The event scheduling algorithm discussed so far assumes a \emph{centralised}
+execution mechanism, where a single simulation engine maintains the global
+\ac{FEL} and processes events in non-decreasing order. It is easy to assess
+this design's correctness, however it quickly becomes a scalability bottleneck
+as the number of model entities and scheduled events grows.
+\ac{PDES} addresses this problem by partitioning the model into a set of
+interacting components, each executed by a separate worker (a thread, a
+physical core or a networked process). With the common abstraction of \ac{LP}
+we indicate a computing owning a portion of the model state, maintaining its
+local \ac{FEL} while interacting with other \ac{LP}s by exchanging messages.
+
+The simulation output of a parallel simulator should be the same as executing
+that model under the same assumptions with a sequential simulator, with the
+only difference being that parallel and distributed simulation should allow
+multiple LPs to run concurrently in order to gain some sort of computational
+speedup by the employment of multiple resources in
+parallel~\cite{fujimoto1993FAPDESWFS}.
+
+\paragraph{Causality and Simulation Correctness}
+In general, when one component may directly or indirectly influence another
+component, there is a causal dependency of events. To guarantee execution
+correctness, the generation of
 states must preserve what is called \emph{causality}. Moreover,
 ~\cite{Fujimoto1990PDES} states that correct simulation happens under the
-\emph{causality constraint}, namely when each modular component of a model
-processes the events in non-decreasing timestamp order. From this constraint
-follows that for \ac{PDES} simulation, some could either strictly avoid
-violating the causality constraint, defining what is known as
-\emph{Conservative \ac{PDES}} (\Cref{sssec:conservative_pdes}), while other
-approaches known as \emph{Speculative} (\Cref{sssec:speculative_pdes}) have an
-optimistic approach which temporarily violate the constraint but then will
-detect and repair the violations.
+\emph{local causality constraint}, namely when each \ac{LP} processes the
+events in timestamp order. 
+In order to avoid \emph{synchronisation problems}, every \ac{LP} should adhere
+to the local causality constraint. 
+The output of a parallel simulator is equivalent to its sequential counterpart
+if and only if the local causality constraint is respected. Despite this
+observation, in presence of independent events their out-of-order execution
+will not cause causality errors. This raises an issue linked to the way
+parallel simulators can determine whether two events could be executed
+concurrently, and whether or not \ac{LP}s are allowed to temporarily violate
+the local causality constraint. Two opposite approaches has been developed
+during the years and will be presented in the following sections.
 
+\subsubsection{Conservative Execution}\label{sssec:conservative_pdes}
 
-With the raising interest in \ac{PDES}
+\emph{Conservative execution} is a form of processes synchronisation which
+maintains correctness of a simulation by ensuring that an \ac{LP} \emph{never}
+processes an event that might later be preceded by an earlier incoming event.
+Having an event $E_t$ at time $t$, the \ac{LP} must prove it will neve arrive
+an event $E_{t'}$ with $t' < t$ on any of its communication channel.
 
-\subsubsection{Conservative Parallel Execution}\label{sssec:conservative_pdes}
+\paragraph{Channel ordering and the importance of Lower Bounds:} Most
+conservative protocols assume that messages on each channel are delivered in
+non-decreasing timestamp order. Under this assumption, for each incoming channel
+$c$, an \ac{LP} can maintain a lower bound $LB_c$ on the timestamp of the
+next event that may arrive on $c$.
+That said, if the \ac{LP} currently holds a candidate event with smallest
+local timestamp $t_{\text{min}}$, then $t_{\text{min}}$ is \emph{safe} iff ~\cite{fujimoto1999Pads}:
+\begin{equation}
+	t_{\text{min}} \leq \min_{c \in \text{InputChannels}} \{LB_c\}
+\end{equation}
+The main challenge is therefore how to compute and propagate useful lower
+bounds without introducing global barriers that limits parallelism.
+
+\paragraph{Lookahead:} The ability of an \ac{LP} to predict a strictly
+positive minimum time into the future before it can affect other \ac{LP}s
+is called \emph{Lookahead}. If an \ac{LP} is at local simulation time
+$t$ and can guarantee that any message it sends to a neighbour will have
+timestamp at least $t + L$ for some $L > 0$, then it can advertise this
+information as a lower bound. Lookahead often comes from model's structure, for
+instance non-zero service times in queuing models or propagation latency in
+network models. In general, the larger the lookahead, the easier and faster it
+is for conservative protocols to find safe events and expose
+parallelism~\cite{fujimoto1988LPDES}.
+
+\paragraph{Blocking and Deadlock Avoidance:} in conservative execution, an
+\ac{LP} may become blocked when its earliest local event is not provably safe.
+In special cases where each \ac{LP} blocks for an earlier incoming message from
+their input queues, a \emph{Deadlock} can occur.
+
+In order to overcome such problems, the \ac{CMB} algorithm \newline
+\cite{chandyMisra1983DDD, bryant1977simulation} avoids deadlock by exchanging
+null messages. More specifically, each \ac{LP} periodically informs its
+neighbours of a safe lower bound on future messages by sending to each outgoing
+channel a null message advertising that it will not send any event with
+timestamp smaller than $t + L$, where $t$ is current simulation time and $L$ is
+the lookahead for that channel. Upon receiving null messages, an \ac{LP} can
+update its lower bound on that channel $LB_c$.
+
+Thanks to this synchronisation mechanism, deadlocks are avoided by paying an
+extra communication overhead and potentially a large number of null messages
+when lookahead is small.
+\\
+\newline
+
+Overall conservative protocols are attractive because they never violate the
+local causality constraint. However their performance depends critically on the
+ability to compute good lower bounds (lookahead). When lookahead is poor,
+\ac{LP}s spend a large fraction of time waiting, and communication overhead
+could dominate execution.
 
 \subsubsection{Speculative Execution}\label{sssec:speculative_pdes}
 
+Speculative or Optimistic execution takes an opposite stance to the local causality
+constraint with respect to conservative approaches, because rather than waiting until
+an event is provably safe, an \ac{LP} processes events as soon as it can. This leads
+to an increased level of concurrency, but causality violations could happen when
+a \emph{straggler} event arrives. Optimistic protocols therefore include mechanisms
+to \emph{detect} such violations and \emph{repair} the simulation state.
+
+\paragraph{Time Warp and the Rollback procedure:}
+The most influential optimistic approach is Jefferson's Time
+Warp \cite{jefferson1987TWOS}, where each \ac{LP} maintains a local event list,
+a local simulation clock (timestamp of most recently processed event $t_{LP}$), a
+history of past states and an output log of messages it has sent. The last two
+elements are used for enabling \ac{LP}'s \emph{rollback}.
+
+The \ac{LP} repeatedly removes and processes its smallest timestamp event, even if it
+is not known to be safe. If a new incoming event $E_{t'}$ with timestamp $t' < t_{LP}$,
+$E_{t'}$ is marked as straggler events and the \ac{LP} performs a rollback as shown in
+\Cref{fig:time_warp_rollbck}.
+%
+\includediagram{figures/diagrams/time_warp.tex}{Straggler event $E_{135}$
+	arrival in an \ac{LP}, causing the \emph{rollback} at a consistent state
+	with time $t < 135$, retrieved from the state log. Current simulation state
+	is then $S_{130}$, and neighbors are advertised with respective
+	anti-messages for events past $M_{130}$, namely $M_{140}$ and
+$M_{150}$.}{fig:time_warp_rollbck}
+%
+More specifically the \ac{LP}
+%
+\begin{enumerate*}[label=(\roman*)]
+	\item restores the saved state corresponding or prior to time $t'$
+	\item re-inserts any locally processed events with timestamp $t \geq t'$
+		back into the local event list and then
+	\item "unsends" any messages previously sent with timestamp $t \geq t'$ by
+		sending \emph{anti-messages}, i.e. message cancellation notices.
+\end{enumerate*}
+%
+Finally, the LP resumes forward execution reprocessing events in correct time
+order.
+
+\paragraph{Cascading Rollbacks, GVT and fossil collection:} by means of
+anti-messages, Time Warp removes the effects of speculative execution from
+other \ac{LP}s. If an \ac{LP} rolled back past a message it had sent, that
+message must be undone at the receiver if it has already been processed. This
+can trigger additional rollbacks, yielding a cascade. While we are assured that
+no domino effect where the entire computation is eventually rolled back to the
+beginning of the simulation~\cite{fujimoto1999Pads}, a practical implication is
+that optimistic \ac{PDES} shifts some of the synchronisation cost from
+\emph{waiting} (typical of conservative approaches) to work potentially done
+twice.
+
+Another important concern with speculative execution is that, in order to
+support rollback, \ac{LP}s must retain state history and message logs, but
+keeping unbounded history is infeasible. Therefore the concept of \ac{GVT} is
+defined as a lower bound on the timestamp on any event that may still affect
+the future of the simulation (shown in greyed queues' contents in
+\Cref{fig:time_warp_rollbck}). Once \ac{GVT} has advanced to time $T$, no event
+with timestamp smaller that $T$ can ever be rolled back again; hence, state
+snapshots and logs older than $T$ can be safely discarded by the process of
+\emph{fossil collection}.
+\\
+\newline
+
+Summarising, optimistic execution tends to be effective where conservative
+approaches fail, more specifically when dealing with dynamic dependencies
+topology among \ac{LP}s with limited lookahead, when communication delays or
+network latency are high (therefore waiting is too costly) and if causality
+violations are rare.
+
+\subsubsection{Conservative vs. Speculative}
+
+While both approaches enforce the same correctness criterion, namely the
+equivalence to a sequential timestamp-ordered \ac{DES}, the way they manage
+uncertainty about future incoming events is fundamentally different:
+\begin{itemize}
+	\item Conservative approaches pays by \emph{stalling} and by exchanging
+		lower bounds (e.g. null messages) to avoid mistakes;
+	\item Optimistic methods pays by \emph{repairing} mistakes through
+		rollbacks, anti-messages and periodic \ac{GVT}-based \emph{garbage
+		collection}.
+\end{itemize}
+As explained in \cite{Fujimoto1990PDES}, conservative approaches are faster in
+presence of models which have a high degree of predictability, having good
+lookahead and where the communication topology is static; conversely,
+optimistic approaches are faster for dynamic topologies with irregular workload
+distribution or models with poor lookahead. On the other hand conservative
+approaches offer low memory overhead, whereas state-saving requirements for
+optimistic approaches must be managed explicitly and could constitute a major
+performance bottleneck.
+
+Beyond the classical algorithmic taxonomy, a large body of work has focused on
+making optimistic synchronisation practical on modern multi-core and
+cluster-based platforms by reducing rollback costs and improving coordination,
+proposing and evaluating \emph{runtime-level} mechanisms in optimistic
+\ac{PDES}, ranging from engineering of rollback-oriented kernels and
+APIs~\cite{pellegrini2012TROSCIPM} to OS and hardware-assisted techniques that
+reduce wasted CPU work upon causality violations~\cite{silvestri2020IPI}.
+
+Moreover, current research is going toward hybrid approaches (e.g. limited
+optimism, window-based execution, adaptive throttling, \dots) as
+\cite{piccione2023HSSPDES} which balances waiting and rollback depending on the
+model structure and the target platform.
+
 \subsection{Approximation-based Approaches}
+
 \subsubsection{$\tau$-Leaping}
+
