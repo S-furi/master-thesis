@@ -3,30 +3,26 @@
 ## Index
 
 - **Chapter 1: An introduction to Simulation**
-    - **The importance of simulators in science**
+    - **The importance of simulators in science** ✅
     - **Simulation and simulators**
-        - **System modelling concepts**
-        - **Formal Definition of the Simulation Framework**
-    - **Simulation Formalisms**
-        - **Discrete Time** (Fixed Step DTSS)
-        - **Differential Equation** (Continuous DESS)
-        - **Discrete Event** (DEVS)
-        - **Multi-Agent Based Simulation** (MABS, autonomy and emergence)
-        - **Deterministic and Stochastic Simulation**
+        - **System modelling concepts** ✅
+        - **Formal Definition of the Simulation Framework** ✅
+    - **The Landscape of Simulation Formalisms**
+        - **Time-Stepped Approaches** (Fixed Step DTSS) ✅
+        - **Simulation through Differential Equations** (Continuous DESS) ✅
+        - **Discrete Event Simulation** (DEVS) ✅
+        - **Multi-Agent Based Simulation** (MABS, autonomy and emergence) ✅
+        - **Deterministic and Stochastic Simulation** ✅
+        - **Summary and conclusions** ✅
 
-    - **Dependency Management in Simulation Algorithms**
-        - **Manual Dependency Tracking: The Stochastic Simulation Algorithm** (Direct Method and *First Reaction Method*)
-            - **SSA Optimisations (Gibson-Bruck's *Next Reaction Method*)**
-        - **Synchronisation-based approaches**
-            - **Conservative Parallel Execution**
-            - **Speculative Execution**
-        - **Approximation-based Approaches**
-            - **$\tau$-Leaping**
-        - **Hardware-Accelerated Approaches**
-            - **Massively Parallel/GPU-Based Simulation**
+    - **Discrete Event Simulation Execution Paradigms**
+        - *Ordered-Pull-based Approach*
+            - **The case of SSA**
+        - *Constrained-Pull Approach* Conservative PDES
+        - *Speculative-Repair Approach* Speculative PDES
+        - **Event-Driven Approach** new solution
 
     - **Motivations and Objectives**
-        - **The Lack od Data-flow Approaches for Automatic Dependency Resolution**
         - **Towards Automatic Dependency Resolution through Reactive Execution**:
             - **Brief Introduction to the Reactive Paradigm**
             - **Benefits**
@@ -35,31 +31,33 @@
                     A reactive engine moves this burden from the Human to the Framework.
                 - **Consistency by Construction**
                 - **Efficiency** in high density systems (e.g. MABS)
-        - **Building a Fully-Reactive DES**
+        - **Building a Fully-Reactive DES** by means of mofifying an existing simulator
+            and assessing its correctness by making it run the existing test suite.
 
-- **Chapter 2: Reactivity and Dependency Management**
-    - **The Nature of Dependencies in Simulation**
-        - **The state-event coupling** (i.e. how state changes trigger event re-scheduling)
-        - **The traditional approach: Dependency Graph and the Pull model**
-        - **Problems and issues with the traditional approach** (complexity bottleneck)
+- **Chapter 2: Reactivity as Dependency Resolution Mechanism**
+    - **Theory of Reactive Systems**
+        - **Event-driven/Data-flow applications** (Lee and Messerschmitt "Fran")
+        - **The reactive Manifesto** the drivers
+            - **Reactive Principles** rigorous definitions
+        - **FRP** extensions
+        - **Project Reactor**
 
-    - **The Reactive Execution Paradigm**
-        - **The Reactor Model**
-            - **Theoretical Foundation**
-            - **Data-Flows as the primary driver of execution**
-        - **Push-based propagation**
-            - **Observer Pattern**
-        - **Functional Reactive Programming Principles**
+    - **Mechanics of Propagation**
+        - **Sycnhronous and Async propagation**
+        - **Observer Pattern**
+        - **Signls/Pull-based/Lazy execution**
+        - **Flows**
 
-    - **Evaluation Strategies: Eager vs. Lazy**
+    - **Evaluation Strategies: Eager vs. Lazy** or Demand-driven vs. Data-driven
         - **Eager Push** (The ReactiveX/Observer Model)
         - **Lazy Derivations** (The MobX/Dirty-bit Model)
         - **Complexity Analysis**
 
-    - **Challenges in Reactive Frameworks Design**
+    - **Challenges in Reactive Frameworks Design** 
         - **Glitches and Unsafe Dependencies Avoidance** (i.e. preventing redundant recomputations, cyclic deps, ...)
         - **Memory and Lifecycle Management**
         - **Performance Pitfalls**
+        - **Challenged in Distributed Environments** see Salvaneschi works (open research issue)
 
     - **Comparison and Synthesis**
         - **Overview of Reactive Frameworks**
@@ -69,6 +67,7 @@
             - **In-house solution**
         - **DES requirements** (why a custom lightweight cps-like approach could fit best)
         - **The Hybrid Proposal** (i.e.eager rescheduling w/ lazy data propagation to grant DES correctness)
+
 
 - **Chapter 3: Designing a Reactive Architecture for Alchemist**
     - **Alchemist**

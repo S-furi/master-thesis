@@ -678,8 +678,8 @@
 @inproceedings{piccione2023HSSPDES,
             author = {Piccione, Andrea and Andelfinger, Philipp and Pellegrini,
                       Alessandro},
-            title = {Hybrid Speculative Synchronisation for
-                     Parallel Discrete Event Simulation},
+            title = {Hybrid Speculative Synchronisation for Parallel Discrete
+                     Event Simulation},
             year = {2023},
             isbn = {9798400700309},
             publisher = {Association for Computing Machinery},
@@ -783,4 +783,72 @@
             location = {Miami, FL, Spain},
             series = {SIGSIM-PADS '20},
 }
+@article{yao2006ESSTLSM,
+            author = {Cao, Yang and Gillespie, Daniel T. and Petzold, Linda R.},
+            title = {Efficient step size selection for the tau-leaping
+                     simulation method},
+            journal = {The Journal of Chemical Physics},
+            volume = {124},
+            number = {4},
+            pages = {044109},
+            year = {2006},
+            month = {01},
+            abstract = {The tau-leaping method of simulating the stochastic time
+                        evolution of a well-stirred chemically reacting system
+                        uses a Poisson approximation to take time steps that leap
+                        over many reaction events. Theory implies that tau
+                        leaping should be accurate so long as no propensity
+                        function changes its value “significantly” during any
+                        time step τ. Presented here is an improved procedure for
+                        estimating the largest value for τ that is consistent
+                        with this condition. This new τ-selection procedure is
+                        more accurate, easier to code, and faster to execute than
+                        the currently used procedure. The speedup in execution
+                        will be especially pronounced in systems that have many
+                        reaction channels.},
+            issn = {0021-9606},
+            doi = {10.1063/1.2159468},
+            url = {https://doi.org/10.1063/1.2159468},
+            eprint = {
+                      https://pubs.aip.org/aip/jcp/article-pdf/doi/10.1063/1.2159468/15382239/044109_1_online.pdf
+                      },
+}
+
+@article{haseltine2002ASCFSRSCK,
+            author = {Haseltine, Eric L. and Rawlings, James B.},
+            title = {Approximate simulation of coupled fast and slow reactions
+                     for stochastic chemical kinetics},
+            journal = {The Journal of Chemical Physics},
+            volume = {117},
+            number = {15},
+            pages = {6959-6969},
+            year = {2002},
+            month = {10},
+            abstract = {Exact methods are available for the simulation of
+                        isothermal, well-mixed stochastic chemical kinetics. As
+                        increasingly complex physical systems are modeled,
+                        however, these methods become difficult to solve because
+                        the computational burden scales with the number of
+                        reaction events. This paper addresses one aspect of this
+                        problem: the case in which reacting species fluctuate by
+                        different orders of magnitude. By partitioning the system
+                        into subsets of “fast” and “slow” reactions, it is
+                        possible to bound the computational load by approximating
+                        “fast” reactions either deterministically or as Langevin
+                        equations. This paper provides a theoretical background
+                        for such approximations and outlines strategies for
+                        computing these approximations. Two motivating examples
+                        drawn from the fields of particle technology and
+                        biotechnology illustrate the accuracy and computational
+                        efficiency of these approximations.},
+            issn = {0021-9606},
+            doi = {10.1063/1.1505860},
+            url = {https://doi.org/10.1063/1.1505860},
+            eprint = {
+                      https://pubs.aip.org/aip/jcp/article-pdf/117/15/6959/19313404/6959_1_online.pdf
+                      },
+}
+
+
+
 
