@@ -15,12 +15,19 @@
         - **Deterministic and Stochastic Simulation** ✅
         - **Summary and conclusions** ✅
 
-    - **Discrete Event Simulation Execution Paradigms**
-        - *Ordered-Pull-based Approach*
-            - **The case of SSA**
-        - *Constrained-Pull Approach* Conservative PDES
-        - *Speculative-Repair Approach* Speculative PDES
-        - **Event-Driven Approach** new solution
+    - **Event Dependencies Management** ✅
+        - SSA Optimisation by the Next Reaction Method ✅
+        - Other Optimisations 
+        - Limitations ⚠️
+
+    - **Dependency Management in Parallel and Distributed Simulations**
+        - Causality and simulation correctness ✅
+        - Conservative Execution ✅
+        - Speculative Execution ✅
+        - Conservative vs. Speculative ✅
+
+    - **Reactive Dependency Management: a proposal**
+        - Reactive PDES ✅
 
     - **Motivations and Objectives**
         - **Towards Automatic Dependency Resolution through Reactive Execution**:

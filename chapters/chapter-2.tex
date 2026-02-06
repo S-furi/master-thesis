@@ -1,2 +1,128 @@
 %root = ../thesis-main.tex
 \chapter{Reactivity and Dependency Management}\label{ch:reactvity_dep_mgmnt}
+
+The previous chapter introduced what is a simulator, with an emphasis to
+the discrete-event formalism. Moreover, the key concept of dependency management
+is introduced in such systems with emphasis on complex systems with sparse
+dependencies such as biochemical systems kinetic. This chapter aims to introduce
+a complementary viewpoint in dependency management and resolution through
+\emph{reactivity} as a general-purpose technique for expressing and executing
+such dependency structures.
+
+Reactive programming is often present as a software-engineering style for
+building responsive user interfaces or streaming
+applications~\cite{kuhn2017RDP}, but at more abstract level, however, it
+provides a vocabulary and a set of execution strategies and principles for
+maintaining \emph{derived values} and \emph{event-driven processes} consistent
+with a changing base state (e.g. a simulated environment that changes over
+time). In other words, it can be interpreted as a dependency resolution
+mechanism: changes propagate through a set of dependencies in an implicit,
+dynamic graph triggering recomputation, notifications and potentially the
+scheduling of future work.
+
+In what follows, an extensive theoretical foundation is built around three
+complementary formalisms:
+\begin{itemize}
+	\item \emph{event-riven} and \emph{data-flow} models, which view
+	      computation as the propagation of tokens or events through a network of
+	      operations;
+	\item the \emph{observer} family of patterns, traditionally introduced in
+	      object-oriented design, which popularised callback-based push
+	      propagation and decoupled notification;
+	\item \emph{Functional Reactive Programming}, which provides specific
+	      meanings and manipulation tools to time-varying values and event
+	      streams.
+\end{itemize}
+We then connect these ideas to modern reactive frameworks (with Project Reactor
+as a concrete reference point) and highlight the implications for designing
+reactive dependency management in a discrete-event simulation engine.
+
+\section{Theory of Reactive Systems}
+
+\subsection{Event-driven and Data-flow Computation}
+
+A natural conceptual root of reactive programming is \emph{event-driven}
+computation. In such systems, execution follows a data-driven model, where each
+instruction becomes executable only once all required operands have been
+preceding instructions~\cite{dennis1974PABDFP}. Applied to software systems,
+such formalism define a system organised as a graph of components whose
+dependencies are realised through the flow of messages. Systems developed under
+such assumptions are usually employed to exploit parallelism and concurrency,
+especially for distributed systems, which introduces a higher degree of
+complexity due to how communication is handled among the nodes of the system.
+Typical event-driven applications rely on \emph{asynchronous communication},
+which avoids keeping nodes in hold when sending messages while using explicit
+mechanism of synchronisation when needed~\cite{lamport1978TCOEDS}. Conversely,
+\emph{synchronous communication} blocks whenever a message is sent. No approach
+excludes the other, and they could be better suited depending to the problem at
+hand (see \cite{arjomandi1983ESVADS} for a case where synchronous systems could
+have better performance). A perfect exemplification of such architecture at the
+programming-language level, is the \emph{actor model} which is mainly based on
+message-passing. In the actor model each actor encapsulates state and
+behaviour, processes one message at a time, and interacts exclusively by
+sending messages to other actors. This yields a compositional model where
+concurrency emerges from independent actors \emph{reacting} to incoming
+messages~\cite{agha1986AMCCDS}.
+
+\subsection{Reactive systems}
+The term \emph{reactive systems} was originally coined to distinguish systems
+that  maintain a continuous interaction with their environment from
+transformational systems that simply compute a result from
+inputs~\cite{harel1989DRS}. In modern software engineering however, this notion
+denotes systems that must continuously respond to incoming stimuli (user
+actions, network messages, sensor readings) under certain constraints of
+latency and availability. The \emph{Reactive Manifesto}\footnote{
+	\url{https://reactivemanifesto.org/}} organises this space under four
+high-level properties: responsiveness, resilience, elasticity and
+message-driven interaction.
+
+Although the manifesto is not a formal model of computation, it highlights
+constraints that directly affect dependency resolution mechanisms:
+\begin{itemize}
+	\item \emph{backpressure} and load regulation which determine how fast
+	      communications along dependencies edges are allowed to propagate;
+	\item \emph{asynchrony} and distribution to maximise responsiveness,
+	      but making the arrival of updates uncertain and complicating consistency;
+	\item \emph{failure} as a first-class concern, which motivates explicit lifecycle
+	      management for subscription and resources.
+\end{itemize}
+These considerations will become relevant when discussing about propagation strategies
+and pitfalls of reactive frameworks. [LINKS TO SECTION HERE AND ABOVE]
+
+\subsection{The Observer pattern and push-based propagation}
+In object-oriented systems, reactivity is traditionally implemented through the
+\emph{Observer pattern}~\cite{gamma1994design}. A \emph{subject} maintains a
+set of \emph{observers} and notifies them whenever its state changes.
+Therefore, the pattern decouples producers from consumers: the subject does not
+need to know what observers do with the updates, only that they implement a
+common notification interface.
+
+From a dependency-management viewpoint, observer-style reactivity correspond to
+a \emph{push-based} propagation, where updates originate at a source which
+\emph{immediately} (\emph{synchronous}) push them to dependents which may in
+turn update their own status.
+
+This approach is simple and effective, but it introduces well-known challenges
+to the point that some may argue to ``Deprecate the Observer pattern''~\cite{maier2010DOP}.
+Among some notable issues we find
+\begin{enumerate*}[label=(\roman*)]
+	\item the dependency graph is often implicit in registrations spread across
+	      the codebase
+	\item ordering constraints are subtle when several observers depend on one
+	      another
+	\item feedback cycles and re-entrant notifications can create inconsistent
+	      intermediate state (link to glitches) and
+	\item lifecycle management becomes critical (link to section)
+\end{enumerate*}
+
+These issues motivate richer reactive abstractions where dependencies become
+explicit and where the runtime can provide stronger guarantees about lifecycles
+and propagation order.
+
+\subsection{Functional Reactive Programming}
+\ac{FRP} emerged as an attempt to provide a more principled account of
+reactive computation. In the classical \ac{FRP} formulation, time-varying
+values (often referred to as \emph{behaviours} or \emph{signals}) are treated
+as first-class values and discrete occurrences are represented as \emph{event
+streams}~\cite{elliott1997FRA}. 
+
