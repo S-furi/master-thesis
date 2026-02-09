@@ -1120,7 +1120,25 @@
 }
 
 
-@article{hudak2000FRP,
+@article{hudak2000PFRP,
+            author = {Hudak, Paul},
+            title = {Principles of functional reactive programming},
+            year = {2000},
+            issue_date = {Jan 2000},
+            publisher = {Association for Computing Machinery},
+            address = {New York, NY, USA},
+            volume = {25},
+            number = {1},
+            issn = {0163-5948},
+            url = {https://doi-org.ezproxy.unibo.it/10.1145/340855.340961},
+            doi = {10.1145/340855.340961},
+            journal = {SIGSOFT Softw. Eng. Notes},
+            month = jan,
+            pages = {59},
+            numpages = {1},
+}
+
+@article{zhanyong2000FRP,
             author = {Wan, Zhanyong and Hudak, Paul},
             title = {Functional reactive programming from first principles},
             year = {2000},
@@ -1162,3 +1180,256 @@
 }
 
 
+@article{awerbuch1985CNS,
+            author = {Awerbuch, Baruch},
+            title = {Complexity of network synchronization},
+            year = {1985},
+            issue_date = {Oct. 1985},
+            publisher = {Association for Computing Machinery},
+            address = {New York, NY, USA},
+            volume = {32},
+            number = {4},
+            issn = {0004-5411},
+            url = {https://doi.org/10.1145/4221.4227},
+            doi = {10.1145/4221.4227},
+            abstract = {The problem of simulating a synchronous network by an
+                        asynchronous network is investigated. A new simulation
+                        technique, referred to as a synchronizer, which is a new,
+                        simple methodology for designing efficient distributed
+                        algorithms in asynchronous networks, is proposed. The
+                        synchronizer exhibits a trade-off between its
+                        communication and time complexities, which is proved to
+                        be within a constant factor of the lower bound.},
+            journal = {J. ACM},
+            month = oct,
+            pages = {804–823},
+            numpages = {20},
+}
+@inproceedings{elliott2009PPFRP,
+            author = {Elliott, Conal M.},
+            title = {Push-pull functional reactive programming},
+            year = {2009},
+            isbn = {9781605585086},
+            publisher = {Association for Computing Machinery},
+            address = {New York, NY, USA},
+            url = {https://doi.org/10.1145/1596638.1596643},
+            doi = {10.1145/1596638.1596643},
+            abstract = {Functional reactive programming (FRP) has simple and
+                        powerful semantics, but has resisted efficient
+                        implementation. In particular, most past implementations
+                        have used demand-driven sampling, which accommodates
+                        FRP's continuous time semantics and fits well with the
+                        nature of functional programming. Consequently, values
+                        are wastefully recomputed even when inputs don't change,
+                        and reaction latency can be as high as the sampling
+                        period. This paper presents a way to implement FRP that
+                        combines data- and demand-driven evaluation, in which
+                        values are recomputed only when necessary, and reactions
+                        are nearly instantaneous. The implementation is rooted in
+                        a new simple formulation of FRP and its semantics and so
+                        is easy to understand and reason about. On the road to a
+                        new implementation, we'll meet some old friends (monoids,
+                        functors, applicative functors, monads, morphisms, and
+                        improving values) and make some new friends (functional
+                        future values, reactive normal form, and concurrent "
+                        unambiguous choice").},
+            booktitle = {Proceedings of the 2nd ACM SIGPLAN Symposium on Haskell
+                         },
+            pages = {25–36},
+            numpages = {12},
+            keywords = {concurrency, data-driven, demand-driven, functional
+                        reactive programming, semantics},
+            location = {Edinburgh, Scotland},
+            series = {Haskell '09},
+}
+
+@article{lee1987SDF,
+            author = {Lee, E.A. and Messerschmitt, D.G.},
+            journal = {Proceedings of the IEEE},
+            title = {Synchronous data flow},
+            year = {1987},
+            volume = {75},
+            number = {9},
+            pages = {1235-1245},
+            keywords = {Digital signal processing;Signal
+                        processing;Hardware;Flow graphs;Processor
+                        scheduling;Runtime;Scheduling algorithm;Software
+                        systems;Assembly systems;Microcomputers},
+            doi = {10.1109/PROC.1987.13876},
+}
+
+
+@book{wadge1985LUCID,
+            author = {Wadge, W W and Ashcroft, E A},
+            title = {LUCID: The data flow programming language},
+            annote = {LUCID is a new dataflow language. It was designed to
+                      exploit the capabilities of the coming generation of
+                      supercomputers - multi-processor ''dataflow'' machines
+                      which are (potentially) hundreds or thousands of times more
+                      powerful than conventional, single-processor ''von
+                      Neumann'' machines and which need languages in which highly
+                      parallel algorithms can be easily expressed. LUCID is a
+                      functional language, but one which supports variables, i.e.
+                      , values which change with time. LUCID programmers can
+                      therefore use iteration (repetition) as well as recursion.
+                      The statements of a LUCID program are equations which can
+                      be thought of as defining a network of processors and
+                      communication lines. LUCID's dataflow approach to
+                      programming has more in common with that of the UNIX (TM)
+                      shell, with its filters and pipelines, than with the
+                      imperative, one-step-at-a-time approach of a conventional
+                      language like C or PASCAL. The primary objective of this
+                      book is to prove that Dataflow is a real alternative to
+                      sequential/imperative computing, and that dataflow
+                      algorithms can be expressed naturally and concisely in
+                      LUCID.},
+            url = {https://www.osti.gov/biblio/5868863},
+            place = {United States},
+            publisher = {Academic Press,Orlando, FL},
+            year = {1985},
+            month = {01},
+}
+
+@article{halbwachs1991LUSTRE,
+            author = {Halbwachs, N. and Caspi, P. and Raymond, P. and Pilaud, D.
+                      },
+            journal = {Proceedings of the IEEE},
+            title = {The synchronous data flow programming language LUSTRE},
+            year = {1991},
+            volume = {79},
+            number = {9},
+            pages = {1305-1320},
+            abstract = {The authors describe LUSTRE, a data flow synchronous
+                        language designed for programming reactive systems-such
+                        as automatic control and monitoring systems-as well as
+                        for describing hardware. The data flow aspect of LUSTRE
+                        makes it very close to usual description tools in these
+                        domains (block-diagrams, networks of operators, dynamical
+                        sample-systems, etc.), and its synchronous interpretation
+                        makes it well suited for handling time in programs.
+                        Moreover, this synchronous interpretation allows it to be
+                        compiled into an efficient sequential program. The LUSTRE
+                        formalism is very similar to temporal logics. This allows
+                        the language to be used for both writing programs and
+                        expressing program properties, which results in an
+                        original program verification methodology.<>},
+            keywords = {Computer languages;Delay;Frequency
+                        synchronization;Computerized
+                        monitoring;Protocols;Hardware design languages;Aerospace
+                        control;Design methodology;Real time systems;Automatic
+                        programming},
+            doi = {10.1109/5.97300},
+            ISSN = {1558-2256},
+            month = {Sep.},
+}
+
+@article{bainomugisha2013SRP,
+            author = {Bainomugisha, Engineer and Carreton, Andoni Lombide and
+                      Cutsem, Tom van and Mostinckx, Stijn and Meuter, Wolfgang
+                      de},
+            title = {A survey on reactive programming},
+            year = {2013},
+            issue_date = {August 2013},
+            publisher = {Association for Computing Machinery},
+            address = {New York, NY, USA},
+            volume = {45},
+            number = {4},
+            issn = {0360-0300},
+            url = {https://doi-org.ezproxy.unibo.it/10.1145/2501654.2501666},
+            doi = {10.1145/2501654.2501666},
+            abstract = {Reactive programming has recently gained popularity as a
+                        paradigm that is well-suited for developing event-driven
+                        and interactive applications. It facilitates the
+                        development of such applications by providing
+                        abstractions to express time-varying values and
+                        automatically managing dependencies between such values.
+                        A number of approaches have been recently proposed
+                        embedded in various languages such as Haskell, Scheme,
+                        JavaScript, Java, .NET, etc. This survey describes and
+                        provides a taxonomy of existing reactive programming
+                        approaches along six axes: representation of time-varying
+                        values, evaluation model, lifting operations,
+                        multidirectionality, glitch avoidance, and support for
+                        distribution. From this taxonomy, we observe that there
+                        are still open challenges in the field of reactive
+                        programming. For instance, multidirectionality is
+                        supported only by a small number of languages, which do
+                        not automatically track dependencies between time-varying
+                        values. Similarly, glitch avoidance, which is subtle in
+                        reactive programs, cannot be ensured in distributed
+                        reactive programs using the current techniques.},
+            journal = {ACM Comput. Surv.},
+            month = aug,
+            articleno = {52},
+            numpages = {34},
+            keywords = {reactive systems, interactive applications, functional
+                        reactive programming, event-driven applications, dataflow
+                        programming, Reactive programming},
+}
+
+@inproceedings{cooper2006EDDCBYVL,
+            author = {Cooper, Gregory H. and Krishnamurthi, Shriram},
+            title = {Embedding dynamic dataflow in a call-by-value language},
+            year = {2006},
+            isbn = {354033095X},
+            publisher = {Springer-Verlag},
+            address = {Berlin, Heidelberg},
+            url = {https://doi.org/10.1007/11693024_20},
+            doi = {10.1007/11693024_20},
+            abstract = {This paper describes FrTime, an extension of Scheme
+                        designed for writing interactive applications. Inspired
+                        by functional reactive programming, the language embeds
+                        dynamic dataflow within a call-by-value functional
+                        language. The essence of the embedding is to make program
+                        expressions evaluate to nodes in a dataflow graph. This
+                        strategy eases importation of legacy code and permits
+                        incremental program construction. We have integrated
+                        FrTime with the DrScheme programming environment and have
+                        used it to develop several novel applications. We
+                        describe FrTime's design and implementation in detail and
+                        present a formal semantics of its evaluation model.},
+            booktitle = {Proceedings of the 15th European Conference on
+                         Programming Languages and Systems},
+            pages = {294–308},
+            numpages = {15},
+            location = {Vienna, Austria},
+            series = {ESOP'06},
+}
+
+@inproceedings{moriguchi2023DDSMFRP,
+            author = {Moriguchi, Sosuke and Watanabe, Takuo},
+            title = {Developing Distributed Systems with Multiparty Functional
+                     Reactive Programming},
+            year = {2023},
+            isbn = {9798400708053},
+            publisher = {Association for Computing Machinery},
+            address = {New York, NY, USA},
+            url = {https://doi.org/10.1145/3631991.3632000},
+            doi = {10.1145/3631991.3632000},
+            abstract = {Functional Reactive Programming (FRP) is a programming
+                        paradigm that describes a system as a data flow between
+                        time-varying values, a concept that abstracts values that
+                        change over time. It helps describe embedded systems and
+                        GUIs. FRP is also useful for describing distributed
+                        applications, but avoiding glitches is more complicated.
+                        Glitches are inconsistencies between time-varying values
+                        caused by differences in update timing and are
+                        unavoidable in distributed systems where communication
+                        delays are inevitable. Existing methods to avoid
+                        glitching incur high communication overhead to ensure
+                        consistency among the system’s time-varying values. To
+                        address this problem, we propose the concept of
+                        multiparty FRP and a language MPFRP based on it. A party
+                        is a subset of the time-varying values that make up the
+                        system and are updated independently. We propose avoiding
+                        glitches with small communication overhead by
+                        guaranteeing consistency within each party.},
+            booktitle = {Proceedings of the 2023 5th World Symposium on Software
+                         Engineering},
+            pages = {61–66},
+            numpages = {6},
+            keywords = {dataflow programming, distributed systems, functional
+                        reactive programming, glitch avoidance},
+            location = {Tokyo, Japan},
+            series = {WSSE '23},
+}
