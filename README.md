@@ -29,7 +29,7 @@
     - **Reactive Dependency Management: a proposal**
         - Reactive PDES ✅
 
-    - **Motivations and Objectives**
+    - **Motivations and Objectives**  ⚠️
         - **Towards Automatic Dependency Resolution through Reactive Execution**:
             - **Brief Introduction to the Reactive Paradigm**
             - **Benefits**
@@ -41,40 +41,29 @@
         - **Building a Fully-Reactive DES** by means of mofifying an existing simulator
             and assessing its correctness by making it run the existing test suite.
 
-- **Chapter 2: Reactivity as Dependency Resolution Mechanism**
-    - **Theory of Reactive Systems**
-        - **Event-driven/Data-flow applications** (Lee and Messerschmitt "Fran")
-        - **The reactive Manifesto** the drivers
-            - **Reactive Principles** rigorous definitions
-        - **FRP** extensions
-        - **Project Reactor**
+- **Chapter 2: Reactivity as Dependency Resolution Mechanism** ✅
+    - **Theory of Reactive Systems** ✅
+        - **Event-driven and Data-Flow computatoin** ✅
+        - **Reactive Systems** ✅
+        - **Observer pattern and push based propagation** ✅
+        - **FRP** ✅
 
-    - **Mechanics of Propagation**
-        - **Sycnhronous and Async propagation**
-        - **Observer Pattern**
-        - **Signls/Pull-based/Lazy execution**
-        - **Flows**
+    - **Mechanics of Propagation** ✅
+        - **Sycnhronous and Async propagation** ✅
+        - **Push vs Pull updates** ✅
 
-    - **Evaluation Strategies: Eager vs. Lazy** or Demand-driven vs. Data-driven
-        - **Eager Push** (The ReactiveX/Observer Model)
-        - **Lazy Derivations** (The MobX/Dirty-bit Model)
-        - **Complexity Analysis**
+    - **Challenges in Reactive Frameworks Design**  ✅
+        - **Ordering, consistency and glitches** ✅
+        - **Resources and Lifecycle Management** ✅
+        - **Performance Considerations** ✅
+        - **Challenges in Distributed Environments** ✅
 
-    - **Challenges in Reactive Frameworks Design** 
-        - **Glitches and Unsafe Dependencies Avoidance** (i.e. preventing redundant recomputations, cyclic deps, ...)
-        - **Memory and Lifecycle Management**
-        - **Performance Pitfalls**
-        - **Challenged in Distributed Environments** see Salvaneschi works (open research issue)
-
-    - **Comparison and Synthesis**
-        - **Overview of Reactive Frameworks**
-            - **Industry Standard**
-                - **JavaRX**
-                - **Kotlin Flows**
-            - **In-house solution**
-        - **DES requirements** (why a custom lightweight cps-like approach could fit best)
-        - **The Hybrid Proposal** (i.e.eager rescheduling w/ lazy data propagation to grant DES correctness)
-
+     - **Overview of Reactive Frameworks in JVM languages** ✅
+        - **JavaRX** ✅
+        - **Scala.React** ✅
+        - **Akka** ✅
+        - **Kotlin Flows** ✅
+    - **Summary** ✅
 
 - **Chapter 3: Designing a Reactive Architecture for Alchemist**
     - **Alchemist**
