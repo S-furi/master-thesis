@@ -422,7 +422,7 @@ middleware:
 \begin{itemize}
 	\item \emph{Causal Consistency:} Ensures that updates that are causally
 	      related are observed in the correct order. This is efficient and
-	      minimizes network traffic but does not prevent glitches (partial
+	      minimises network traffic but does not prevent glitches (partial
 	      updates).
 	\item \emph{Glitch Freedom:} Guarantees that a node only recomputes when
 	      \emph{all} relevant inputs for a specific logical time-step have
@@ -430,7 +430,7 @@ middleware:
 	      buffer messages, increasing latency.
 	\item \emph{Atomic Consistency:} Ensures a total ordering of updates across
 	      the system, preventing concurrent propagation but incurring the highest
-	      synchronization cost.
+	      synchronisation cost.
 \end{itemize}
 
 \subsubsection{Coupling vs. Resilience}
@@ -447,11 +447,87 @@ dependents in an undefined state. Consequently, the research landscape has
 fragmented into various distinct paradigms to address this trade-off such as:
 middleware approaches like \textsc{DREAM}~\cite{margara2014DREAM} which enforce
 strict \emph{glitch freedom} through heavy coordination; industrial actor
-frameworks like \textsc{Akka} which prioritize availability by accepting
+frameworks like \textsc{Akka} which prioritise availability by accepting
 \emph{nondeterminism} and \emph{eventual consistency} and recently
-\textsc{Lingua Franca}~\cite{menard2023LF}, which utilizes \emph{logical time}
-to recover deterministic, glitch-free execution without the centralized
+\textsc{Lingua Franca}~\cite{menard2023LF}, which utilises \emph{logical time}
+to recover deterministic, glitch-free execution without the centralised
 bottlenecks of traditional middleware.
+
+\section{Overview of Reactive Frameworks in JVM languages}
+
+The \ac{JVM} ecosystem hosts a rich variety of reactive
+libraries and frameworks. To contextualise the architectural decisions behind
+the proposed simulation engine, we first categorise existing solutions based on
+their propagation models, consistency guarantees, and primary industrial
+applications. \Cref{tab:reactive_frameworks_comparison} summarises these
+attributes, highlighting the distinction between general-purpose asynchronous
+tools and those prioritising strict consistency.
+
+\begin{table}[ht]
+    \centering
+    \label{tab:reactive_frameworks_comparison}
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabularx}{\textwidth}{@{} l X l X @{}}
+    \toprule
+    \textbf{Framework} & \textbf{Paradigm} & \textbf{Consistency} & \textbf{Primary Focus} \\
+    \midrule
+    \midrule
+    \textbf{\textsc{RxJava}} & Reactive Extensions (Push) & Eventual / Async & Data Streams \& UI \\
+    \midrule
+    \textbf{\textsc{Akka}} & Actor Model & Eventual & Resilience \& Scale \\
+    \midrule
+    \textbf{Scala.React} & Functional Reactive (FRP) & Strong (Glitch-free) & Composability \\
+    \midrule
+    \textbf{Kotlin Flows} & Coroutines (Pull/Cold) & Sequential Async & Async Logic \\
+    \bottomrule
+    \end{tabularx}
+    \caption{Comparison of Major JVM Reactive Frameworks vs. Simulation Requirements}
+\end{table}
+
+\subsection{Industry Standards}
+
+\subsubsection{RxJava (Reactive Extensions)}
+RxJava represents the widespread adoption of the \emph{ReactiveX} API, which
+combines the Observer pattern with the Iterator pattern and functional
+programming paradigms. It employs a push-based propagation model where a source
+(\texttt{Observable}) emits items to subscribers, offering an extensive
+operator library for transforming, filtering, and combining asynchronous
+streams. However, its design prioritises the handling of asynchronous data
+pipelines over strict state consistency, providing no strict deterministic
+ordering often necessitating complex external synchronisation to prevent race
+conditions during state updates.
+
+\subsubsection{Scala.React}
+Emerging from the academic effort to deprecate the Observer pattern,
+Scala.React provides a principled implementation of \ac{FRP} on the \ac{JVM}.
+Unlike the manual callback management found in standard libraries, it
+introduces first-class signals and events that automatically manage
+dependencies. Its primary contribution is the enforcement of strong consistency
+through algorithms that guarantee topological order during updates, effectively
+eliminating glitches. Moreover it emphasises strong consistency and
+composability taking inspiration from Reactor's core ideas.
+
+\subsubsection{Akka}
+Akka is the industry reference for building highly concurrent, distributed, and
+resilient message-driven applications via the \emph{Actor Model}. Actors
+encapsulate state and behavior, communicating exclusively through asynchronous
+message passing, a model that excels at ``Location Transparency'' and
+self-healing architectures. Despite these strengths, Akka exposes developers to
+non-determinism and high-level race conditions~\cite{menard2023LF}. For a
+software programs where reproducibility is paramount, relying on Akka's default
+eventual consistency model often requires implementing complex virtual time
+barriers to ensure that events are processed in the correct causal order.
+
+\subsubsection{Kotlin Flows}
+As a component of the Kotlin Coroutines library, Flows offer a modern
+implementation of reactive streams deeply integrated with structured
+concurrency. Flows operate on a ``cold'' execution model, meaning the reactive
+pipeline is only active when collected. This approach leverages coroutines to
+handle backpressure and asynchrony in a sequential, imperative style, avoiding
+the operator complexity often associated with RxJava. While it offers superior
+language integration, it remains targeted primarily at asynchronous data
+processing rather than the precise, time-stepped propagation of updates
+required by discrete-event software systems (e.g. a \ac{DES}).
 
 \section{Summary}
 
@@ -466,12 +542,12 @@ flows~\cite{salvaneschi2017PERPSC}.
 
 We first examined the foundations of \emph{event-driven} and \emph{data-flow}
 computations, highlighting how explicit dependency graphs allow the runtime to
-reason about scheduling and optimization. We discussed how \ac{FRP} addresses
+reason about scheduling and optimisation. We discussed how \ac{FRP} addresses
 the ``inversion of reference'' issues (Lapsed Listeners) inherent in the
 Observer pattern by elevating time-varying values (Behaviors) and discrete
 occurrences (Events) to first-class citizens.
 
-The mechanics of propagation were analyzed along two critical axes:
+The mechanics of propagation were analysed along two critical axes:
 \begin{itemize}
 	\item \emph{Push vs. Pull:} Where push-based systems offer low latency for
 		sporadic events, and pull-based (sampling) systems align better with
@@ -487,22 +563,30 @@ Crucially, we addressed the inherent challenges of dynamic dependency graphs.
 We explored the phenomenon of \emph{glitches} and how they must be managed
 through topological sorting in local environments.
 
-Finally, we extended this analysis to distributed environments, where the lack
-of a global clock renders local glitch-freedom techniques insufficient. We
-categorized the solution space into three distinct paradigms:
+Extended to distributed environments, where the lack of a global clock renders
+local glitch-freedom techniques insufficient, we categorised the solution space
+into three distinct paradigms:
 \begin{enumerate}
-	\item \emph{Strong Consistency}: Classical middleware (like \textsc{DREAM})
-		which enforces glitch freedom via heavy coordination transactions.
+	\item \emph{Strong Consistency}: Classical middleware (like
+		\textsc{DREAM}) which enforces glitch freedom via heavy
+		coordination transactions.
 	\item \emph{Eventual Consistency}: Industrial actor frameworks (like
-		\textsc{Akka}) which prioritize availability and scalability by
-		accepting temporary inconsistencies and utilizing flow control.
-	\item \emph{Deterministic Concurrency}: Emergent models (like \textsc{Lingua
-		Franca}) which leverage \emph{logical time} to restore deterministic
-		execution order without the bottlenecks of centralized locking.
+		\textsc{Akka}) which prioritise availability and scalability by
+		accepting temporary inconsistencies and utilising flow control.
+	\item \emph{Deterministic Concurrency}: Emergent models (like
+		\textsc{Lingua Franca}) which leverage \emph{logical time} to
+		restore deterministic execution order without the bottlenecks
+		of centralised locking.
 \end{enumerate}
 
-This theoretical toolbox provides the necessary vocabulary to discuss the
-architectural decisions of the proposed simulation engine in the following
-chapters, specifically regarding how to balance the strict ordering required by
-\ac{DES} with the flexible composability offered by reactive programming.
+Finally, we surveyed the current landscape of \ac{JVM}-based reactive
+frameworks to evaluate their suitability for the objectives of this thesis,
+revealing a misalignment with discrete-event simulation's requirements, due to
+the prioritisation of throughput and asynchronous handling.
+
+This theoretical toolbox and the analysis of the industry standard solutions,
+provides the necessary vocabulary and knowledge to discuss the architectural
+decisions of the proposed simulation engine in the following chapters,
+specifically regarding how to balance the strict ordering required by \ac{DES}
+with the flexible composability offered by reactive programming.
 
