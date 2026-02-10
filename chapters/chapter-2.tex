@@ -464,24 +464,24 @@ attributes, highlighting the distinction between general-purpose asynchronous
 tools and those prioritising strict consistency.
 
 \begin{table}[ht]
-    \centering
-    \label{tab:reactive_frameworks_comparison}
-    \renewcommand{\arraystretch}{1.2}
-    \begin{tabularx}{\textwidth}{@{} l X l X @{}}
-    \toprule
-    \textbf{Framework} & \textbf{Paradigm} & \textbf{Consistency} & \textbf{Primary Focus} \\
-    \midrule
-    \midrule
-    \textbf{\textsc{RxJava}} & Reactive Extensions (Push) & Eventual / Async & Data Streams \& UI \\
-    \midrule
-    \textbf{\textsc{Akka}} & Actor Model & Eventual & Resilience \& Scale \\
-    \midrule
-    \textbf{Scala.React} & Functional Reactive (FRP) & Strong (Glitch-free) & Composability \\
-    \midrule
-    \textbf{Kotlin Flows} & Coroutines (Pull/Cold) & Sequential Async & Async Logic \\
-    \bottomrule
-    \end{tabularx}
-    \caption{Comparison of Major JVM Reactive Frameworks vs. Simulation Requirements}
+	\centering
+	\label{tab:reactive_frameworks_comparison}
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{@{} l X l X @{}}
+		\toprule
+		\textbf{Framework}       & \textbf{Paradigm}          & \textbf{Consistency} & \textbf{Primary Focus} \\
+		\midrule
+		\midrule
+		\textbf{\textsc{RxJava}} & Reactive Extensions (Push) & Eventual / Async     & Data Streams \& UI     \\
+		\midrule
+		\textbf{\textsc{Akka}}   & Actor Model                & Eventual             & Resilience \& Scale    \\
+		\midrule
+		\textbf{Scala.React}     & Functional Reactive (FRP)  & Strong (Glitch-free) & Composability          \\
+		\midrule
+		\textbf{Kotlin Flows}    & Coroutines (Pull/Cold)     & Sequential Async     & Async Logic            \\
+		\bottomrule
+	\end{tabularx}
+	\caption{Comparison of Major JVM Reactive Frameworks vs. Simulation Requirements}
 \end{table}
 
 \subsection{Industry Standards}
@@ -550,13 +550,13 @@ occurrences (Events) to first-class citizens.
 The mechanics of propagation were analysed along two critical axes:
 \begin{itemize}
 	\item \emph{Push vs. Pull:} Where push-based systems offer low latency for
-		sporadic events, and pull-based (sampling) systems align better with
-		continuous-time simulation but require careful handling of idle
-		recomputation.
+	      sporadic events, and pull-based (sampling) systems align better with
+	      continuous-time simulation but require careful handling of idle
+	      recomputation.
 	\item \emph{Sync vs. Async:} Where synchronous execution simplifies
-		reasoning about ordering and consistency (essential for strictly
-		ordered simulations), while asynchronous execution is necessary for
-		decoupling and scalability, albeit at the cost of non-determinism.
+	      reasoning about ordering and consistency (essential for strictly
+	      ordered simulations), while asynchronous execution is necessary for
+	      decoupling and scalability, albeit at the cost of non-determinism.
 \end{itemize}
 
 Crucially, we addressed the inherent challenges of dynamic dependency graphs.
@@ -568,15 +568,15 @@ local glitch-freedom techniques insufficient, we categorised the solution space
 into three distinct paradigms:
 \begin{enumerate}
 	\item \emph{Strong Consistency}: Classical middleware (like
-		\textsc{DREAM}) which enforces glitch freedom via heavy
-		coordination transactions.
+	      \textsc{DREAM}) which enforces glitch freedom via heavy
+	      coordination transactions.
 	\item \emph{Eventual Consistency}: Industrial actor frameworks (like
-		\textsc{Akka}) which prioritise availability and scalability by
-		accepting temporary inconsistencies and utilising flow control.
+	      \textsc{Akka}) which prioritise availability and scalability by
+	      accepting temporary inconsistencies and utilising flow control.
 	\item \emph{Deterministic Concurrency}: Emergent models (like
-		\textsc{Lingua Franca}) which leverage \emph{logical time} to
-		restore deterministic execution order without the bottlenecks
-		of centralised locking.
+	      \textsc{Lingua Franca}) which leverage \emph{logical time} to
+	      restore deterministic execution order without the bottlenecks
+	      of centralised locking.
 \end{enumerate}
 
 Finally, we surveyed the current landscape of \ac{JVM}-based reactive
