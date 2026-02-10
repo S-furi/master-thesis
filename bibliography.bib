@@ -317,43 +317,6 @@
             primaryClass = {q-fin.TR},
 }
 
-
-@article{Gillespie2001ACSSCRS,
-            author = {Gillespie, Daniel T.},
-            title = {Approximate accelerated stochastic simulation of chemically
-                     reacting systems},
-            journal = {The Journal of Chemical Physics},
-            volume = {115},
-            number = {4},
-            pages = {1716-1733},
-            year = {2001},
-            month = {07},
-            abstract = {The stochastic simulation algorithm (SSA) is an
-                        essentially exact procedure for numerically simulating
-                        the time evolution of a well-stirred chemically reacting
-                        system. Despite recent major improvements in the
-                        efficiency of the SSA, its drawback remains the great
-                        amount of computer time that is often required to
-                        simulate a desired amount of system time. Presented here
-                        is the “τ-leap” method, an approximate procedure that in
-                        some circumstances can produce significant gains in
-                        simulation speed with acceptable losses in accuracy. Some
-                        primitive strategies for control parameter selection and
-                        error mitigation for the τ-leap method are described, and
-                        simulation results for two simple model systems are
-                        exhibited. With further refinement, the τ-leap method
-                        should provide a viable way of segueing from the exact
-                        SSA to the approximate chemical Langevin equation, and
-                        thence to the conventional deterministic reaction rate
-                        equation, as the system size becomes larger.},
-            issn = {0021-9606},
-            doi = {10.1063/1.1378322},
-            url = {https://doi.org/10.1063/1.1378322},
-            eprint = {
-                      https://pubs.aip.org/aip/jcp/article-pdf/115/4/1716/19076619/1716_1_online.pdf
-                      },
-}
-
 @article{Fujimoto1990PDES,
             author = {Fujimoto, Richard M.},
             title = {Parallel discrete event simulation},
@@ -439,33 +402,6 @@
             month = oct,
             pages = {30–53},
             numpages = {24},
-}
-
-@inproceedings{fujimoto2001PDSS,
-            author = {Fujimoto, Richard M.},
-            title = {Parallel simulation: parallel and distributed simulation
-                     systems},
-            year = {2001},
-            isbn = {078037309X},
-            publisher = {IEEE Computer Society},
-            address = {USA},
-            abstract = {Originating from basic research conducted in the 1970's
-                        and 1980's, the parallel and distributed simulation field
-                        has matured over the last few decades. Today, operational
-                        systems have been fielded for applications such as
-                        military training, analysis of communication networks,
-                        and air traffic control systems, to mention a few. This
-                        tutorial gives an overview of technologies to distribute
-                        the execution of simulation programs over multiple
-                        computer systems. Particular emphasis is placed on
-                        synchronization (also called time management) algorithms
-                        as well as data distribution techniques.},
-            booktitle = {Proceedings of the 33nd Conference on Winter Simulation
-                         },
-            pages = {147–157},
-            numpages = {11},
-            location = {Arlington, Virginia},
-            series = {WSC '01},
 }
 
 @article{fujimoto1993FAPDESWFS,
@@ -586,50 +522,6 @@
             address = {Cambridge, MA, USA},
             month = nov,
             year = {1977},
-}
-
-            @article{10.1145/37499.37508,
-            author = {Jefferson, D. and Beckman, B. and Wieland, F. and Blume,
-                      L. and Diloreto, M.},
-            title = {Time warp operating system},
-            year = {1987},
-            issue_date = {Nov. 1987},
-            publisher = {Association for Computing Machinery},
-            address = {New York, NY, USA},
-            volume = {21},
-            number = {5},
-            issn = {0163-5980},
-            url = {https://doi.org/10.1145/37499.37508},
-            doi = {10.1145/37499.37508},
-            abstract = {This paper describes the Time Warp Operating System,
-                        under development for three years at the Jet Propulsion
-                        Laboratory for the Caltech Mark III Hypercube
-                        multi-processor. Its primary goal is concurrent execution
-                        of large, irregular discrete event simulations at maximum
-                        speed. It also supports any other distributed
-                        applications that are synchronized by virtual time.The
-                        Time Warp Operating System includes a complete
-                        implementation of the Time Warp mechanism, and is a
-                        substantial departure from conventional operating systems
-                        in that it performs synchronization by a general
-                        distributed process rollback mechanism. The use of
-                        general rollback forces a rethinking of many aspects of
-                        operating system design, including programming interface,
-                        scheduling, message routing and queueing, storage
-                        management, flow control, and commitment.In this paper we
-                        review the mechanics of Time Warp, describe the TWOS
-                        operating system, show how to construct simulations in
-                        object-oriented form to run under TWOS, and offer a
-                        qualitative comparison of Time Warp to the Chandy-Misra
-                        method of distributed simulation. We also include details
-                        of two benchmark simulations and preliminary measurements
-                        of time-to-completion, speedup, rollback rate, and
-                        antimessage rate, all as functions of the number of
-                        processors used.},
-            journal = {SIGOPS Oper. Syst. Rev.},
-            month = nov,
-            pages = {77–93},
-            numpages = {17},
 }
 
 @inproceedings{jefferson1987TWOS,
@@ -783,72 +675,6 @@
             location = {Miami, FL, Spain},
             series = {SIGSIM-PADS '20},
 }
-@article{yao2006ESSTLSM,
-            author = {Cao, Yang and Gillespie, Daniel T. and Petzold, Linda R.},
-            title = {Efficient step size selection for the tau-leaping
-                     simulation method},
-            journal = {The Journal of Chemical Physics},
-            volume = {124},
-            number = {4},
-            pages = {044109},
-            year = {2006},
-            month = {01},
-            abstract = {The tau-leaping method of simulating the stochastic time
-                        evolution of a well-stirred chemically reacting system
-                        uses a Poisson approximation to take time steps that leap
-                        over many reaction events. Theory implies that tau
-                        leaping should be accurate so long as no propensity
-                        function changes its value “significantly” during any
-                        time step τ. Presented here is an improved procedure for
-                        estimating the largest value for τ that is consistent
-                        with this condition. This new τ-selection procedure is
-                        more accurate, easier to code, and faster to execute than
-                        the currently used procedure. The speedup in execution
-                        will be especially pronounced in systems that have many
-                        reaction channels.},
-            issn = {0021-9606},
-            doi = {10.1063/1.2159468},
-            url = {https://doi.org/10.1063/1.2159468},
-            eprint = {
-                      https://pubs.aip.org/aip/jcp/article-pdf/doi/10.1063/1.2159468/15382239/044109_1_online.pdf
-                      },
-}
-
-@article{haseltine2002ASCFSRSCK,
-            author = {Haseltine, Eric L. and Rawlings, James B.},
-            title = {Approximate simulation of coupled fast and slow reactions
-                     for stochastic chemical kinetics},
-            journal = {The Journal of Chemical Physics},
-            volume = {117},
-            number = {15},
-            pages = {6959-6969},
-            year = {2002},
-            month = {10},
-            abstract = {Exact methods are available for the simulation of
-                        isothermal, well-mixed stochastic chemical kinetics. As
-                        increasingly complex physical systems are modeled,
-                        however, these methods become difficult to solve because
-                        the computational burden scales with the number of
-                        reaction events. This paper addresses one aspect of this
-                        problem: the case in which reacting species fluctuate by
-                        different orders of magnitude. By partitioning the system
-                        into subsets of “fast” and “slow” reactions, it is
-                        possible to bound the computational load by approximating
-                        “fast” reactions either deterministically or as Langevin
-                        equations. This paper provides a theoretical background
-                        for such approximations and outlines strategies for
-                        computing these approximations. Two motivating examples
-                        drawn from the fields of particle technology and
-                        biotechnology illustrate the accuracy and computational
-                        efficiency of these approximations.},
-            issn = {0021-9606},
-            doi = {10.1063/1.1505860},
-            url = {https://doi.org/10.1063/1.1505860},
-            eprint = {
-                      https://pubs.aip.org/aip/jcp/article-pdf/117/15/6959/19313404/6959_1_online.pdf
-                      },
-}
-
 
 @article{anderson2007MNRM,
             title = {A modified next reaction method for simulating chemical
@@ -888,34 +714,6 @@
             url = {https://books.google.it/books?id=tYPAsgEACAAJ},
             year = {2017},
             publisher = {Manning},
-}
-
-            @inproceedings{10.1145/642089.642111,
-            author = {Dennis, Jack B. and Misunas, David P.},
-            title = {A preliminary architecture for a basic data-flow processor},
-            year = {1974},
-            isbn = {9781450373661},
-            publisher = {Association for Computing Machinery},
-            address = {New York, NY, USA},
-            url = {https://doi.org/10.1145/642089.642111},
-            doi = {10.1145/642089.642111},
-            abstract = {A processor is described which can achieve highly
-                        parallel execution of programs represented in data-flow
-                        form. The language implemented incorporates conditional
-                        and iteration mechanisms, and the processor is a step
-                        toward a practical data-flow processor for a
-                        Fortran-level data-flow language. The processor has a
-                        unique architecture which avoids the problems of
-                        processor switching and memory/processor interconnecion
-                        that usually limit the degree of realizable concurrent
-                        processing. The architecture offers an unusual solution
-                        to the problem of structuring and managing a two-level
-                        memory system.},
-            booktitle = {Proceedings of the 2nd Annual Symposium on Computer
-                         Architecture},
-            pages = {126–132},
-            numpages = {7},
-            series = {ISCA '75},
 }
 
 @article{dennis1974PABDFP,
@@ -1053,9 +851,6 @@
             timestamp = {2010-06-05T16:40:25.000+0200},
             title = {Design Patterns: Elements of Reusable Object-Oriented
                      Software},
-            url = {
-                   http://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612/ref=ntt_at_ep_dpi_1
-                   },
             year = 1994,
 }
 
@@ -1433,3 +1228,186 @@
             location = {Tokyo, Japan},
             series = {WSSE '23},
 }
+
+@article{mukkara2017CGSECMLGP,
+            title = {Cache-Guided Scheduling: Exploiting caches to maximize
+                     locality in graph processing},
+            author = {Mukkara, Anurag and Beckmann, Nathan and Sanchez, Daniel},
+            journal = {AGP’17},
+            year = {2017},
+}
+
+@inproceedings{mukkara2018ELGATHATS,
+            author = {Mukkara, Anurag and Beckmann, Nathan and Abeydeera, Maleen
+                      and Ma, Xiaosong and Sanchez, Daniel},
+            title = {Exploiting locality in graph analytics through
+                     hardware-accelerated traversal scheduling},
+            year = {2018},
+            isbn = {9781538662403},
+            publisher = {IEEE Press},
+            url = {https://doi.org/10.1109/MICRO.2018.00010},
+            doi = {10.1109/MICRO.2018.00010},
+            abstract = {Graph processing is increasingly bottlenecked by main
+                        memory accesses. On-chip caches are of little help
+                        because the irregular structure of graphs causes
+                        seemingly random memory references. However, most
+                        real-world graphs offer significant potential
+                        locality---it is just hard to predict ahead of time. In
+                        practice, graphs have well-connected regions where
+                        relatively few vertices share edges with many common
+                        neighbors. If these vertices were processed together,
+                        graph processing would enjoy significant data reuse.
+                        Hence, a graph's traversal schedule largely determines
+                        its locality.This paper explores online traversal
+                        scheduling strategies that exploit the community
+                        structure of real-world graphs to improve locality.
+                        Software graph processing frameworks use simple,
+                        locality-oblivious scheduling because, on general-purpose
+                        cores, the benefits of locality-aware scheduling are
+                        outweighed by its overheads. Software frameworks rely on
+                        offline preprocessing to improve locality. Unfortunately,
+                        preprocessing is so expensive that its costs often negate
+                        any benefits from improved locality. Recent graph
+                        processing accelerators have inherited this design. Our
+                        insight is that this misses an opportunity: Hardware
+                        acceleration allows for more sophisticated, online
+                        locality-aware scheduling than can be realized in
+                        software, letting systems significantly improve locality
+                        without any preprocessing.To exploit this insight, we
+                        present bounded depth-first scheduling (BDFS), a simple
+                        online locality-aware scheduling strategy. BDFS restricts
+                        each core to explore one small, connected region of the
+                        graph at a time, improving locality on graphs with good
+                        community structure. We then present HATS, a
+                        hardware-accelerated traversal scheduler that adds just
+                        0.4\% area and 0.2\% power over general-purpose cores.We
+                        evaluate BDFS and HATS on several algorithms using large
+                        real-world graphs. On a simulated 16-core system, BDFS
+                        reduces main memory accesses by up to 2.4x and by 30\% on
+                        average. However, BDFS is too expensive in software and
+                        degrades performance by 21\% on average. HATS eliminates
+                        these overheads, allowing BDFS to improve performance by
+                        83\% on average (up to 3.1x) over a locality-oblivious
+                        software implementation and by 31\% on average (up to
+                        2.1x) over specialized prefetchers.},
+            booktitle = {Proceedings of the 51st Annual IEEE/ACM International
+                         Symposium on Microarchitecture},
+            pages = {1–14},
+            numpages = {14},
+            keywords = {caches, graph analytics, locality, multicore,
+                        prefetching, scheduling},
+            location = {Fukuoka, Japan},
+            series = {MICRO-51},
+}
+
+@inproceedings{margara2014DREAM,
+            author = {Margara, Alessandro and Salvaneschi, Guido},
+            title = {We have a DREAM: distributed reactive programming with
+                     consistency guarantees},
+            year = {2014},
+            isbn = {9781450327374},
+            publisher = {Association for Computing Machinery},
+            address = {New York, NY, USA},
+            url = {https://doi.org/10.1145/2611286.2611290},
+            doi = {10.1145/2611286.2611290},
+            abstract = {The reactive programming paradigm has been proposed to
+                        simplify the development of reactive systems. It relies
+                        on programming primitives to express dependencies between
+                        data items and on runtime/middleware support for
+                        automated propagation of changes. Despite this paradigm
+                        is receiving increasing attention, defining the precise
+                        semantics and the consistency guarantees for reactive
+                        programming in distributed environments is an open
+                        research problem.This paper targets such problem by
+                        studying the consistency guarantees for the propagation
+                        of changes in a distributed reactive system. In
+                        particular, it introduces three propagation semantics,
+                        namely causal, glitch free, and atomic, providing
+                        different trade-offs between costs and guarantees.
+                        Furthermore, it describes how these semantics are
+                        concretely implemented in a Distributed REActice
+                        Middleware (DREAM), which exploits a distributed
+                        event-based dispatching system to propagate changes.We
+                        compare the performance of DREAM in a wide range of
+                        scenarios. This allows us to study the overhead
+                        introduced by the different semantics in terms of network
+                        traffic and propagation delay and to assess the
+                        efficiency of DREAM in supporting distributed reactive
+                        systems.},
+            booktitle = {Proceedings of the 8th ACM International Conference on
+                         Distributed Event-Based Systems},
+            pages = {142–153},
+            numpages = {12},
+            keywords = {glitch-freedom, event-based middleware, dream,
+                        distributed reactive programming, consistency guarantees},
+            location = {Mumbai, India},
+            series = {DEBS '14},
+}
+@inproceedings{salvaneschi2013TDRP,
+            author = {Salvaneschi, Guido and Drechsler, Joscha and Mezini, Mira},
+            year = {2013},
+            month = {06},
+            pages = {226-235},
+            title = {Towards Distributed Reactive Programming},
+            volume = {7890},
+            isbn = {978-3-642-38492-9},
+            doi = {10.1007/978-3-642-38493-6_16},
+}
+
+@article{menard2023LF,
+            author = {Menard, Christian and Lohstroh, Marten and Bateni, Soroush
+                      and Chorlian, Matthew and Deng, Arthur and Donovan, Peter
+                      and Fournier, Cl\'{e}ment and Lin, Shaokai and Suchert,
+                      Felix and Tanneberger, Tassilo and Kim, Hokeun and
+                      Castrillon, Jeronimo and Lee, Edward A.},
+            title = {High-performance Deterministic Concurrency Using Lingua
+                     Franca},
+            year = {2023},
+            issue_date = {December 2023},
+            publisher = {Association for Computing Machinery},
+            address = {New York, NY, USA},
+            volume = {20},
+            number = {4},
+            issn = {1544-3566},
+            url = {https://doi.org/10.1145/3617687},
+            doi = {10.1145/3617687},
+            abstract = {Actor frameworks and similar reactive programming
+                        techniques are widely used for building concurrent
+                        systems. They promise to be efficient and scale well to a
+                        large number of cores or nodes in a distributed system.
+                        However, they also expose programmers to nondeterminism,
+                        which often makes implementations hard to understand,
+                        debug, and test. The recently proposed reactor model is a
+                        promising alternative that enables deterministic
+                        concurrency. In this article, we present an efficient,
+                        parallel implementation of reactors and demonstrate that
+                        the determinacy of reactors does not imply a loss in
+                        performance. To show this, we evaluate Lingua Franca (LF)
+                        , a reactor-oriented coordination language. LF equips
+                        mainstream programming languages with a deterministic
+                        concurrency model that automatically takes advantage of
+                        opportunities to exploit parallelism. Our implementation
+                        of the Savina benchmark suite demonstrates that, in terms
+                        of execution time, the runtime performance of LF programs
+                        even exceeds popular and highly optimized actor
+                        frameworks. We compare against Akka and CAF, which LF
+                        outperforms by 1.86\texttimes{} and 1.42\texttimes{},
+                        respectively.},
+            journal = {ACM Trans. Archit. Code Optim.},
+            month = oct,
+            articleno = {48},
+            numpages = {29},
+            keywords = {Coordination, concurrency, determinism, performance},
+}
+
+@ARTICLE{salvaneschi2017PERPSC,
+  author={Salvaneschi, Guido and Proksch, Sebastian and Amann, Sven and Nadi, Sarah and Mezini, Mira},
+  journal={IEEE Transactions on Software Engineering}, 
+  title={On the Positive Effect of Reactive Programming on Software Comprehension: An Empirical Study}, 
+  year={2017},
+  volume={43},
+  number={12},
+  pages={1125-1143},
+  keywords={Programming;Runtime;Software development;Robot sensing systems;Reactive programming;empirical study;controlled experiment;software comprehension},
+  doi={10.1109/TSE.2017.2655524}}
+
