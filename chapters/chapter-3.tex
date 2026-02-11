@@ -1,2 +1,153 @@
 %root = ../thesis-main.tex
-\chapter{Designing a Reactive Architectre for Alchemist}\label{design_alchemist}
+\chapter{Designing a Reactive Architecture for Alchemist}\label{design_alchemist}
+
+\section{Alchemist}
+Alchemist~\cite{pianini2013COSCSA} is a chemical-oriented, general-purpose
+stochastic simulator, extensible and open source developed by the University of
+Bologna that runs on the \ac{JVM}, built to tackle the complexity that arises
+with \emph{pervasive computing}. This simulator focusses on the necessity to
+define advanced mechanisms for modelling autonomous agents' interactions in
+highly-dynamic and distributed environments. Thanks to this, Alchemist is
+capable to express various scenarios for pervasive, aggregate and
+nature-inspired computing.
+
+Alchemist's core is composed of a set of possibly heterogeneous nodes capable
+of communicating among themselves through a set of chemical-inspired
+interactions and reactions. Such extensible and general-purpose model can lead
+to the definition of autonomous behaviours of situated agents, reflecting with
+high-fidelity the intrinsic dynamics and complexity that arises in pervasive
+contexts. Alchemist's flexibility lets modelers define simulation logic through
+a set of behavioural rules on top of the environment, resulting in a powerful
+tool for exploring and lead experiments on coordination strategies,
+self-adaptation and self-management in multi-agent and pervasive contexts.
+
+\paragraph{Meta-model} The Alchemist meta-model represents the theoretical
+foundations which guides simulation modelers. The components of Alchemist are
+depicted in \Cref{fig:alchemist-metamodel}:
+%
+\centerimagesource{figures/alchemist-metamodel.png}{The Alchemist
+	meta-model}{alchemist-metamodel}{1}{https://alchemistsimulator.github.io/explanation/metamodel/}
+%
+\begin{itemize}
+	\item \textbf{Molecule} the name associated to a value;
+	\item \textbf{Concentration} the value associated to a specific molecule;
+	\item \textbf{Node} molecules and reactions' container, situated in an
+	      environment;
+	\item \textbf{Environment} space abstraction inside Alchemist. It contains
+	      all nodes and can perform:
+	      \begin{itemize}
+		      \item compute nodes' position in space;
+		      \item compute the distance between two nodes;
+		      \item move nodes inside the environment.
+	      \end{itemize}
+	\item \textbf{Linking Rule} a function of the current status of the
+	      environment. It associates a neighborhood to every node;
+	\item \textbf{Neighborhood} entity composed by a node (\emph{center}) and a
+	      set of nodes (\emph{neighbors});
+	\item \textbf{Reaction} represents any event that may change environment's
+	      state. Every reaction is defined by a set of conditions (even none),
+	      one or more actions and a \emph{Time Distribution}.
+	      \Cref{fig:alchemist-reaction} shows components of a reaction. The
+	      frequency at which at which a reaction can happen could depend on a
+	      static ``rate'' parameter, the value of each condition or a ``rate
+	      equation '' which combines the static rate and condition's propensities
+	      to compute an ``instantaneous rate'';
+	\item \textbf{Condition} a function on current environment's state yielding
+	      a boolean and a real number: if the condition does not hold, the
+	      associated reaction will not execute. The real number returned by a
+	      condition may influence reaction's speed, depending on the reaction
+	      itself and the time distribution;
+	\item \textbf{Action} models a change on the environment.
+\end{itemize}
+%
+\centerimagesource{figures/alchemist-reaction.png}{Reaction representation in
+	Alchemist}{alchemist-reaction}{1}{https://alchemistsimulator.github.io/explanation/metamodel/}
+%
+\paragraph{Incarnations} Alchemist's \emph{extensibility} relies on the
+abstract representation of molecules and concentrations. This is realized
+through the concept of \emph{Incarnations}, which provides concrete type
+definitions for molecules and concentrations. An \emph{Incarnation} may also
+specify conditions, actions, and occasionally, the environment and the
+reactions that act upon it. In short, an \emph{Incarnation} is a concrete
+instance of Alchemist's meta-model. Although Alchemist employs classical
+chemical terminology, different \emph{Incarnations} can represent vastly
+different universes. More specifically, at the time of writing, Alchemist
+supports the following \emph{Incarnations}:
+
+\begin{itemize}
+	\item \textbf{SAPERE}~\cite{pianiniCISFPSE} was the first stable
+	      \emph{Incarnation} for Alchemist, and defines a nature-inspired
+	      framework designed to engineer self-organising pervasive service
+	      ecosystems. In this approach agents (such as device or users) are
+	      represented by Live Semantic Annotations (LSAs), which interact within
+	      a distributed spatial substrate governed by the so called ``eco-laws''.
+	      Functioning like chemical reactions, these laws enable spontaneous
+	      discovery, spatial diffusion and data aggregation without centralised
+	      control. Its practical viability is demonstrated through a large-scale
+	      real-world deployment at the Vienna City Marathon, where it
+	      successfully managed \emph{crowd steering} via public displays and
+	      smartphones~\cite{zambonelli2015DPMASNIC}.
+	\item \textbf{Protelis}~\cite{pianini2015PROTELIS}: Protelis is a
+	      functional language embedded in Java designed for practical
+	      \emph{aggregate programming}. This paradigm shifts the focus from
+	      individual device behaviour to the computation and coordination of
+	      \emph{aggregates of devices}, enabling the decomposition of problems
+	      solvable by distributed networks. Protelis relies on the \emph{Field
+		      Calculus} to ensure that these aggregate specifications are
+	      consistently mapped to local executions, allowing for the construction
+	      of resilient, widely reusable distributed components.
+	\item \textbf{Biochemistry} is an Alchemist incarnation created to support
+	      \emph{biochemical} reactions which occur inside a biological cell or a
+	      group of cells that share a common environment.
+	\item \textbf{\textsc{ScaFi}} is a Scala toolkit providing an internal
+	      domain-specific language, a simulation environment, and runtime support
+	      for practical aggregate computing. This framework implements a variant of
+	      the Higher-Order Field Calculus, offering a unified platform for
+	      simulating and executing distributed collective systems.
+\end{itemize}
+
+\subsection{Dependency Management in Alchemist}
+The stochastic chemical simulation concepts presented in
+\Cref{sec:dependency_management} assume single compartments of interacting
+molecules. Alchemist extends this domain by introducing the concept of
+``neighborhoods,'' defined as sets of communicating \emph{Nodes}. In this
+scenario, nodes can influence one another and move within an environment.
+However, since molecules can travel between compartments and nodes can move
+relative to one another, maintaining the dependency graph becomes a significant
+challenge. In addition to the standard \ac{SSA} dependencies, this abstraction
+introduces \emph{spatial dependencies}, transforming the structure into a
+\emph{spatial dependency graph} where reaction propensities may be affected
+locally, within a neighborhood or globally. To manage this complexity,
+Alchemist reactions define specific \emph{input} and \emph{output} contexts.
+These contexts specify, respectively, which parts of the environment a reaction
+reads to compute its propensity and which parts it modifies.
+
+Alchemist addresses this challenge by implementing the \emph{Next Reaction
+Method} (\Cref{ssec:ssa_optimisation}), which explicitly maps reaction
+dependencies in a directed graph. Maintaining the consistency of this graph is
+a non-trivial task. Specifically, adding a reaction requires verifying its
+dependencies against existing system reactions; if dependencies are found, a
+new node is added to the graph with corresponding edges. Conversely, deleting a
+reaction requires pruning all dependencies where the reaction acts as either
+the influencer or the influenced. Notably, any topology change during the
+simulation (e.g., neighbors entering or leaving a neighborhood) triggers these
+procedures, requiring a dynamic recalculation of dependencies for the affected
+components.
+
+\subsection{In-house Solution} % should this be moveod into implementation detail? it's more a design aspect...
+The analysis of these standards reveals a significant gap between industrial
+reactive tools and the rigorous requirements of a Discrete Event Simulator.
+Frameworks like Akka and RxJava prioritize throughput and availability,
+design choices that inherently allow for non-deterministic event interleaving.
+Conversely, a simulation engine requires strict causal ordering and glitch
+freedom to accurately calculate system dynamics; relying on eventual consistency
+is insufficient for physical correctness. Furthermore, commercial frameworks
+typically couple execution to wall-clock time, whereas our engine necessitates
+a \emph{virtual time} scheduler to decouple simulation progression from hardware
+execution speed.
+
+To address these limitations, we propose an in-house reactive engine. This
+solution adopts the expressive vocabulary of RxJava (Observables, Signals) and
+the deterministic rigor of academic models like Lingua Franca~\cite{menard2023LF},
+implementing a propagation strategy specifically tailored to the discrete-event
+lifecycle.
