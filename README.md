@@ -66,25 +66,22 @@
     - **Summary** ✅
 
 - **Chapter 3: Designing a Reactive Architecture for Alchemist**
-    - **Alchemist**
-        - **Architectural Overview**
-            - **Alchemist Metamodel**A
-            - **Implementations and Applications (Incarnations)**
-        - **Dependency Management in Alchemist**
-    - **The Reactive Metamodel**
-        - **From state to Observables**
-        - **From Logic to Derivation** i.e. explain how conditions can be
-        expressed in terms of compositions and manipulations of
-        observables/data flows.
-            - **Overview of Operator Algebra**
-        - **From explicit scheduling to Reaction** i.e. reactions and how the
-        control loop is inverted wrt engine.
-
-    - **The hybrid Execution Strategy**
-        - **Eager Scheduling**
-        - **Opportunities for Lazy Context Evaluation** (e.g. state could be
-        lazy until explicitly requested).
-
+  - **Alchemist** ✅
+        - **Architectural Overview** ✅
+            - **Alchemist Metamodel** ✅
+            - **Implementations and Applications (Incarnations)** ✅
+        - **Dependency Management in Alchemist** ✅
+  - **The Reactive Metamodel**
+      - **Dependency Management in Alchemist's Engine** ✅
+        - **On Explicit Dependency Graphs** ✅
+      - **Towards an observable state** ✅
+      - **Behaviour as a Composition of Event Streams** ✅
+  - **Reactive Architecture Design Principles**
+      - **Synchronous propagation for causal consistency** ✅
+      - **push-based updates for sparsisty** ✅
+      - **selective eager evealuation for scheduling** ✅
+  - **Summary** ✅
+    
 - **Chapter 4: Implementation and Evaluation**
     - **The Reactive Framework**
         - **Core Abstractions**
