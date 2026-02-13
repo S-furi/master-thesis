@@ -537,27 +537,17 @@ traversal.
 
 This mechanism effectively automates a portion of the dependency management.
 The simulator ``knows'' which events depend on others, removing the need for a
-full scan. However, this approach historically relies on the assumption of
-a static structure. In standard NRM implementations, the
-dependency graph is derived from the stoichiometry of the chemical equations
-and remains immutable throughout the simulation.
-
-\subsection{REVIEW The Dynamic Dependency Limitation REVIEW}
+full scan. However, this approach historically relies on the assumption of a
+static structure. In standard NRM implementations, the dependency graph is
+derived from the stoichiometry of the chemical equations and remains immutable
+throughout the simulation.
 
 This static assumption breaks down in modern \emph{Multi-Agent Based
-Simulations} (MABS) and spatial computing environments like Alchemist. In these
-contexts, dependencies are often spatial and transient. For instance, an agent
-$A$ depends on agent $B$ only while they are within a specific interaction
-radius $r$. As agents move, the topology of the dependency graph changes
-continuously.
-
-Adapting the static Gibson-Bruck graph to such dynamic topology requires
-frequent, expensive graph reconstruction or reverts the system to inefficient
-polling strategies. This exposes a critical gap in current DES architectures:
-we possess efficient methods for sorting events (FEL) and efficient methods for
-tracking static dependencies (Dependency Graphs), but we lack a unified
-framework for handling \emph{dynamic, data-driven dependencies} without
-manual intervention.
+Simulations} (\Cref{ssec:mabs}) and spatial computing environments. In these
+contexts, dependencies are often spatial and transient, and adapting the static
+Gibson-Bruck graph to such dynamic topology requires frequent, expensive graph
+reconstruction or reverts the system to inefficient polling strategies. More on
+this in \Cref{ssec:alchemist_engine}.
 
 \section{Dependency Management in Parallel and Distributed Simulations}
 \label{sec:pdes}
@@ -636,8 +626,8 @@ parallelism~\cite{fujimoto1988LPDES}.
 In special cases where each \ac{LP} blocks for an earlier incoming message from
 their input queues, a \emph{Deadlock} can occur.
 
-In order to overcome such problems, the \ac{CMB} algorithm \newline
-\cite{chandyMisra1983DDD, bryant1977simulation} avoids deadlock by exchanging
+In order to overcome such problems, the \ac{CMB} algorithm
+~\cite{chandyMisra1983DDD, bryant1977simulation} avoids deadlock by exchanging
 null messages. More specifically, each \ac{LP} periodically informs its
 neighbours of a safe lower bound on future messages by sending to each outgoing
 channel a null message advertising that it will not send any event with
@@ -932,9 +922,13 @@ preserves the observable behaviour of the original simulator while changing its
 internal dependency management strategy.
 
 \paragraph{Thesis roadmap.}
-This chapter motivates the reactive approach and frames the problem.
-The architectural and implementation details of the proposed solution are
-presented in \Cref{ch:reactive-architecture,ch:implementation}, where we
-introduce the reactive abstractions employed by the simulator and discuss how
-they are integrated in the execution pipeline.
+This chapter motivates the reactive approach and frames the problem. On
+\Cref{ch:reactvity_dep_mgmnt} reactive programming is explored by following the
+taxonomy of reactive frameworks and designs, highlighting pros and cons of
+every approach, while giving the reader the fundamental vocabulary and
+knowledge to understand the rationale behind the architectural and
+implementation details of the proposed solution presented in
+\Cref{ch:design_alchemist,ch:impl_eval}, where we introduce the reactive
+abstractions employed by the simulator and discuss how they are integrated in
+the execution pipeline.
 

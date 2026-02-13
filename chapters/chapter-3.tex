@@ -1,5 +1,5 @@
 %root = ../thesis-main.tex
-\chapter{Designing a Reactive Architecture for Alchemist}\label{design_alchemist}
+\chapter{Designing a Reactive Architecture for Alchemist}\label{ch:design_alchemist}
 
 \section{Alchemist}
 Alchemist~\cite{pianini2013COSCSA} is a chemical-oriented, general-purpose
@@ -64,7 +64,7 @@ depicted in \Cref{fig:alchemist-metamodel}:
 	Alchemist}{alchemist-reaction}{1}{https://alchemistsimulator.github.io/explanation/metamodel/}
 %
 \paragraph{Incarnations} Alchemist's \emph{extensibility} relies on the
-abstract representation of molecules and concentrations. This is realized
+abstract representation of molecules and concentrations. This is realised
 through the concept of \emph{Incarnations}, which provides concrete type
 definitions for molecules and concentrations. An \emph{Incarnation} may also
 specify conditions, actions, and occasionally, the environment and the
@@ -87,7 +87,7 @@ supports the following \emph{Incarnations}:
 	      real-world deployment at the Vienna City Marathon, where it
 	      successfully managed \emph{crowd steering} via public displays and
 	      smartphones~\cite{zambonelli2015DPMASNIC}.
-	\item \textbf{Protelis}~\cite{pianini2015PROTELIS}: Protelis is a
+	\item \textbf{Protelis}~\cite{pianini2015PROTELIS} is a
 	      functional language embedded in Java designed for practical
 	      \emph{aggregate programming}. This paradigm shifts the focus from
 	      individual device behaviour to the computation and coordination of
@@ -134,20 +134,271 @@ simulation (e.g., neighbors entering or leaving a neighborhood) triggers these
 procedures, requiring a dynamic recalculation of dependencies for the affected
 components.
 
-\subsection{In-house Solution} % should this be moveod into implementation detail? it's more a design aspect...
-The analysis of these standards reveals a significant gap between industrial
-reactive tools and the rigorous requirements of a Discrete Event Simulator.
-Frameworks like Akka and RxJava prioritize throughput and availability,
-design choices that inherently allow for non-deterministic event interleaving.
-Conversely, a simulation engine requires strict causal ordering and glitch
-freedom to accurately calculate system dynamics; relying on eventual consistency
-is insufficient for physical correctness. Furthermore, commercial frameworks
-typically couple execution to wall-clock time, whereas our engine necessitates
-a \emph{virtual time} scheduler to decouple simulation progression from hardware
-execution speed.
+\section{The Reactive Metamodel}
 
-To address these limitations, we propose an in-house reactive engine. This
-solution adopts the expressive vocabulary of RxJava (Observables, Signals) and
-the deterministic rigor of academic models like Lingua Franca~\cite{menard2023LF},
-implementing a propagation strategy specifically tailored to the discrete-event
-lifecycle.
+The previous section introduced Alchemist and its meta-model, highlighting how
+it extends standard chemical kinetics (as seen in \ac{SSA}) by introducing the
+concept of spatial dependencies. Currently, Alchemist supports these
+dependencies by enhancing Gibson and Bruck's Dependency Graph. However, we
+argue that a fundamentally different approach is required, one that shifts
+focus from data structure optimisation to a re-definition of interactions via a
+\emph{reactive architecture}.
+
+\subsection{Dependency Management in Alchemist's Engine}\label{ssec:alchemist_engine}
+In Alchemist, dependencies are defined between reactions based on their
+\emph{contexts}: conditions rely on a specific state of the environment (input
+context), while actions modify it (output context). The simulation engine
+explicitly constructs and maintains a graph based on these definitions.
+Specifically, a reaction $r_1$ is said to influence a reaction $r_2$ (creating
+a dependency $r_1 \to r_2$) if any of the following conditions hold:
+%
+\begin{itemize}
+    \item $r_1$ and $r_2$ reside on the same node;
+    \item $r_1$'s output context is \emph{global};
+    \item $r_2$'s input context is \emph{global};
+	\item $r_1$'s output context is \emph{neighborhood} and $r_2$ resides
+		within that neighborhood;
+	\item $r_2$'s input context is \emph{neighborhood} and $r_1$ resides within
+		that neighborhood;
+	\item Both $r_1$'s output context and $r_2$'s input context are
+		\emph{neighborhood}, and the two neighborhoods share at least one
+		common node.
+\end{itemize}
+%
+Based on this logic, the engine schedules reactions using the \ac{NRM}
+procedure (see \Cref{alg:gibson_bruck}). Crucially, in a pervasive computing
+scenario, this process is dynamic: if a reaction (e.g., movement) alters the
+network topology, the engine must update the influence spheres accordingly.
+This involves pruning obsolete dependencies with former neighbors and
+establishing new ones with entering nodes.
+
+\subsection{On Explicit Dependency Graphs}
+While the explicit dependency graph is the standard for optimising stochastic
+simulations, its application to dynamic, spatial environments introduces
+significant trade-offs.
+
+The primary advantage of an explicit graph is theoretical performance. By
+enforcing a strict set of rules, the engine avoids scanning the entire system
+state to determine which reactions to update.
+\begin{itemize}
+	\item \textbf{Optimisation:} It allows for $O(1)$ selection of the next
+		reaction and precise updating of only the affected propensities.
+	\item \textbf{Cycle Detection:} An explicit structure can theoretically
+		help in detecting and mitigating risks associated with cyclic
+		dependencies during the graph construction phase.
+\end{itemize}
+
+Conversely, delegating full control to the engine to track, extract, and
+reschedule influencing reactions results in high architectural complexity.
+\begin{itemize}
+	\item \textbf{Synchronisation Overhead:} The graph is a ``shadow'' of the
+		system state. In highly dynamic scenarios—such as mobile ad-hoc
+		networks—keeping this shadow graph synchronised with the actual spatial
+		topology is non-trivial. Every movement requires a
+		scanning procedure to identify topology changes, potentially negating
+		the performance benefits of the graph itself.
+	\item \textbf{Fragility and Subtle Bugs:} The necessity of manually
+		maintaining graph consistency is error-prone. A slight
+		desynchronisation between the environment and the graph can lead to
+		``ghost dependencies''. For example, if a node $n_A$ moves away from
+		$n_B$ but the engine fails to prune the dependency edge $r_A \to r_B$
+		due to a boundary condition error, $r_B$ may continue to be rescheduled
+		based on $n_A$'s state. Conversely, a ``missing dependency'' occurs if
+		the engine fails to register a new neighbor instantly, causing a node
+		to ignore local stimuli.
+	\item \textbf{Centralised Complexity:} The current approach centralises
+		logic within the engine, which must poll the environment and
+		micro-manage reaction states. This monolithic management style makes
+		the system harder to extend and debug compared to a decentralised,
+		reactive approach.
+\end{itemize}
+
+\subsection{Towards an observable state}
+What explained in the previous sections reveals the \emph{poll-based} nature
+of Alchemist. Reactions do not autonomously react to environmental changes,
+but instead the engine must explicitly, for a given reaction $r$ polled from
+the top of the queue
+%
+\begin{enumerate*}[label=(\roman*)]
+    \item query every $r$'s conditions to verify they still hold against
+	    the current environmental state, 
+    \item identify all dependent reactions after $r$'s associated action
+	    modifies the environment and
+    \item force them to re-scan the environment to update their firing rate,
+	    finally rescheduling them.
+\end{enumerate*}
+
+This architectural choice dictates the definition of the \emph{observable
+domain}. Because the engine must be able to compute propensities and check
+conditions at any arbitrary step, a reaction must explicitly define the input
+context it needs to ``observe.'' This rigid definition is necessary for the
+engine to construct the dependency graph $\mathcal{G}$ and determine which
+reactions to poll after a change.
+
+Conversely, in a \emph{reactive} system, the domain itself is observable.
+Changes are directly notified to observers, which can immediately update their
+state whenever the environment changes. In this model, the engine is no longer
+responsible for tracking and determining which reactions may have been
+influenced or need rescheduling. Instead, this information flows dynamically
+from reaction to reaction, or from domain changes to observable states.
+\Cref{fig:sd_obs_engine} depicts the possibile change in responsibilities of
+the Alchemist's engine when introducing an observable environment state and a
+reactive set of observers.
+
+\includediagram[0.7\linewidth]{figures/diagrams/obs_alchemsit_seq_diagram.tex}{Overview
+of observer-based domain interaction with conditions and
+reactions.}{fig:sd_obs_engine}
+
+With these concepts in mind, we can then define which Alchemist components need
+to be observable. Following is a comprehensive list of observables:
+\begin{itemize}
+	\item \emph{Node's contents} may change during an execution of a
+		simulation, and reactions such as chemical-like reactions could
+		react on changes of specific molecules inside a node;
+	\item \emph{Node's position} may be of interest when computing the
+		force of a field on the set of neighbor of a given node;
+	\item \emph{Node's neighborhood} changes whenever the movement of a
+		node causes exiting and eventually joining new neighbors, which
+		could be of great interest within autonomous agents behaviours;
+	\item \emph{Distances} either between nodes or within a given point and
+		radius in space.
+\end{itemize}
+
+\subsection{Behavior as a Composition of Event Streams}
+The primitives listed above constitute the atomic building blocks of the
+observable domain. However, a simulation model rarely relies on raw data
+changes in isolation; rather, it depends on complex logical predicates and
+aggregated states. By leveraging the reactive paradigms introduced in
+\Cref{ch:reactvity_dep_mgmnt}, these atomic observables can be transformed and
+combined to express arbitrarily complex behaviors through an algebra of
+composition.
+
+In this view, a \emph{Condition} is no longer a static predicate to be polled,
+but a derived event stream obtained by filtering and mapping the state of
+nodes, neighborhoods, and distances. Operators such as \texttt{map},
+\texttt{filter}, and \texttt{merge} allow us to lift the low-level observables
+into high-level semantic events~\cite{bainomugisha2013SRP}. For instance, a
+condition requiring ``at least three neighbors within 10 meters'' is simply a
+composition of the \emph{Node's position} and \emph{Node's neighborhood}
+streams, transformed into a boolean stream that emits events only when the
+predicate status changes.
+
+This shift redefines the engine's role from an active supervisor to a
+streamlined scheduler. While the engine retains the responsibility of polling
+the priority queue to execute the next scheduled event, the burden of
+maintaining dependency consistency is removed. In this reactive architecture,
+the engine does not traverse a graph to identify which reactions to update.
+Instead, the reactions themselves drive the scheduling process. Through the
+composition of event streams, the environment state directly notifies its
+observers (reactions) whenever a relevant change occurs. Upon receiving such a
+notification, a reaction autonomously re-evaluates its validity or firing rate
+and, if necessary, signals the engine to reschedule it. Consequently, the
+engine simply executes the reaction at the head of the queue, relying on the
+reactive logic embedded within the reaction to ensure it is valid and
+up-to-date, effectively offloading the complexity of dependency resolution to
+the declarative composition of the streams.
+
+\section{Reactive Architecture Design Principles}\label{sec:design_principles}
+
+The theoretical analysis of reactive systems in \Cref{ch:reactvity_dep_mgmnt}
+revealed a broad spectrum of implementation choices, ranging from asynchronous
+actor models to synchronous dataflow, and from pull-based sampling to
+push-based event propagation. However, as established in \Cref{ssec:devs}, a
+\ac{DES} engine imposes strict constraints on causality, reproducibility, and
+correctness that differ significantly from the requirements of responsive user
+interfaces or distributed web services.
+
+Consequently, the design of the Alchemist reactive engine is governed by three
+fundamental architectural principles that map the general capabilities of
+reactive programming to the specific needs of stochastic simulation.
+
+\subsection{Synchronous Propagation for Causal Consistency}
+The first and most critical design decision concerns the concurrency model of
+the dependency graph. While mainstream reactive frameworks (e.g., RxJava, Akka)
+often default to asynchronous execution to maximise throughput, we enforce a
+strict \emph{synchronous propagation} model.
+
+As discussed in \Cref{ssec:sync_async}, asynchrony introduces non-determinism
+and complicates strict ordering. In the context of a sequential \ac{DES}, this
+is unacceptable for three reasons:
+\begin{enumerate}
+    \item \emph{Causality Preservation:} The simulation clock must not advance
+	    until the system state is fully consistent. Asynchronous updates
+	    could lead to race conditions where an event is executed based on a
+	    stale state (e.g., a reaction firing before its propensity has been
+	    updated by a previous event). Synchronous propagation ensures that
+	    after any state change, the entire dependency graph settles to a
+	    consistent state \emph{before} the control returns to the
+	    scheduler.
+    \item \emph{Glitch Freedom:} As detailed in \Cref{ssec:glitches}, glitches
+	    are temporary inconsistencies where a node observes inputs from
+	    different logical times. In a physical simulation, a glitch is not
+	    merely a transient update state, but a potential source of
+	    numerical error. Synchronous execution, combined with a
+	    deterministic propagation order, guarantees that observers always
+	    perceive a valid snapshot of the world.
+    \item \emph{Minimising Overhead:} The granularity of updates in Alchemist
+	    is often fine (e.g., a single molecule count change). The overhead
+	    of context switching and queue management required by asynchronous
+	    schedulers could dominate the execution time. Synchronous method
+	    calls keep execution simple and also on the hot path of the CPU,
+	    maximising cache locality.
+\end{enumerate}
+
+\subsection{Push-Based Notification for Sparsity}
+The second principle addresses the direction of data flow. We adopt a
+\emph{push-based} model (referencing \Cref{ssec:push_pull}) where the
+environment actively notifies observers of changes, rather than observers
+polling or sampling the state.
+
+This choice is dictated by the \emph{sparsity} of events in \ac{MABS} and
+stochastic simulation. In many scenarios, an agent's context (e.g., its
+neighborhood or local concentration) remains stable for long periods between
+discrete events. A pull-based or sampling approach (common in continuous-time
+FRP) would waste computational resources checking for changes that have not
+occurred. Conversely, a push-based model ensures that computation is performed
+\emph{only} when a relevant state change actually occurs, aligning perfectly
+with the discrete-event philosophy of skipping periods of inactivity.
+
+\subsection{Selective Eager Evaluation for Scheduling}
+The final principle resolves the tension between \emph{lazy} and \emph{eager}
+evaluation. While functional reactive programming often promotes laziness to
+avoid unnecessary work, the \ac{NRM} would benefit from a hybrid approach.
+
+\begin{itemize}
+    \item \emph{Eager Scheduling Critical Path:} The \ac{FEL} must always be
+	    ordered by correct putative times. Therefore, the chain of
+	    dependencies leading from \emph{State Change} $\to$
+	    \emph{Propensity Calculation} $\to$ \emph{Event Rescheduling} must
+	    be evaluated \emph{eagerly}. Deferring these updates would leave
+	    the priority queue in an inconsistent state, potentially violating
+	    the core correctness of the \ac{SSA}.
+    \item \emph{Lazy Payload Evaluation:} Conversely, computations that do
+	    not affect the scheduling orde, such as complex data aggregation
+	    for logging, visualisation, or the generation of heavy reaction
+	    products, can remain \emph{lazy}. These values are computed only
+	    when the reaction is actually selected for execution by the engine,
+	    or when a monitor explicitly requests them.
+\end{itemize}
+
+By adhering to these three principles, Synchronous consistency, Push-based
+sparsity, and Selective Eagerness, the architecture bridges the gap between the
+flexible composability of reactive programming and the rigorous deterministic
+requirements of discrete-event simulation.
+
+\section{Summary and Outlook}
+In this chapter, we have critically analysed the limitations of the standard
+Alchemist engine, identifying the poll-based dependency management as a primary
+source of complexity and potential fragility. We proposed a paradigm shift
+towards a reactive architecture where the environment itself is observable. In
+this model, the rigid dependency graph is replaced by a dynamic composition of
+event streams, and the engine transforms from an active supervisor into a
+streamlined scheduler driven by the reactions themselves.
+
+We have established the theoretical foundations for this new architecture,
+defined the necessary observable primitives, and outlined the required
+principles to achieve correct simulation execution by means of precise
+execution strategies and data propagation. With these conceptual pillars in
+place, we have laid the groundwork necessary to move from abstraction to
+engineering.
+

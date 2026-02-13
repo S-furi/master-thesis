@@ -1,0 +1,35 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage[underline=true,rounded corners=false]{pgf-umlsd}
+
+\begin{document}
+
+\begin{sequencediagram}
+    \newthread{env}{:Environment}
+    \newthread{cond}{:Condition}
+    \newthread{rxn}{:Reaction}
+    \newthread{eng}{:Engine}
+
+    \begin{sdblock}{Execution}{Discrete Event}
+        \begin{call}{eng}{Execute}{rxn}{Reschedule}
+            \mess{rxn}{Modify State}{env}
+        \end{call}
+    \end{sdblock}
+
+    \begin{sdblock}{Reactive Update}{Observable Domain}
+        \mess{env}{Notify Change}{cond}
+
+        \begin{callself}{cond}{Re-evaluate}{}
+        \end{callself}
+
+        \mess{cond}{Notify Validity}{rxn}
+
+        \begin{callself}{rxn}{Update Rate}{}
+        \end{callself}
+        \mess{rxn}{Reschedule}{eng}
+    \end{sdblock}
+
+    \postlevel
+\end{sequencediagram}
+
+\end{document}

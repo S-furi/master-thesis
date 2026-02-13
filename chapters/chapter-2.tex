@@ -106,7 +106,7 @@ constraints that directly affect dependency resolution mechanisms:
 	      explicit lifecycle management for subscription and resources.
 \end{itemize}
 These considerations will become relevant when discussing about propagation strategies
-and pitfalls of reactive frameworks. [LINKS TO SECTION HERE AND ABOVE]
+and pitfalls of reactive frameworks (\Cref{ssec:push_pull,ssec:glitches}).
 
 \subsection{The Observer pattern and push-based propagation}
 In object-oriented systems, reactivity is traditionally implemented through the
@@ -130,8 +130,8 @@ Among some notable issues we find
 	\item ordering constraints are subtle when several observers depend on one
 	      another
 	\item feedback cycles and re-entrant notifications can create inconsistent
-	      intermediate state (link to glitches) and
-	\item lifecycle management becomes critical (link to section)
+	      intermediate state (\Cref{ssec:glitches}) and
+	  \item lifecycle management becomes critical (\Cref{ssec:react_lifecycle})
 \end{enumerate*}
 
 These issues motivate richer reactive abstractions where dependencies become
@@ -256,7 +256,7 @@ when the dependency graph is large and dynamic over time. In the following
 sections some of these issues along with how some of the solutions presented
 above tackles those problems.
 
-\subsection{Ordering, consistency and glitches}
+\subsection{Ordering, consistency and glitches}\label{ssec:glitches}
 Once the dependency graph branches and re-joins, update ordering becomes
 observable. A derived computation that depends on two inputs may observe a
 mixed intermediate state if those inputs update at different times. This
@@ -292,7 +292,7 @@ non-termination or unstable oscillations. Robust reactive models must detect
 cycles and either reject them or provide explicit constructs that define the
 intended semantics of the feedback.
 
-\subsection{Lifecycle and Resource Management}
+\subsection{Lifecycle and Resource Management}\label{ssec:react_lifecycle}
 While glitches and ordering concern the \emph{correctness} of active
 propagation, a separate class of challenges arises regarding the
 \emph{duration} and \emph{termination} of reactive dependencies. In traditional
@@ -358,7 +358,7 @@ Frameworks address these lifecycle challenges through three primary strategies:
 	      construction.
 \end{enumerate}
 
-\subsection{Performance considerations}
+\subsection{Performance considerations}\label{ssec:react_perf}
 Reactive APIs or fully-reactive programming languages like
 \textsc{Fran}~\cite{elliott1997FRA} are often advertised as declarative and
 composable, but their runtime behaviour can be counter-intuitive because small
