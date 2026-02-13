@@ -529,6 +529,20 @@ language integration, it remains targeted primarily at asynchronous data
 processing rather than the precise, time-stepped propagation of updates
 required by discrete-event software systems (e.g. a \ac{DES}).
 
+\subsection{In-house Solution}
+The analysis of these standards reveals a significant gap between industrial
+reactive tools and the rigorous requirements of a discrete event simulator.
+Frameworks like Akka and RxJava prioritise throughput and availability, design
+choices that inherently allow for non-deterministic event interleaving.
+Conversely, a simulation engine requires strict causal ordering and glitch
+freedom to accurately calculate system dynamics and relying on eventual
+consistency is insufficient for physical correctness. To address these
+limitations, we will propose an in-house reactive engine. This solution adopts
+the expressive vocabulary of RxJava (Observables, Signals) and the
+deterministic rigor of academic models like Lingua Franca or Scala.React,
+implementing a propagation strategy specifically tailored to the discrete-event
+lifecycle.
+
 \section{Summary}
 
 This chapter established a theoretical framework for understanding reactivity

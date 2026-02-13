@@ -191,7 +191,7 @@ differential equations.
 
 To obtain the state trajectory, the \ac{ODE} must be solved. Solving an
 \ac{ODE} \emph{analytically} is often impossible, especially for non-linear
-systems. Therefore, simulations utilize numerical integration methods (e.g.
+systems. Therefore, simulations utilise numerical integration methods (e.g.
 Euler's method, Runge-Kutta for one-step methods, ...). It is also important to
 note that because digital computers operate in discrete steps, simulating a
 Differential Equation System effectively reduces it to a form of Discrete Time
@@ -376,7 +376,7 @@ event $e_i$ at time $t$ transitions the system state from $S$ to $S'$. This
 state change implies a causal ripple effect: it may enable new events, disable
 previously scheduled events or alter the execution time of pending events.
 
-This problem is rigorously formalized in terms of complex biochemical systems
+This problem is rigorously formalised in terms of complex biochemical systems
 in the formulation of Gillespie's \ac{SSA}~\cite{GillespieESSCCR:1977}. The
 ``Direct Method'' is a grounded method for simulating the time evolution of
 chemical reaction networks, relying on the \emph{Markovian} property for
@@ -552,7 +552,7 @@ this in \Cref{ssec:alchemist_engine}.
 \section{Dependency Management in Parallel and Distributed Simulations}
 \label{sec:pdes}
 
-While the Gibson-Bruck algorithm optimizes the \emph{selection} of the next
+While the Gibson-Bruck algorithm optimises the \emph{selection} of the next
 event by pruning redundant dependency checks, it remains fundamentally tethered
 to a \emph{centralised} execution mechanism. In this sequential paradigm, a
 single simulation engine maintains the global \ac{FEL} and processes events in
