@@ -139,7 +139,7 @@ explicit and where the runtime can provide stronger guarantees about lifecycles
 and propagation order, along with a set of reactive abstractions that improve
 composability.
 
-\subsection{Functional Reactive Programming}
+\subsection{Functional Reactive Programming}\label{ssec:frp}
 \ac{FRP} emerged as an attempt to provide a more principled account of reactive
 computation. In the classical \ac{FRP} formulation, time-varying values are
 treated as first-class values and discrete occurrences are represented as
@@ -161,7 +161,7 @@ runtime provides an operational interpretation. Moreover, further works as
 be derived from continuous sampling of event-streams, demonstrating that even
 some intuitive \ac{FRP} primitives impose non-trivial constraints if one wants
 to preserve the intended semantics. This analysis is important because it
-clarifies that \ac{FRP} is not merely a set of APIs, but a semantic model whose
+clarifies that \ac{FRP} is not merely a set of \ac{API}s, but a semantic model whose
 implementation choices affect both expressiveness and correctness.
 
 In practice, \ac{FRP} systems differ along two major design axis:
@@ -359,7 +359,7 @@ Frameworks address these lifecycle challenges through three primary strategies:
 \end{enumerate}
 
 \subsection{Performance considerations}\label{ssec:react_perf}
-Reactive APIs or fully-reactive programming languages like
+Reactive \ac{API}s or fully-reactive programming languages like
 \textsc{Fran}~\cite{elliott1997FRA} are often advertised as declarative and
 composable, but their runtime behaviour can be counter-intuitive because small
 changes in operator structure, scheduling or allocation patterns can lead to
@@ -487,7 +487,7 @@ tools and those prioritising strict consistency.
 \subsection{Industry Standards}
 
 \subsubsection{RxJava (Reactive Extensions)}
-RxJava represents the widespread adoption of the \emph{ReactiveX} API, which
+RxJava represents the widespread adoption of the \emph{ReactiveX} \ac{API}, which
 combines the Observer pattern with the Iterator pattern and functional
 programming paradigms. It employs a push-based propagation model where a source
 (\texttt{Observable}) emits items to subscribers, offering an extensive
@@ -529,7 +529,7 @@ language integration, it remains targeted primarily at asynchronous data
 processing rather than the precise, time-stepped propagation of updates
 required by discrete-event software systems (e.g. a \ac{DES}).
 
-\subsection{In-house Solution}
+\subsection{In-house Solution}\label{ssec:in_house}
 The analysis of these standards reveals a significant gap between industrial
 reactive tools and the rigorous requirements of a discrete event simulator.
 Frameworks like Akka and RxJava prioritise throughput and availability, design
