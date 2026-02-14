@@ -34,7 +34,7 @@ data stream, ensuring that consumers cannot inadvertently alter the state of
 the source. State mutation is reserved for the \kotlin{MutableObservable<T>}
 subtype. This interface extends the contract by exposing an \kotlin{update}
 function, which encourages functional state transitions of the form \kotlin{(T)
--> T}. This distinction allows the internal logic of a component to mutate
+	-> T}. This distinction allows the internal logic of a component to mutate
 state safely while exposing only the immutable \kotlin{Observable} interface to
 external observers, preserving encapsulation.
 
@@ -45,14 +45,14 @@ from functional programming and category theory, the framework treats
 \kotlin{Observable} as a \emph{Monad}.
 
 Through the basic uplifting operation \kotlin{fun observe(value: T):
-Observable<T>} and the set of extension functions defined in the framework,
+	Observable<T>} and the set of extension functions defined in the framework,
 developers can chain operations using standard functional operators:
 \begin{itemize}
 	\item \texttt{map} which transforms the emitted values of an observable,
-		creating a new derived stream;
+	      creating a new derived stream;
 	\item \texttt{flatMap}/\texttt{switchMap} with the goal to project each
-		emitted value into a new observable and flatten the resulting streams,
-		allowing for dynamic dependency replacement.
+	      emitted value into a new observable and flatten the resulting streams,
+	      allowing for dynamic dependency replacement.
 \end{itemize}
 This monadic structure allows for the definition of complex data flows where
 dependencies are handled implicitly. For example, a reaction's firing rate can
@@ -77,9 +77,9 @@ In a simulation, an aggregate value (e.g., the total concentration of a
 molecule across all neighbours) depends on two distinct factors:
 \begin{enumerate*}[label=(\roman*)]
 	\item \emph{structural changes} with neighbors entering or leaving the list
-		and 
+	      and
 	\item \emph{element changes} where the concentration value changing within
-		an existing neighbor.
+	      an existing neighbor.
 \end{enumerate*}
 
 To handle this dual dependency, the framework provides sophisticated operators
@@ -110,30 +110,30 @@ reasons:
 
 \begin{enumerate}
 	\item \emph{Semantic Distinction in Streams:} In a reactive data flow, it
-		is often necessary to distinguish between ``the value is known to be
-		null'' and ``there is no value yet'' (or ``the value has been
-		removed''). Kotlin's \texttt{T?} collapses these states. For instance,
-		in \texttt{ObservableMap}, retrieving the value for a specific key
-		returns an \texttt{Observable<Option<V>>}. This signature allows the
-		stream to explicitly signal three distinct states:
-    \begin{itemize}
-		\item \kotlin{Some(v)}: The key is present with value $v$;
-		\item \kotlin{Some(null)}: The key is present, and the value is
-			explicitly null (if $V$ is nullable);
-		\item \kotlin{None}: The key is missing from the map.
-    \end{itemize}
+	      is often necessary to distinguish between ``the value is known to be
+	      null'' and ``there is no value yet'' (or ``the value has been
+	      removed''). Kotlin's \texttt{T?} collapses these states. For instance,
+	      in \texttt{ObservableMap}, retrieving the value for a specific key
+	      returns an \texttt{Observable<Option<V>>}. This signature allows the
+	      stream to explicitly signal three distinct states:
+	      \begin{itemize}
+		      \item \kotlin{Some(v)}: The key is present with value $v$;
+		      \item \kotlin{Some(null)}: The key is present, and the value is
+		            explicitly null (if $V$ is nullable);
+		      \item \kotlin{None}: The key is missing from the map.
+	      \end{itemize}
 
 	\item \emph{JVM Interoperability:} While Kotlin's nullable types are
-		effective within Kotlin sources, they are represented as standard
-		references (with metadata annotations) at the bytecode level. When
-		accessed from Java or Scala, the strict compile-time safety guarantees
-		are often lost or require verbose defensive programming. By using an
-		explicit monadic wrapper like \texttt{arrow.core.Option}, we expose a
-		consistent \ac{API} across all \ac{JVM} languages. This aligns with the
-		functional paradigms of Scala (which relies heavily on its own
-		\texttt{Option}) and provides a richer, composable interface (e.g.,
-		\texttt{map}, \texttt{flatMap}, \texttt{fold}) than standard Java null
-		checks.
+	      effective within Kotlin sources, they are represented as standard
+	      references (with metadata annotations) at the bytecode level. When
+	      accessed from Java or Scala, the strict compile-time safety guarantees
+	      are often lost or require verbose defensive programming. By using an
+	      explicit monadic wrapper like \texttt{arrow.core.Option}, we expose a
+	      consistent \ac{API} across all \ac{JVM} languages. This aligns with the
+	      functional paradigms of Scala (which relies heavily on its own
+	      \texttt{Option}) and provides a richer, composable interface (e.g.,
+	      \texttt{map}, \texttt{flatMap}, \texttt{fold}) than standard Java null
+	      checks.
 \end{enumerate}
 
 Consequently, while the use of an external library introduces a dependency, the
@@ -155,7 +155,7 @@ resources usage.
 Alchemist divides its lifecycle into two distinct phases. The first is the
 \emph{set-up phase}, where the environment is instantiated, nodes are created,
 and reactions are wired to conditions. The second is the \emph{execution
-phase}, where the simulation loop begins.
+	phase}, where the simulation loop begins.
 
 This separation poses a challenge for reactive programming. When defining a
 reaction during the set-up phase, a programmer might attempt to create an
@@ -166,13 +166,13 @@ eagerly.
 
 To address this, the framework offers two strategies:
 \begin{enumerate}
-    \item \emph{Deferred Creation:} Creating eager event streams only within
-      the \kotlin{initializationComplete} method of the \kotlin{Actionable}
-      interface. This guarantees that the stream is constructed only after the
-      set-up phase concludes and all components are stable;
-    \item \emph{Lazy Subscription:} Creating event streams in the constructor
-      but deferring their activation. The stream remains inert during the
-      set-up phase and begins emitting values only when the simulation starts.
+	\item \emph{Deferred Creation:} Creating eager event streams only within
+	      the \kotlin{initializationComplete} method of the \kotlin{Actionable}
+	      interface. This guarantees that the stream is constructed only after the
+	      set-up phase concludes and all components are stable;
+	\item \emph{Lazy Subscription:} Creating event streams in the constructor
+	      but deferring their activation. The stream remains inert during the
+	      set-up phase and begins emitting values only when the simulation starts.
 \end{enumerate}
 To support the latter approach, the \kotlin{onChange} signature includes an
 \kotlin{invokeOnRegistration} flag. When set to \kotlin{false}, it signals that
@@ -203,13 +203,13 @@ and attaches no listeners to the source. This behaviour is managed via the
 \kotlin{startMonitoring} and \kotlin{stopMonitoring} lifecycle hooks, which are
 automatically invoked based on the emptiness of the subscribers list.
 
-\paragraph{Explicit Initialization and Safety}
-Finally, the framework addresses the semantic ambiguity of "initial values" in
+\paragraph{Explicit Initialisation and Safety}
+Finally, the framework addresses the semantic ambiguity of ``initial values'' in
 push-based systems. As highlighted in \cite{bainomugisha2013SRP}:
 \begin{quote}
-    ``In push-based approaches, the programmer must initialise behaviours
-    explicitly to make sure they hold a value when eagerly evaluating code in
-    which they are used.''
+	``In push-based approaches, the programmer must initialise behaviours
+	explicitly to make sure they hold a value when eagerly evaluating code in
+	which they are used.''
 \end{quote}
 
 To strictly adhere to this principle, \kotlin{DerivedObservable} wraps its
@@ -225,5 +225,97 @@ consumers that the behaviour is defined but currently holds no value, allowing
 the simulation to proceed without glitches until the necessary data becomes
 available.
 
+\subsection{\texttt{Disposable} pattern and Resource Management through
+	Lifecycles}\label{ssec:disposability}
 
-\subsection{\texttt{Disposable} pattern and Resource Management through Lifecycles}\label{ssec:disposability}
+In a reactive architecture heavily reliant on the observer pattern, memory
+management becomes a critical concern. As established in
+\Cref{ssec:reactive_alchemist_principles}, the simulation graph involves
+thousands of long-lived objects (Nodes, Molecules) and possibly short-lived
+reactive streams. If an observer registers a callback on a long-lived subject
+but fails to deregister when it is no longer needed, the subject \emph{retains}
+a strong reference to the observer, preventing garbage collection. In the
+context of Alchemist, this ``lapsed listener problem'' could quickly lead to
+the progressive memory exhaustion over the course of a simulation.
+
+To mitigate this, the framework introduces a structured \emph{lifecycle}
+management system largely inspired by the Android Jetpack
+architecture\footnote{\url{https://developer.android.com/jetpack/androidx}}.
+This system automates the management of subscription ensuring that reactive
+connections are severed automatically when the participating entities reach the
+end of their lifecycle.
+
+\paragraph{The Disposable contract} At the lowest level, the framework defines
+a functional interface \kotlin{Disposable} which provides a uniform contract
+for any entity holding resources that must be explicitly released. Core domain
+entities, including \kotlin{Node} and \kotlin{Reaction}, implement this
+interface. When a node is disposed, it recursively dispose every reaction
+attached to it, and every reaction in turn dispose their conditions. This
+explicit cascading cleanup is the first line of defense against leaks.
+
+\paragraph{Lifecycle-Aware components} While manual disposal is effective, it
+is error-prone if relied upon for every individual subscription. To automate this,
+the concept of \emph{Lifecycle-aware components} is introduced. The architecture
+revolves around three key abstractions:
+\begin{itemize}
+	\item \kotlin{LifecycleState} is a simple enumeration defining the
+	      valid states of a component. At the time of writing, the states
+	      \kotlin{INITIALIZED}, \kotlin{STARTED} and \kotlin{DESTROYED}
+	      are defined; however, further works could enrich this set state
+	      to include finer-grained states both for better debugging
+	      purposes or better subscription's state management (see the
+	      \textsc{AndroidX} implementation for reference);
+	\item \kotlin{LifecycleOwner}'s contract is implemented by any class
+	      that has a defined lifecycle (e.g. \kotlin{Node},
+	      \kotlin{Actionable}). It exposes an explicit \kotlin{Lifecycle}
+	      object;
+	\item \kotlin{Lifecycle} and \kotlin{LifecycleRegistry} are the actual
+	      state managers which notifies state observers when the state
+	      transitions occur.
+\end{itemize}
+
+The most powerful feature of this system is the integration between
+\kotlin{Observable} streams and \kotlin{LifecycleOwner}s. The framework
+provides the extension method \kotlin{bindTo} which wraps a standard
+subscription in a lifecycle-aware safety harness.
+%
+\code{Kotlin}{listings/bindTo.kt}{Wrapping an observable's standard
+	subscription into a lifecycle-aware subscription}{bindTo}
+%
+The \kotlin{bindTo} (defined as \Cref{lst:bindTo}) method performs three critical
+functions:
+\begin{enumerate}
+	\item \emph{Pre-check:} If the owner is already \kotlin{DESTROYED}, the
+	      subscription is ignored entirely, preventing ``zombie'' callbacks on dead
+	      objects.
+	\item \emph{Active State Gating:} The callback is invoked \emph{only} if
+	      the owner is in an active state (at least \kotlin{STARTED}). This
+	      prevents reactions from firing while a node is still initialising or
+	      paused.
+	\item \emph{Auto-Unsubscription:} The operator registers an observer on
+	      the owner's lifecycle. When the owner transitions to \kotlin{DESTROYED},
+	      the operator automatically calls \kotlin{stopWatching()} on the data
+	      stream and removes itself.
+\end{enumerate}
+
+\paragraph{Application in the Engine}
+This mechanism is ubiquitous in the new engine implementation. For example,
+\kotlin{Actionable} (Reactions) implements \kotlin{LifecycleOwner}. When a
+reaction subscribes to a condition (e.g., a molecule concentration), it uses
+\kotlin{bindTo(this)}. 
+
+Consequently, when the \kotlin{Engine} removes a node from the environment, it
+simply calls \kotlin{node.dispose()}. This triggers the following cascade:
+\begin{enumerate}
+    \item The Node marks itself as \kotlin{DESTROYED}.
+    \item The Node disposes its Reactions.
+    \item The Reactions mark themselves as \kotlin{DESTROYED}.
+    \item The \kotlin{bindTo} bindings detect the state change and unregister
+      the Reactions from all upstream Observables (e.g., neighborhood lists,
+      molecule maps).
+\end{enumerate}
+
+This architecture guarantees that removing an entity from the simulation graph
+cleanly severs all its incoming and outgoing reactive links, solving the memory
+leak problem by design rather than by convention.
+
