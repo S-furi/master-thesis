@@ -155,7 +155,7 @@ programming, where continuous evolution and event-driven changes coexist. A
 central benefit of this viewpoint is that programs can be expressed
 \emph{declaratively}, where instead of manually maintaining state and
 registering callbacks (e.g. as in the observer pattern), one defines behaviours
-and events by composing \emph{primitives} and \emph{combinators}, and the
+and events by composing \emph{primitives} and \emph{combinators} and the
 runtime provides an operational interpretation. Moreover, further works as
 \cite{zhanyong2000FRP} shows even at a higher detail how continuous time could
 be derived from continuous sampling of event-streams, demonstrating that even
@@ -182,7 +182,7 @@ The theoretical models in the previous section agree on a common operational
 structure: a reactive application maintains some base state and a collection of
 derived computations whose results must remain consistent with that base. A
 non-trivial aspect of the design space of reactivity is about
-\emph{propagation}, and more specifically what counts as an update, when it is
+\emph{propagation} and more specifically what counts as an update, when it is
 delivered, in which order and under which flow-control and with which lifecycle
 rules.
 
@@ -246,7 +246,7 @@ composable semantics of continuous time (pull).
 
 Generally, a designer may choose a pull-based model for parts of a reactive
 system where sampling is done on event values that change continuously over
-time, and this is especially try in environments capable of lazy evaluation in
+time and this is especially try in environments capable of lazy evaluation in
 order to minimise performance waste. On the other hand, a push-based evaluation
 model fits well in systems that require instantaneous reactions.
 
@@ -277,7 +277,7 @@ push-based execution models encourage).
 Various solutions to this problem have been proposed, originally representing
 dependencies in a DAG and performing a topological sorting. Other approaches
 can tackle this problem by transactional batching where computations are
-ordered in a task queue modeled as a set, and duplicated jobs gets re-inserted
+ordered in a task queue modeled as a set and duplicated jobs gets re-inserted
 in the task queue. While several glitch-avoidance approaches have been
 successfully implemented in in single computers, distributed glitch avoidance
 is much more complicated because of network failures, delays and lack of global
@@ -458,7 +458,7 @@ bottlenecks of traditional middleware.
 The \ac{JVM} ecosystem hosts a rich variety of reactive
 libraries and frameworks. To contextualise the architectural decisions behind
 the proposed simulation engine, we first categorise existing solutions based on
-their propagation models, consistency guarantees, and primary industrial
+their propagation models, consistency guarantees and primary industrial
 applications. \Cref{tab:reactive_frameworks_comparison} summarises these
 attributes, highlighting the distinction between general-purpose asynchronous
 tools and those prioritising strict consistency.
@@ -491,7 +491,7 @@ RxJava represents the widespread adoption of the \emph{ReactiveX} \ac{API}, whic
 combines the Observer pattern with the Iterator pattern and functional
 programming paradigms. It employs a push-based propagation model where a source
 (\texttt{Observable}) emits items to subscribers, offering an extensive
-operator library for transforming, filtering, and combining asynchronous
+operator library for transforming, filtering and combining asynchronous
 streams. However, its design prioritises the handling of asynchronous data
 pipelines over strict state consistency, providing no strict deterministic
 ordering often necessitating complex external synchronisation to prevent race
@@ -508,7 +508,7 @@ eliminating glitches. Moreover it emphasises strong consistency and
 composability taking inspiration from Reactor's core ideas.
 
 \subsubsection{Akka}
-Akka is the industry reference for building highly concurrent, distributed, and
+Akka is the industry reference for building highly concurrent, distributed and
 resilient message-driven applications via the \emph{Actor Model}. Actors
 encapsulate state and behavior, communicating exclusively through asynchronous
 message passing, a model that excels at ``Location Transparency'' and
@@ -564,7 +564,7 @@ occurrences (Events) to first-class citizens.
 The mechanics of propagation were analysed along two critical axes:
 \begin{itemize}
 	\item \emph{Push vs. Pull:} Where push-based systems offer low latency for
-	      sporadic events, and pull-based (sampling) systems align better with
+	      sporadic events and pull-based (sampling) systems align better with
 	      continuous-time simulation but require careful handling of idle
 	      recomputation.
 	\item \emph{Sync vs. Async:} Where synchronous execution simplifies

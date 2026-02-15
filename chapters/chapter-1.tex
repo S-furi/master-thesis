@@ -3,7 +3,7 @@
 The scientific method begins with the formulation of a \emph{theory}, a
 hypothesis that can, in principle, be falsified or corroborated. This
 constitutes the first scientific pillar: the theoretical assumptions and
-knowledge used to describe a phenomenon, a property, or a behaviour.
+knowledge used to describe a phenomenon, a property or a behaviour.
 \emph{Experiments} constitute the process of gathering evidence to assess a
 theory, through a series of observations of the real world that confirm or
 refute the initial hypothesis. In the modern era, computer systems
@@ -25,7 +25,7 @@ sciences.
 
 \section{Simulation and modeling}
 As noted above, simulation allows researchers to investigate systems that are
-too complex for analytical solutions, or too dangerous, expensive, or slow to
+too complex for analytical solutions, or too dangerous, expensive or slow to
 study in the real world. To build a valid simulation, however, one must
 first establish a rigorous mathematical foundation for representing reality.
 
@@ -45,7 +45,7 @@ in \Cref{fig:ms_framework}:
 \begin{itemize}
 	\item the \emph{source system} is the real or virtual environment under
 	      study, serving as the source of behavioural data.
-	\item the \emph{model} is a set of instructions, rules, equations, or
+	\item the \emph{model} is a set of instructions, rules, equations or
 	      constraints that form a logical representation of the system;
 	\item the \emph{simulation} is the computational device (e.g. an
 	      algorithm) that interprets the model's instructions to generate
@@ -284,7 +284,7 @@ global notion of time and progresses by processing scheduled \emph{events}
 perception--action updates). When an event is processed, one or more agents
 update their state and may schedule future events. In this view, \ac{MABS} can
 be interpreted as a form of \ac{DES} in which the state-transition logic is
-distributed across autonomous entities, and event generation is driven by
+distributed across autonomous entities and event generation is driven by
 interaction and communication patterns rather than by a single central
 process~\cite{MacalNorth2010ABMS,Byrd2019ABIDES}.
 
@@ -544,7 +544,7 @@ throughout the simulation.
 
 This static assumption breaks down in modern \emph{Multi-Agent Based
 Simulations} (\Cref{ssec:mabs}) and spatial computing environments. In these
-contexts, dependencies are often spatial and transient, and adapting the static
+contexts, dependencies are often spatial and transient and adapting the static
 Gibson-Bruck graph to such dynamic topology requires frequent, expensive graph
 reconstruction or reverts the system to inefficient polling strategies. More on
 this in \Cref{ssec:alchemist_engine}.
@@ -644,7 +644,7 @@ when lookahead is small.
 Overall conservative protocols are attractive because they never violate the
 local causality constraint. However their performance depends critically on the
 ability to compute good lower bounds (lookahead). When lookahead is poor,
-\ac{LP}s spend a large fraction of time waiting, and communication overhead
+\ac{LP}s spend a large fraction of time waiting and communication overhead
 could dominate execution.
 
 \subsection{Speculative Execution}\label{ssec:speculative_pdes}
@@ -671,7 +671,7 @@ $E_{t'}$ is marked as straggler events and the \ac{LP} performs a rollback as sh
 \includediagram{figures/diagrams/time_warp.tex}{Straggler event $E_{135}$
 	arrival in an \ac{LP}, causing the \emph{rollback} at a consistent state
 	with time $t < 135$, retrieved from the state log. Current simulation state
-	is then $S_{130}$, and neighbors are advertised with respective
+	is then $S_{130}$ and neighbors are advertised with respective
 	anti-messages for events past $M_{130}$, namely $M_{140}$ and
 	$M_{150}$.}{fig:time_warp_rollbck}
 %
@@ -853,15 +853,15 @@ abstractions to express dependencies as \emph{data flows} that update
 automatically as their sources change. If the execution engine can make
 dependencies explicit \emph{as they happen} by turning state observations into
 subscriptions, then the propagation of consequences can be handled by the
-framework, and the model can focus on the domain logic.
+framework and the model can focus on the domain logic.
 
 \subsection{Towards Automatic Dependency Resolution through Reactive Execution}
 
 \subsubsection{What is a reactive system?}
-Reactive systems organise computation around changes: values are observed, and
+Reactive systems organise computation around changes: values are observed and
 derived values are automatically updated when their sources change. From an
 implementation standpoint, this typically manifests as streams (or signals)
-that can be subscribed to, and as combinators that build higher-level behaviour
+that can be subscribed to and as combinators that build higher-level behaviour
 by composing these streams. Crucially, the dependency structure is not encoded
 as a separate artefact to be manually maintained; it is \emph{implicitly}
 represented by the set of active subscriptions created by the running program.
@@ -884,7 +884,7 @@ expected benefits.
 	\item \textbf{Reduction of cognitive load (developer productivity).} In
 		many \ac{DES} engines the model developer must reason about the
 		relationship between state changes and scheduled future work: which
-		events become invalid, which ones must be rescheduled, and which
+		events become invalid, which ones must be rescheduled and which
 		derived quantities must be recomputed. With a reactive engine, these
 		dependencies are expressed once (as subscriptions) and the framework is
 		responsible for propagating the consequences of changes, moving
@@ -895,14 +895,14 @@ expected benefits.
 		they are updated according to a single propagation discipline. This
 		does not remove the need for correct model logic, but it reduces the
 		risk of \emph{accidental inconsistency} introduced by forgotten
-		cancellations, stale caches, or ad-hoc invalidation rules scattered
+		cancellations, stale caches or ad-hoc invalidation rules scattered
 		across the model code.
 
 	\item \textbf{Efficiency in high-density systems.} In high-density
 		scenarios (e.g. densely interacting \ac{MABS}), dependency management
 		itself can become a significant cost. A reactive approach aims at
 		limiting recomputation to the computations that actually depend
-		(directly or transitively) on changed state, and at avoiding global
+		(directly or transitively) on changed state and at avoiding global
 		scans or coarse-grained rebuilds of interaction structures.
 \end{itemize}
 
@@ -915,7 +915,7 @@ concrete and assessable, we pursue this objective by modifying an existing
 simulator and evaluating the result against its existing test suite.
 
 This choice has two advantages. First, it provides a realistic baseline: the
-new execution model must coexist with the expectations, \ac{API}s, and invariants of
+new execution model must coexist with the expectations, \ac{API}s and invariants of
 a mature codebase. Second, it offers an empirical notion of correctness:
 passing the pre-existing tests provides evidence that the reactive execution
 preserves the observable behaviour of the original simulator while changing its

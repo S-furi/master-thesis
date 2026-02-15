@@ -67,7 +67,7 @@ depicted in \Cref{fig:alchemist-metamodel}:
 abstract representation of molecules and concentrations. This is realised
 through the concept of \emph{Incarnations}, which provides concrete type
 definitions for molecules and concentrations. An \emph{Incarnation} may also
-specify conditions, actions, and occasionally, the environment and the
+specify conditions, actions and occasionally, the environment and the
 reactions that act upon it. In short, an \emph{Incarnation} is a concrete
 instance of Alchemist's meta-model. Although Alchemist employs classical
 chemical terminology, different \emph{Incarnations} can represent vastly
@@ -100,7 +100,7 @@ supports the following \emph{Incarnations}:
 	      \emph{biochemical} reactions which occur inside a biological cell or a
 	      group of cells that share a common environment.
 	\item \textbf{\textsc{ScaFi}} is a Scala toolkit providing an internal
-	      domain-specific language, a simulation environment, and runtime support
+	      domain-specific language, a simulation environment and runtime support
 	      for practical aggregate computing. This framework implements a variant of
 	      the Higher-Order Field Calculus, offering a unified platform for
 	      simulating and executing distributed collective systems.
@@ -161,7 +161,7 @@ a dependency $r_1 \to r_2$) if any of the following conditions hold:
 	\item $r_2$'s input context is \emph{neighborhood} and $r_1$ resides within
 		that neighborhood;
 	\item Both $r_1$'s output context and $r_2$'s input context are
-		\emph{neighborhood}, and the two neighborhoods share at least one
+		\emph{neighborhood} and the two neighborhoods share at least one
 		common node.
 \end{itemize}
 %
@@ -188,7 +188,7 @@ state to determine which reactions to update.
 		dependencies during the graph construction phase.
 \end{itemize}
 
-Conversely, delegating full control to the engine to track, extract, and
+Conversely, delegating full control to the engine to track, extract and
 reschedule influencing reactions results in high architectural complexity.
 \begin{itemize}
 	\item \textbf{Synchronisation Overhead:} The graph is a ``shadow'' of the
@@ -254,7 +254,7 @@ With these concepts in mind, we can then define which Alchemist components need
 to be observable. Following is a comprehensive list of observables:
 \begin{itemize}
 	\item \emph{Node's contents} may change during an execution of a
-		simulation, and reactions such as chemical-like reactions could
+		simulation and reactions such as chemical-like reactions could
 		react on changes of specific molecules inside a node;
 	\item \emph{Node's position} may be of interest when computing the
 		force of a field on the set of neighbor of a given node;
@@ -276,8 +276,8 @@ composition.
 
 In this view, a \emph{Condition} is no longer a static predicate to be polled,
 but a derived event stream obtained by filtering and mapping the state of
-nodes, neighborhoods, and distances. Operators such as \texttt{map},
-\texttt{filter}, and \texttt{merge} allow us to lift the low-level observables
+nodes, neighborhoods and distances. Operators such as \texttt{map},
+\texttt{filter} and \texttt{merge} allow us to lift the low-level observables
 into high-level semantic events~\cite{bainomugisha2013SRP}. For instance, a
 condition requiring ``at least three neighbors within 10 meters'' is simply a
 composition of the \emph{Node's position} and \emph{Node's neighborhood}
@@ -303,9 +303,9 @@ the declarative composition of the streams.
 
 The theoretical analysis of reactive systems in \Cref{ch:reactvity_dep_mgmnt}
 revealed a broad spectrum of implementation choices, ranging from asynchronous
-actor models to synchronous dataflow, and from pull-based sampling to
+actor models to synchronous dataflow and from pull-based sampling to
 push-based event propagation. However, as established in \Cref{ssec:devs}, a
-\ac{DES} engine imposes strict constraints on causality, reproducibility, and
+\ac{DES} engine imposes strict constraints on causality, reproducibility and
 correctness that differ significantly from the requirements of responsive user
 interfaces or distributed web services.
 
@@ -377,14 +377,14 @@ seen in \cite{elliott2009PPFRP}).
 	    the core correctness of the \ac{SSA}.
     \item \emph{Lazy Payload Evaluation:} Conversely, computations that do
 	    not affect the scheduling orde, such as complex data aggregation
-	    for logging, visualisation, or the generation of heavy reaction
+	    for logging, visualisation or the generation of heavy reaction
 	    products, can remain \emph{lazy}. These values are computed only
 	    when the reaction is actually selected for execution by the engine,
 	    or when a monitor explicitly requests them.
 \end{itemize}
 
 By adhering to these three principles, Synchronous consistency, Push-based
-sparsity, and Selective Eagerness, the architecture bridges the gap between the
+sparsity and Selective Eagerness, the architecture bridges the gap between the
 flexible composability of reactive programming and the rigorous deterministic
 requirements of discrete-event simulation.
 
@@ -394,7 +394,7 @@ Alchemist engine, identifying the poll-based dependency management as a primary
 source of complexity and potential fragility. We proposed a paradigm shift
 towards a reactive architecture where the environment itself is observable. In
 this model, the rigid dependency graph is replaced by a dynamic composition of
-event streams, and the engine transforms from an active supervisor into a
+event streams and the engine transforms from an active supervisor into a
 streamlined scheduler driven by the reactions themselves.
 
 We have established the theoretical foundations for this new architecture,

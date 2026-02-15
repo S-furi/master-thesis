@@ -65,7 +65,7 @@ While standard observables handle scalar values efficiently, simulating a
 pervasive ecosystem requires tracking aggregates, such as the list of
 neighbours or the map of molecules within a node. To address this, the
 framework introduces specific reactive collections: \kotlin{ObservableList},
-\kotlin{ObservableSet}, and \kotlin{ObservableMap}.
+\kotlin{ObservableSet} and \kotlin{ObservableMap}.
 These interfaces provide granular observation capabilities. For instance,
 \kotlin{ObservableMap} allows observing the value of a specific key, while
 \kotlin{ObservableSet} allows observing the membership status of a specific
@@ -118,7 +118,7 @@ reasons:
 	      stream to explicitly signal three distinct states:
 	      \begin{itemize}
 		      \item \kotlin{Some(v)}: The key is present with value $v$;
-		      \item \kotlin{Some(null)}: The key is present, and the value is
+		      \item \kotlin{Some(null)}: The key is present and the value is
 		            explicitly null (if $V$ is nullable);
 		      \item \kotlin{None}: The key is missing from the map.
 	      \end{itemize}
@@ -258,7 +258,7 @@ engine due to two primary constraints:
 \begin{enumerate}
 	\item \emph{Cross-Platform Consistency (Kotlin Multiplatform):} Alchemist
 		is evolving towards a multi-platform ecosystem (targeting JVM,
-		JavaScript, and Native). The semantics and capabilities of weak
+		JavaScript and Native). The semantics and capabilities of weak
 		references vary drastically across these targets:
     \begin{itemize}
 		\item On the \ac{JVM}, \texttt{WeakHashMap} allows iteration over keys,
@@ -293,7 +293,7 @@ a functional interface \kotlin{Disposable} which provides a uniform contract
 for any entity holding resources that must be explicitly released. Core domain
 entities, including \kotlin{Node} and \kotlin{Reaction}, implement this
 interface. When a node is disposed, it recursively dispose every reaction
-attached to it, and every reaction in turn dispose their conditions. This
+attached to it and every reaction in turn dispose their conditions. This
 explicit cascading cleanup is the first line of defense against leaks.
 
 \paragraph{Lifecycle-Aware components} While manual disposal is effective, it
