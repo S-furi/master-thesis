@@ -313,7 +313,7 @@ Consider a short-lived component (e.g., a simulation agent or a UI widget) that
 subscribes to a long-lived global signal (e.g., a global clock or environment
 state). Even when the short-lived component is logically ``destroyed'' or
 removed from the scene, the global source retains a reference to it via the
-callback. Consequently, the garbage collector cannot reclaim the component's
+callback. Consequently, the \ac{GC} cannot reclaim the component's
 memory. Over time, these ``zombie'' listeners accumulate, leading to a
 monotonic increase in memory usage, representing a classic memory
 leak~\cite{maier2010DOP}.

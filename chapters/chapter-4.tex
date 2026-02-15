@@ -245,6 +245,49 @@ This system automates the management of subscription ensuring that reactive
 connections are severed automatically when the participating entities reach the
 end of their lifecycle.
 
+\paragraph{Design Rationale: Explicit Disposal versus Weak References} In
+standard software architecture, a common countermeasure to the Lapsed Listener
+problem is the employment of \emph{weak references}. By holding observers via a
+\texttt{WeakReference} or storing them in a \texttt{WeakMap}, a system allows
+the \ac{GC} to reclaim the subscriber if no other strong references
+to it exist, effectively automating the cleanup process.
+
+However, this approach was deliberately rejected for the Alchemist reactive
+engine due to two primary constraints:
+
+\begin{enumerate}
+	\item \emph{Cross-Platform Consistency (Kotlin Multiplatform):} Alchemist
+		is evolving towards a multi-platform ecosystem (targeting JVM,
+		JavaScript, and Native). The semantics and capabilities of weak
+		references vary drastically across these targets:
+    \begin{itemize}
+		\item On the \ac{JVM}, \texttt{WeakHashMap} allows iteration over keys,
+			which is essential for a subject to traverse its list of
+			subscribers and emit notifications;
+		\item In JavaScript, the \texttt{WeakMap} specification expressly
+			forbids iteration (keys are not enumerable) to ensure deterministic
+			garbage collection behavior. This makes it impossible to implement
+			a standard \emph{Observer} pattern where the subject iterates over
+			a collection of weak subscribers;
+		\item In Kotlin/Native, support for weak references has historically
+			been experimental or inconsistent with managed runtime
+			expectations\footnote{\url{https://youtrack.jetbrains.com/issue/KT-48075}}.
+    \end{itemize}
+	\item \emph{Performance Predictability:} Weak references introduce
+		non-negligible overhead to the \ac{GC} and reference access.
+		Furthermore, relying on \ac{GC} for cleanup introduces non-determinism:
+		a "dead" listener might continue to receive events (and consume CPU
+		cycles) until the \ac{GC} actually runs. In a strictly deterministic
+		simulation engine, resource release should be explicit and tied to the
+		simulation model's lifecycle, not the \ac{JVM}'s memory pressure.
+\end{enumerate}
+
+Consequently, we opted for the \emph{Lifecycle} pattern described below. While
+this requires more explicit architectural structure (i.e., components must
+implement \texttt{Disposable} and explicitly manage and signal about their
+lifecycle's state changes), it ensures deterministic resource management and
+guarantees consistent behavior across all compilation targets.
+
 \paragraph{The Disposable contract} At the lowest level, the framework defines
 a functional interface \kotlin{Disposable} which provides a uniform contract
 for any entity holding resources that must be explicitly released. Core domain
@@ -254,9 +297,9 @@ attached to it, and every reaction in turn dispose their conditions. This
 explicit cascading cleanup is the first line of defense against leaks.
 
 \paragraph{Lifecycle-Aware components} While manual disposal is effective, it
-is error-prone if relied upon for every individual subscription. To automate this,
-the concept of \emph{Lifecycle-aware components} is introduced. The architecture
-revolves around three key abstractions:
+is error-prone if relied upon for every individual subscription. To automate
+this, the concept of \emph{Lifecycle-aware components} is introduced. The
+architecture revolves around three key abstractions:
 \begin{itemize}
 	\item \kotlin{LifecycleState} is a simple enumeration defining the
 	      valid states of a component. At the time of writing, the states
@@ -286,36 +329,38 @@ The \kotlin{bindTo} (defined as \Cref{lst:bindTo}) method performs three critica
 functions:
 \begin{enumerate}
 	\item \emph{Pre-check:} If the owner is already \kotlin{DESTROYED}, the
-	      subscription is ignored entirely, preventing ``zombie'' callbacks on dead
-	      objects.
-	\item \emph{Active State Gating:} The callback is invoked \emph{only} if
-	      the owner is in an active state (at least \kotlin{STARTED}). This
-	      prevents reactions from firing while a node is still initialising or
-	      paused.
+	      subscription is ignored entirely, preventing ``zombie''
+	      callbacks on dead objects.
+	\item \emph{Active State Gating:} The callback is invoked \emph{only}
+	      if the owner is in an active state (at least \kotlin{STARTED}).
+	      This prevents reactions from firing while a node is still
+	      initialising or paused.
 	\item \emph{Auto-Unsubscription:} The operator registers an observer on
-	      the owner's lifecycle. When the owner transitions to \kotlin{DESTROYED},
-	      the operator automatically calls \kotlin{stopWatching()} on the data
-	      stream and removes itself.
+	      the owner's lifecycle. When the owner transitions to
+	      \kotlin{DESTROYED}, the operator automatically calls
+	      \kotlin{stopWatching()} on the data stream and removes itself.
 \end{enumerate}
 
 \paragraph{Application in the Engine}
 This mechanism is ubiquitous in the new engine implementation. For example,
 \kotlin{Actionable} (Reactions) implements \kotlin{LifecycleOwner}. When a
 reaction subscribes to a condition (e.g., a molecule concentration), it uses
-\kotlin{bindTo(this)}. 
+\kotlin{bindTo(this)}.
 
 Consequently, when the \kotlin{Engine} removes a node from the environment, it
 simply calls \kotlin{node.dispose()}. This triggers the following cascade:
 \begin{enumerate}
-    \item The Node marks itself as \kotlin{DESTROYED}.
-    \item The Node disposes its Reactions.
-    \item The Reactions mark themselves as \kotlin{DESTROYED}.
-    \item The \kotlin{bindTo} bindings detect the state change and unregister
-      the Reactions from all upstream Observables (e.g., neighborhood lists,
-      molecule maps).
+	\item The Node marks itself as \kotlin{DESTROYED}.
+	\item The Node disposes its Reactions.
+	\item The Reactions mark themselves as \kotlin{DESTROYED}.
+	\item The \kotlin{bindTo} bindings detect the state change and
+	      unregister the Reactions from all upstream Observables (e.g.,
+	      neighborhood lists, molecule maps).
 \end{enumerate}
 
 This architecture guarantees that removing an entity from the simulation graph
 cleanly severs all its incoming and outgoing reactive links, solving the memory
 leak problem by design rather than by convention.
+
+\section{Alchemist Reactive Engine Integration}
 
