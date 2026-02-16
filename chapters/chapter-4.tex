@@ -505,4 +505,46 @@ neighborhoods or global state, as the framework supports the observation of
 aggregate structures (e.g. node positions, contents, or the entire
 environment).
 
-\subsection{Verification of Correctness}
+\section{Verification of Correctness and Performance Evaluation}
+
+\subsection{Domain correctness}
+Extensive unit tests for observables have been created, covering every aspect
+of observation and the observable domain. Morover, tests has just had to be
+adapted by transforming most of the new methods which are asynchronous event
+streams exposer (e.g. \texttt{observeConcentration}), to synchronous,
+poll-based methods extracting \texttt{current} on such event streams,
+effectively reusing with minimal efforts the existing test suite for the core
+domain.
+
+\subsection{Assessing Engine's Correctness}
+
+The implementation of a reactive engine on top of an existing simulator as
+Alchemist is advantageous because once a prototype of the reactive engine is
+ready, we have a way to determine its feasibility (i.e. the actual
+implementation of the engine) and means to determine the performance and
+efficiency with respect to an explicit dependency graph approach.
+
+Therefore, adapting and fitting the design of the reactive engine along with
+the observable metamodel inside Alchemist has firstly required the development
+of an engine which was separated and largely inspired by the standard engine.
+Thanks to this approach, the new engine could undergo the same test suite as
+the standard one, effectively showing if the new implementation could replace
+the existing engine. Moreover, a set of comparison tests of the two engines are
+carried out. More in particular, given a test simulation with fixed seeds
+running for 100 step, the whole simulation traces are compared against each
+other to determine if they produce the same output given the same input.
+
+Finally, the behaviour of the new engine could be fully tested with every
+simulation used in Alchemist's test suite by tweaking how the loading system
+creates the engine. By setting an ad-hoc system property
+\kotlin{alchemist.engine} to \kotlin{reactive}, the Alchemist loader
+instantiate every simulation using the reactive engine.
+
+By using all the aforementioned techniques, the whole reactive system has been
+tested by running against it the Alchemist's extensive test suite which assures
+that the old engine is indeed replaceable by the new one, and that Discrete
+event simulation could be expressed by means of reactive programming with an ad
+hoc solution.
+
+\subsection{Performance Evaluation through Benchmarking}
+
