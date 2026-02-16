@@ -82,20 +82,17 @@
       - **selective eager evealuation for scheduling** ✅
   - **Summary** ✅
     
-- **Chapter 4: Implementation and Evaluation**
-    - **The Reactive Framework**
-        - **Core Abstractions**
-        - **Memory Management Strategies**
-        - **Ensuring Consistency**
+- **Chapter 4: Implementation and Evaluation** 
+    - **The Reactive Framework** ✅
+        - **An enhanced Observer Pattern** ✅
+        - **Reactive Collections and Aggregation** ✅
+        - **Handling Optionality** ✅
+        - **Optimising derived-observable values** ✅
+        - **Disposable pattern and Resource Management** ✅
     - **Integration into Alchemist**
-        - **Integration Strategy**
-        - **The Engine Simplification**
-        - **The new Execution flow**
-        - **Condition/Reaction Retrofitting**
-        - **Incarnation Support**:
-            - **Biochemistry**
-            - **Protelis**
-            - **Sapere & Scafi**
+        - **Integration Strategy** ✅
+        - **The Engine Simplification** ✅
+        - **Reactive Dependencies Declaration** ✅
     - **Verification of Correctness**
         - **Assessing Correctness through Equivalence Testing**
 
