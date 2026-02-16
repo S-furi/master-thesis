@@ -130,7 +130,7 @@ dependencies against existing system reactions; if dependencies are found, a
 new node is added to the graph with corresponding edges. Conversely, deleting a
 reaction requires pruning all dependencies where the reaction acts as either
 the influencer or the influenced. Notably, any topology change during the
-simulation (e.g., neighbors entering or leaving a neighborhood) triggers these
+simulation (e.g. neighbors entering or leaving a neighborhood) triggers these
 procedures, requiring a dynamic recalculation of dependencies for the affected
 components.
 
@@ -167,7 +167,7 @@ a dependency $r_1 \to r_2$) if any of the following conditions hold:
 %
 Based on this logic, the engine schedules reactions using the \ac{NRM}
 procedure (see \Cref{alg:gibson_bruck}). Crucially, in a pervasive computing
-scenario, this process is dynamic: if a reaction (e.g., movement) alters the
+scenario, this process is dynamic: if a reaction (e.g. movement) alters the
 network topology, the engine must update the influence spheres accordingly.
 This involves pruning obsolete dependencies with former neighbors and
 establishing new ones with entering nodes.
@@ -265,7 +265,8 @@ to be observable. Following is a comprehensive list of observables:
 		radius in space.
 \end{itemize}
 
-\subsection{Behavior as a Composition of Event Streams}
+\subsection{Behavior as a Composition of Event
+Streams}\label{ssec:behviour_comopsition_ev_straems}
 The primitives listed above constitute the atomic building blocks of the
 observable domain. However, a simulation model rarely relies on raw data
 changes in isolation; rather, it depends on complex logical predicates and
@@ -315,7 +316,7 @@ reactive programming to the specific needs of stochastic simulation.
 
 \subsection{Synchronous Propagation for Causal Consistency}
 The first and most critical design decision concerns the concurrency model of
-the dependency graph. While mainstream reactive frameworks (e.g., RxJava, Akka)
+the dependency graph. While mainstream reactive frameworks (e.g. RxJava, Akka)
 often default to asynchronous execution to maximise throughput, we enforce a
 strict \emph{synchronous propagation} model.
 
@@ -326,7 +327,7 @@ is unacceptable for three reasons:
     \item \emph{Causality Preservation:} The simulation clock must not advance
 	    until the system state is fully consistent. Asynchronous updates
 	    could lead to race conditions where an event is executed based on a
-	    stale state (e.g., a reaction firing before its propensity has been
+	    stale state (e.g. a reaction firing before its propensity has been
 	    updated by a previous event). Synchronous propagation ensures that
 	    after any state change, the entire dependency graph settles to a
 	    consistent state \emph{before} the control returns to the
@@ -339,7 +340,7 @@ is unacceptable for three reasons:
 	    deterministic propagation order, guarantees that observers always
 	    perceive a valid snapshot of the world.
     \item \emph{Minimising Overhead:} The granularity of updates in Alchemist
-	    is often fine (e.g., a single molecule count change). The overhead
+	    is often fine (e.g. a single molecule count change). The overhead
 	    of context switching and queue management required by asynchronous
 	    schedulers could dominate the execution time. Synchronous method
 	    calls keep execution simple and also on the hot path of the CPU,
@@ -353,7 +354,7 @@ environment actively notifies observers of changes, rather than observers
 polling or sampling the state.
 
 This choice is dictated by the \emph{sparsity} of events in \ac{MABS} and
-stochastic simulation. In many scenarios, an agent's context (e.g., its
+stochastic simulation. In many scenarios, an agent's context (e.g. its
 neighborhood or local concentration) remains stable for long periods between
 discrete events. A pull-based or sampling approach (common in continuous-time
 FRP) would waste computational resources checking for changes that have not

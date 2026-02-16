@@ -309,8 +309,8 @@ it. In many implementations (such as standard Java \texttt{Listener}s or C\#
 \texttt{event}s), this is a \emph{strong reference}. This creates a
 reachability graph where the \emph{source} keeps the \emph{sink} alive.
 
-Consider a short-lived component (e.g., a simulation agent or a UI widget) that
-subscribes to a long-lived global signal (e.g., a global clock or environment
+Consider a short-lived component (e.g. a simulation agent or a UI widget) that
+subscribes to a long-lived global signal (e.g. a global clock or environment
 state). Even when the short-lived component is logically ``destroyed'' or
 removed from the scene, the global source retains a reference to it via the
 callback. Consequently, the \ac{GC} cannot reclaim the component's
@@ -351,7 +351,7 @@ Frameworks address these lifecycle challenges through three primary strategies:
 	      re-introduces the manual resource management that GC-languages aim to
 	      eliminate.
 	\item \emph{Ownership Transfer and Scopes:} Structured concurrency and
-	      scoped reactivity (e.g., in Kotlin Coroutines or UI-bound lifecycles)
+	      scoped reactivity (e.g. in Kotlin Coroutines or UI-bound lifecycles)
 	      bind the subscription to a parent context. When the parent scope
 	      terminates, all child subscriptions are automatically cancelled,
 	      ensuring both memory safety and computational efficiency by
@@ -438,7 +438,7 @@ Finally, a fundamental tension exists between the explicit dependency
 management of reactive programming and the resilience required by distributed
 systems. Reactive programming typically relies on a tight coupling between
 producers and consumers to maintain the dependency graph. However, distributed
-systems usually favor loose coupling (e.g., Publish/Subscribe patterns) to
+systems usually favor loose coupling (e.g. Publish/Subscribe patterns) to
 tolerate node failures and network partitions~\cite{bainomugisha2013SRP}.
 
 Maintaining a precise dependency graph across a distributed system creates a
