@@ -439,7 +439,7 @@ was a monolithic supervisor responsible for
 	\item extracting the next event from the queue,
 	\item executing the reaction,
 	\item manually traversing the dependency graph to identify affected
-		reactions and finally
+	      reactions and finally
 	\item recalculating propensities and updating the scheduler.
 \end{enumerate*}
 In the new reactive implementation, the Engine's responsibilities are reduced
@@ -507,44 +507,94 @@ environment).
 
 \section{Verification of Correctness and Performance Evaluation}
 
-\subsection{Domain correctness}
+\subsection{Domain and Framework Correctness }
 Extensive unit tests for observables have been created, covering every aspect
-of observation and the observable domain. Morover, tests has just had to be
-adapted by transforming most of the new methods which are asynchronous event
-streams exposer (e.g. \texttt{observeConcentration}), to synchronous,
-poll-based methods extracting \texttt{current} on such event streams,
-effectively reusing with minimal efforts the existing test suite for the core
-domain.
+of observation and the observable domain. Moreover, existing tests required
+minimal adaptation: by transforming most of the new methods which expose
+asynchronous event streams (e.g., \texttt{observeConcentration}) into
+synchronous, poll-based methods by extracting the \texttt{current} value, we
+effectively reused the existing test suite for the core domain with minimal
+effort.
 
 \subsection{Assessing Engine's Correctness}
+Implementing a reactive engine on top of an existing simulator like Alchemist
+offers significant advantages. Once a prototype is ready, it provides a direct
+method to assess its feasibility and benchmark its performance and efficiency
+against the traditional explicit dependency graph approach.
 
-The implementation of a reactive engine on top of an existing simulator as
-Alchemist is advantageous because once a prototype of the reactive engine is
-ready, we have a way to determine its feasibility (i.e. the actual
-implementation of the engine) and means to determine the performance and
-efficiency with respect to an explicit dependency graph approach.
+Consequently, integrating the reactive engine and observable metamodel into
+Alchemist first required developing an engine separate from (yet largely
+inspired by) the standard one. This approach allowed the new engine to undergo
+the same test suite as the standard one, effectively demonstrating its
+capability to replace the existing implementation. Furthermore, comparative
+tests were conducted: by running a simulation with fixed seeds for 100 steps on
+both engines, the full simulation traces were compared to verify that they
+produce identical outputs for identical inputs.
 
-Therefore, adapting and fitting the design of the reactive engine along with
-the observable metamodel inside Alchemist has firstly required the development
-of an engine which was separated and largely inspired by the standard engine.
-Thanks to this approach, the new engine could undergo the same test suite as
-the standard one, effectively showing if the new implementation could replace
-the existing engine. Moreover, a set of comparison tests of the two engines are
-carried out. More in particular, given a test simulation with fixed seeds
-running for 100 step, the whole simulation traces are compared against each
-other to determine if they produce the same output given the same input.
+Finally, the behaviour of the new engine was fully validated against
+Alchemist's entire simulation suite by modifying the engine loading mechanism.
+By setting an ad-hoc system property \kotlin{alchemist.engine = "reactive"},
+the Alchemist loader is directed to instantiate every simulation using the
+reactive engine.
 
-Finally, the behaviour of the new engine could be fully tested with every
-simulation used in Alchemist's test suite by tweaking how the loading system
-creates the engine. By setting an ad-hoc system property
-\kotlin{alchemist.engine} to \kotlin{reactive}, the Alchemist loader
-instantiate every simulation using the reactive engine.
-
-By using all the aforementioned techniques, the whole reactive system has been
-tested by running against it the Alchemist's extensive test suite which assures
-that the old engine is indeed replaceable by the new one, and that Discrete
-event simulation could be expressed by means of reactive programming with an ad
-hoc solution.
+Through these techniques, the entire reactive system was tested against
+Alchemist's extensive test suite. This confirms that the legacy engine is
+indeed replaceable and demonstrates that Discrete Event Simulation can be
+effectively expressed through reactive programming.
 
 \subsection{Performance Evaluation through Benchmarking}
+Demonstrating the engine's correctness by replacing the standard implementation
+naturally leads to a performance evaluation between the two versions.
 
+The evaluation process requires a priori analysis to forecast possible edge
+cases for both architectures. Specifically, we distinguish two scenarios:
+\begin{itemize}
+	\item An \emph{independent} scenario where there are few dependencies among
+		components. In this scenario, the reactive engine should best exploit
+		its capability of executing and rescheduling only what changes, while
+		the standard implementation must always check for dependency changes,
+		wasting computation at every step;
+	\item An \emph{interdependent} scenario where components are tightly
+		coupled and highly dependent on one another. In this case, the overhead
+		of a reactive architecture, the growth of the call stack and the
+		consequent memory pressure could negatively impact performance, whereas
+		the static knowledge of dependencies in an explicit-graph engine could
+		lead to better performance.
+\end{itemize}
+
+Having defined one scenario suitable for a reactive architecture and one
+intended to expose its limitations, two Alchemist simulations were developed.
+The first uses the \emph{SAPERE} incarnation to compute a gradient on a
+$10\times 10$ grid of nodes in the context of aggregate programming. Since the
+gradient only updates when a neighbor provides a shorter path, many nodes
+remain ``stable'' for long periods. A reactive engine can skip re-evaluations
+for these stable nodes, whereas the classic approach polls them unnecessarily.
+
+The second scenario encodes a \emph{repressilator} using the
+\emph{Biochemistry} incarnation, simulating a genetic clock involving
+multi-step dependencies: protein production $\to$ dimerisation $\to$ gene
+repression. This counter-example targets potential weaknesses in reactivity.
+The high degree of interdependence (e.g., a single protein acting as the
+product of one reaction and the reactant for others) creates a dense dependency
+graph. A single change triggers a cascade of re-evaluations, potentially making
+the overhead of implicit dependency management higher than that of an explicit
+dependency graph.
+
+\subsubsection{Analysis of Results}
+
+\paragraph{best case scenario}
+The test results confirm our hypothesis: in independent scenarios, where stable
+dependencies prevent re-computation, the reactive engine is approximately
+$4.65\times$ faster than the classic one, demonstrating substantial CPU cycle
+savings with negligible memory overhead.
+
+Conversely, the results of the interdependent test align with expectations. The
+deep dependency chains and the high volume of links between reactions highlight
+the overhead of the framework. This resulted in an additional 300MB of memory
+usage (on a 2.5GB baseline) and a $0.75\%$ performance loss compared to the
+classic engine.
+
+In summary, the reactive framework appears highly suitable for aggregate
+programming tasks within Alchemist, enabling drastic reductions in execution
+time. Conversely, for chemical-inspired tasks and systems with high cohesion,
+the new architecture may incur a performance penalty.

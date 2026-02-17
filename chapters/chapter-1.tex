@@ -302,9 +302,9 @@ about \emph{deterministic} simulation. In such models the output is determined
 once the set of input quantities and relationships in the model have been
 specified. Hence, given a set of initial conditions and inputs, the output
 trajectory is unique and reproducible. On the other hand, \emph{stochastic
-	simulation} introduces probabilistic elements: here the evolution is not a
+simulation} introduces probabilistic elements: here the evolution is not a
 single path but a realisation of a stochastic process. Stochasticity is
-essential in systems where "average" behaviour (e.g. modeled by differential
+essential in systems where ``average'' behaviour (e.g. modeled by differential
 equations) fails to capture reality. This can occur in \emph{low-granularity}
 regimes, such as chemical reactions or particular \ac{MABS} scenario with
 sparse populations, where fluctuations and rare events drive the system
@@ -681,8 +681,8 @@ More specifically the \ac{LP}
 	\item restores the saved state corresponding or prior to time $t'$
 	\item re-inserts any locally processed events with timestamp $t \geq t'$
 	      back into the local event list and then
-	\item "unsends" any messages previously sent with timestamp $t \geq t'$ by
-	      sending \emph{anti-messages}, i.e. message cancellation notices.
+	\item ``unsends'' any messages previously sent with timestamp $t \geq t'$
+		by sending \emph{anti-messages}, i.e. message cancellation notices.
 \end{enumerate*}
 %
 Finally, the LP resumes forward execution reprocessing events in correct time
