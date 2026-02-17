@@ -82,7 +82,7 @@
       - **selective eager evealuation for scheduling** ✅
   - **Summary** ✅
     
-- **Chapter 4: Implementation and Evaluation** 
+- **Chapter 4: Implementation and Evaluation** ✅
     - **The Reactive Framework** ✅
         - **An enhanced Observer Pattern** ✅
         - **Reactive Collections and Aggregation** ✅
@@ -93,13 +93,11 @@
         - **Integration Strategy** ✅
         - **The Engine Simplification** ✅
         - **Reactive Dependencies Declaration** ✅
-    - **Verification of Correctness**
-        - **Assessing Correctness through Equivalence Testing**
-
-    - **Performance Assessment**
-        - **Throughput Analysis** through comparison
-        - **Benchmarks**
-        - **Memory Overhead**
+    - **Verification of Correctness and Performance Evaluation** ✅
+        - **Domain and Framework correctness** ✅
+        - **Assessing Engine's correctness** ✅
+        - **Performance Evaluation** ✅
+            - *Analysis of results* ✅
 
 - **Chapter 5: Conclusions**
     - **Summary of contributions**
