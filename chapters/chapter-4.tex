@@ -153,7 +153,8 @@ tension between the \emph{eager} consistency required by the \ac{DES} scheduler
 and the desire for \emph{lazy} computation to minimise overhead and improve
 resources usage.
 
-\paragraph{The Challenge of Simulation Initialisation}
+\paragraph{The Challenge of Simulation
+	Initialisation}\label{par:simulation_phases}
 Alchemist divides its lifecycle into two distinct phases. The first is the
 \emph{set-up phase}, where the environment is instantiated, nodes are created,
 and reactions are wired to conditions. The second is the \emph{execution
@@ -447,7 +448,7 @@ strictly to \emph{scheduling} and \emph{execution}. The logic for
 dependency tracking and invalidation is entirely offloaded to the reactions
 themselves via the \kotlin{rescheduleRequest} stream.
 
-The simplified logic of the reactive engine can be summarized in the
+The simplified logic of the reactive engine can be summarised in the
 \kotlin{scheduleReaction} method, shown in \Cref{lst:engine_schedule}: the
 Engine no longer queries the environment to see if a reaction needs an update.
 Instead, it subscribes to the reaction's \kotlin{rescheduleRequest} observable.
@@ -458,7 +459,7 @@ observed dependencies changes.
 
 The flow proceeds as follows:
 \begin{enumerate}
-	\item Upon initialization, the Engine registers itself as a listener to the
+	\item Upon initialisation, the Engine registers itself as a listener to the
 	      \kotlin{rescheduleRequest} of every reaction;
 	\item The scheduler pops the reaction with the minimum $\tau$ (time) and
 	      executes it;
@@ -511,7 +512,7 @@ environment).
 Extensive unit tests for observables have been created, covering every aspect
 of observation and the observable domain. Moreover, existing tests required
 minimal adaptation: by transforming most of the new methods which expose
-asynchronous event streams (e.g., \texttt{observeConcentration}) into
+asynchronous event streams (e.g. \texttt{observeConcentration}) into
 synchronous, poll-based methods by extracting the \texttt{current} value, we
 effectively reused the existing test suite for the core domain with minimal
 effort.
@@ -542,7 +543,7 @@ Alchemist's extensive test suite. This confirms that the legacy engine is
 indeed replaceable and demonstrates that Discrete Event Simulation can be
 effectively expressed through reactive programming.
 
-\subsection{Performance Evaluation through Benchmarking}
+\subsection{Performance Evaluation through Benchmarking}\label{ssec:benchmark}
 Demonstrating the engine's correctness by replacing the standard implementation
 naturally leads to a performance evaluation between the two versions.
 
@@ -550,16 +551,16 @@ The evaluation process requires a priori analysis to forecast possible edge
 cases for both architectures. Specifically, we distinguish two scenarios:
 \begin{itemize}
 	\item An \emph{independent} scenario where there are few dependencies among
-		components. In this scenario, the reactive engine should best exploit
-		its capability of executing and rescheduling only what changes, while
-		the standard implementation must always check for dependency changes,
-		wasting computation at every step;
+	      components. In this scenario, the reactive engine should best exploit
+	      its capability of executing and rescheduling only what changes, while
+	      the standard implementation must always check for dependency changes,
+	      wasting computation at every step;
 	\item An \emph{interdependent} scenario where components are tightly
-		coupled and highly dependent on one another. In this case, the overhead
-		of a reactive architecture, the growth of the call stack and the
-		consequent memory pressure could negatively impact performance, whereas
-		the static knowledge of dependencies in an explicit-graph engine could
-		lead to better performance.
+	      coupled and highly dependent on one another. In this case, the overhead
+	      of a reactive architecture, the growth of the call stack and the
+	      consequent memory pressure could negatively impact performance, whereas
+	      the static knowledge of dependencies in an explicit-graph engine could
+	      lead to better performance.
 \end{itemize}
 
 Having defined one scenario suitable for a reactive architecture and one
@@ -574,7 +575,7 @@ The second scenario encodes a \emph{repressilator} using the
 \emph{Biochemistry} incarnation, simulating a genetic clock involving
 multi-step dependencies: protein production $\to$ dimerisation $\to$ gene
 repression. This counter-example targets potential weaknesses in reactivity.
-The high degree of interdependence (e.g., a single protein acting as the
+The high degree of interdependence (e.g. a single protein acting as the
 product of one reaction and the reactant for others) creates a dense dependency
 graph. A single change triggers a cascade of re-evaluations, potentially making
 the overhead of implicit dependency management higher than that of an explicit
