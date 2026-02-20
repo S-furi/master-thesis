@@ -71,7 +71,8 @@ transitions and output generation:
 where:
 
 \begin{itemize}
-	\item $T$: \emph{Time Base}, whether $T \in \mathbb{R}$ or $T \in \mathbb{Z}$;
+	\item $T$: \emph{Time Base}, whether $T \in \mathbb{R}$ (continuous) or $T
+		      \in \mathbb{Z}$ (discrete);
 	\item $X$: the set of \emph{Input Values};
 	\item $Y$: the set of \emph{Output Values};
 	\item $Q$: the set of \emph{States};
@@ -108,11 +109,11 @@ formalism.
 \subsection{Discrete Time Simulators}\label{ssec:dts}
 
 The Discrete Time Model assumes a \emph{stepwise} mode of execution where, at a
-particular time instant, the model is in a particular state and it defines how
-this state changes. Based on its current state and the current input, the model
-can determine which will be its state and output in the next time instant.
-\emph{Time} in discrete time models advances in discrete steps of integers
-multiple of some basic period such as 1 second, 1 day or 1 year.
+time instant, the model is in a particular state and it defines how this state
+changes. Based on its current state and input, the model can determine which
+will be its state and output in the next time instant. \emph{Time} in discrete
+time models advances in discrete steps of integers multiple of some basic
+period such as 1 second, 1 day or 1 year.
 
 A discrete time model determines its next state and output at a given time
 $t$ with the following functions:
@@ -134,13 +135,13 @@ $q(0), q(1), \dots$ by applying the \emph{state transition function}
 With these simple functions a wide spectrum of potentially interesting and
 arbitrary complex models could be created. A notable example of modeling and
 thereafter simulating models defined through simple state transition and output
-functions are \emph{Cellular Automata} ~\cite{Neumann:66}. A
-cellular automaton has a set of \emph{cells} (potentially infinite) spatially
-located in a grid-like space, where each one of them could have a finite set of
-states determined by a set of state transition functions identical for each
-cell. State transition functions could be influenced by the
-\emph{neighbourhood} of the cell, which most of the time is defined as the set
-of cells located nearest in the geometrical sense.
+functions are \emph{Cellular Automata} ~\cite{Neumann:66}. A cellular automaton
+has a set of \emph{cells} (potentially infinite) spatially located in a
+grid-like space, where each one of them could have a finite set of states
+determined by a set of state transition functions identical for each cell.
+State transition functions could be influenced by the \emph{neighbourhood} of
+the cell, which most of the time is defined as the set of cells located nearest
+in the geometrical sense.
 
 The basic procedure for simulating a cellular automaton is by means of the
 discrete time simulation algorithm: at each time tick, every cell of the
@@ -154,22 +155,17 @@ It is rather obvious that either for infinite environment or for particularly
 large and complex cellular automata, this approach is unfeasible. If at each
 time step we could, instead, ``predict'' which cells could change in the next
 time step, the amount of state computation for each step is dramatically
-reduced (e.g. in Conway's Game of Life). We could define which cells will
-change in the next time step as the cells whose neighbouring cells have not
-changed at the current state transition time. This key idea is behind the
-Discrete Event Simulation (\Cref{ssec:devs}) algorithm, which focuses on
-processing events (a cell state change which will trigger a computation of new
-possibile states for its neighbours) rather than single cells.
+reduced (e.g. in Conway's Game of Life). This is exactly the idea behind
+Discrete-Event Simulation explained in \Cref{ssec:devs}.
 
 \subsection{Differential Equation Simulators}\label{ssec:dess}
 
-Unlike Discrete Time Models and Discrete Event Models (discussed later in
-\Cref{ssec:devs}) where state changes happen at specific time instants, in
-Differential Equations Models the next state is not specified directly but a
-\emph{rate of change} of the state variables is used to express the evolution
-of the model through time. This means that at any particular time instant $t$,
-given a state $z$ and an input value $u$, we only know the rate of change of
-the state, defined as:
+Unlike Discrete Time Models and Discrete Event Models where state changes
+happen at specific time instants, in Differential Equations Models (DESS) the
+next state is not specified directly but a \emph{rate of change} of the state
+variables is used to express the evolution of the model through time. This
+means that at any particular time instant $t$, given a state $z$ and an input
+value $u$, we only know the rate of change of the state, defined as:
 %
 \begin{equation}
 	\frac{dz}{dt} = f(z, u)
@@ -191,8 +187,8 @@ differential equations.
 
 To obtain the state trajectory, the \ac{ODE} must be solved. Solving an
 \ac{ODE} \emph{analytically} is often impossible, especially for non-linear
-systems. Therefore, simulations utilise numerical integration methods (e.g.
-Euler's method, Runge-Kutta for one-step methods, ...). It is also important to
+systems. Therefore, simulations utilise numerical integration methods, for
+example Euler's method or Runge-Kutta for one-step. It is also important to
 note that because digital computers operate in discrete steps, simulating a
 Differential Equation System effectively reduces it to a form of Discrete Time
 System. The numerical solver discretises time into small steps $\Delta t$,
@@ -221,7 +217,7 @@ A Discrete Event System (DEVS) can be specified as:
 %
 Where the key components distinguishing from DTSS and DESS are:
 \begin{itemize}
-	\item \textbf{Time Advance} $\text{ta}: S \rightarrow \mathbb{R}^+_{0,
+	\item \emph{Time Advance} $\text{ta}: S \rightarrow \mathbb{R}^+_{0,
 		      \infty}$: a function returning the time the system remains in a
 	      particular state if no external events occur, defining the
 	      lifespan of a state. If $\text{ta}(s) = 0$ the state is so
@@ -229,10 +225,10 @@ Where the key components distinguishing from DTSS and DESS are:
 		      state}), whereas $\text{ta}(s) = \infty$ means that the system
 	      remains in $s$ indefinitely, unless interrupted by an external
 	      event;
-	\item \textbf{Internal Transition} $\delta_{\text{int}}: S \rightarrow S$: this
-	      function dictates the new state $s' = \delta_{\text{int}}(s)$ after the time $\text{ta}(s)$ has elapsed (autonomous state
-	      change);
-	\item \textbf{External Transition} $\delta_{\text{ext}}: Q \times X
+	\item \emph{Internal Transition} $\delta_{\text{int}}: S \rightarrow S$:
+	      this function dictates the new state $s' = \delta_{\text{int}}(s)$
+	      after the time $\text{ta}(s)$ has elapsed (autonomous state change);
+	\item \emph{External Transition} $\delta_{\text{ext}}: Q \times X
 		      \rightarrow S$: given the total state set $Q = \{ (s, e) : s
 		      \in S, 0 \leq e \leq \text{ta}(s)\}$, this function dictates
 	      the new state $s' = \delta_{\text{ext}}(s, e, x)$ when an input
@@ -243,7 +239,7 @@ global ticker, but a derived property of the system's state via the time
 advance function.
 
 \paragraph{DES Simulation Mechanism (Event
-Scheduling):}\label{par:des_event_scheduling} To execute a formal DEVS model on
+	Scheduling):}\label{par:des_event_scheduling} To execute a formal DEVS model on
 a digital computer, the most common approach is by the \emph{Event Scheduling}
 method ~\cite{BanksDESS10}. The simulator maintains a strictly ordered data
 queue known as the \ac{FEL}, which stores pending events ordered by their
@@ -252,13 +248,13 @@ execution time. The execution proceeds as a sequence of system
 %
 \begin{enumerate}
 	\item The clock is advanced to the time of the imminent event at the head
-		of the \ac{FEL};
+	      of the \ac{FEL};
 	\item The event is removed from the \ac{FEL} and executed (either applying
-		$\delta_{\text{int}}$ or $\delta_{\text{ext}}$);
-	\item The execution may generate new events or cancel or update existing
-		ones by updating the contents of the \ac{FEL};
+	      $\delta_{\text{int}}$ or $\delta_{\text{ext}}$);
+	\item The execution may generate new events, cancel or update existing ones
+	      by updating the contents of the \ac{FEL};
 	\item The process repeats until \ac{FEL} is empty or a termination
-		condition occurs.
+	      condition occurs.
 \end{enumerate}
 %
 Most application of \ac{DES} deal with dynamic, stochastic systems (e.g.
@@ -269,12 +265,12 @@ stochastic process.
 
 \subsection{Multi Agent-based Modeling and Simulation}\label{ssec:mabs}
 
-\ac{MABS} (often also referred to as agent-based modeling and simulation) is a
-modeling approach in which a system is described as a population of
-interacting \emph{agents} situated in an \emph{environment}. Each agent is
-characterised by its own state and by behavioural rules that map observations
-into actions. The system-level behaviour is not prescribed directly; instead,
-it emerges from local interactions among agents and between agents and their
+\ac{MABS}, often also referred to as agent-based modeling and simulation, is a
+modeling approach in which a system is described as a population of interacting
+\emph{agents} situated in an \emph{environment}. Each agent is characterised by
+its own state and by behavioural rules that map observations into actions. The
+system-level behaviour is not ``coded'' directly, instead, it \emph{emerges}
+from local interactions among agents and between agents and their
 environment~\cite{MacalNorth2010ABMS,Bonabeau2002ABM}.
 
 From a \emph{simulation} perspective, many agent-based models can be executed
@@ -297,22 +293,21 @@ agent-based models that explicitly include the \emph{process overview and
 implementations~\cite{GRIMM2006115}.
 
 \subsection{Deterministic and Stochastic Simulation}\label{ssec:det_stoch_sim}
-If the simulated model does not contain any probabilistic components, we talk
-about \emph{deterministic} simulation. In such models the output is determined
-once the set of input quantities and relationships in the model have been
-specified. Hence, given a set of initial conditions and inputs, the output
-trajectory is unique and reproducible. On the other hand, \emph{stochastic
-simulation} introduces probabilistic elements: here the evolution is not a
-single path but a realisation of a stochastic process. Stochasticity is
-essential in systems where ``average'' behaviour (e.g. modeled by differential
-equations) fails to capture reality. This can occur in \emph{low-granularity}
-regimes, such as chemical reactions or particular \ac{MABS} scenario with
-sparse populations, where fluctuations and rare events drive the system
-dynamics.
+\emph{Deterministic simulation} denotes simulated models that does not contain
+any probabilistic components. In such models the output is determined once the
+set of input quantities and relationships in the model have been specified.
+Hence, given a set of initial conditions and inputs, the output trajectory is
+unique and reproducible. On the other hand, \emph{stochastic simulation}
+introduces probabilistic elements: here the evolution is not a single path but
+a realisation of a stochastic process. Stochasticity is essential in systems
+where ``average'' behaviour (e.g. modeled by differential equations) fails to
+capture reality. This can occur in \emph{low-granularity} regimes, such as
+chemical reactions or particular \ac{MABS} scenario with sparse populations,
+where fluctuations and rare events drive the system dynamics.
 
 In the context of Discrete Event Simulation, stochasticity typically manifests
 in the Time Advance function $\text{ta}(s)$. The duration of a state is not
-fixed but drawn from a probability distribution (commonly Exponential for
+fixed but drawn from a probability distribution (commonly exponential for
 memoryless processes), making the event scheduling itself probabilistic.
 
 \subsection{Summary and Comparison}
@@ -326,8 +321,8 @@ which provides the minimal information required to determine future behaviour
 trajectories.
 
 At the level of execution semantics, the formalisms discussed above can be
-understood primarily as different ways of structuring time and evalueating
-state changes:
+understood primarily as different ways of structuring time and evaluating state
+changes:
 \begin{itemize}
 	\item \emph{Discrete-time simulation} (DTSS) advances time in fixed
 	      time steps and updated the state at every tick;
@@ -353,7 +348,7 @@ the scheduling and processing of events.
 A further advantage of the discrete-event formalism is its unifying role: by
 treating advance as a state-dependent property and by representing updates as
 event occurrences, the DEVS framework can accommodate discretised
-continuous-time models and fixed-step discrete-time models withing a common
+continuous-time models and fixed-step discrete-time models within a common
 event based semantics~\cite{Zeigler:2000}. This perspective makes DES a neutral
 ``core'' formalism for simulation on digital computers, while still covering
 behaviours typically introduced via DTSS or DESS.
@@ -405,19 +400,13 @@ sampled from a uniform distribution. The time step is then computed via the
 the smallest integer satisfying $\sum_{j=1}^{\mu} a_j > r_2 \lambda$.
 
 \subsection{\ac{SSA} Optimisation}\label{ssec:ssa_optimisation}
-
-\ac{SSA} (summarised in \Cref{alg:ssa}) ensures correctness by recalculating
-the propensity of \emph{all} possible reactions after every single step.
-While causally robust, this approach is computationally prohibitive for complex
-systems. More in particular:
-
-\begin{itemize}
-	\item Every propensity $a_j$ is recomputed even if the reaction did not
-	      involve those species;
-	\item All propensities have to be summed all together at every step;
-	\item If reactions are stored in a list-like structure, finding the
-	      next reaction $\mu$ to execute is done with linear complexity.
-\end{itemize}
+While \ac{SSA} (summarised in \Cref{alg:ssa}) ensures exactness, this
+causal robustness becomes computationally prohibitive for complex systems.
+The standard algorithm is inefficient because it blindly recomputes and sums the
+propensity $a_j$ of \emph{all} potential reactions at every step, ignoring the
+fact that most species populations remain unchanged. Furthermore, when reactions are
+stored in linear data structures, identifying the next firing reaction $\mu$ requires
+a linear search, which scales poorly as the number of reactions increases.
 
 \begin{algorithm}
 	\caption{Stochastic Simulation Algorithm (Direct Method)}\label{alg:ssa}
@@ -475,18 +464,17 @@ introducing four important properties:
 	      telling precisely which set of reactants to change when a given
 	      reaction is executed.
 	\item The list-like data structure backing the \ac{FEL} is replaced with an
-	      \ac{IPQ}: it is a binary heap combined with a map,
-	      which maximises efficiency for sparse operations and a small number of
-	      updates, granting $O(1)$ access and a sorting cost of $O(\log M)$.
+	      \ac{IPQ}, a binary heap combined with a map which maximises efficiency
+	      for sparse operations and a small number of updates, granting $O(1)$
+	      access and a sorting cost of $O(\log M)$.
 	\item \emph{Random number reuse}: This property addresses the computational
 	      cost of generating high-quality random numbers (could be the most heavy
-	      task in simulation). In the direct method, every step requires two new
-		  random numbers. In the \ac{NRM}, if a reaction $R_j$ is
-	      \emph{not} affected by the execution of $R_\mu$, its absolute putative
-	      time $T_j$ is simply kept in the \ac{FEL}. However, if $R_j$ is
-	      affected (its propensity changes from $a_j$ to $a_j^{new}$), its new
-	      putative time $T_j^{new}$ is rescalelgd to maintain statistical
-	      exactness:
+	      task in simulation). In the direct method every step requires two new
+	      random numbers. In the \ac{NRM}, if a reaction $R_j$ is \emph{not}
+	      affected by the execution of $R_\mu$, its absolute putative time $T_j$
+	      is simply kept in the \ac{FEL}. However, if $R_j$ is affected (its
+	      propensity changes from $a_j$ to $a_j^{new}$), its new putative time
+	      $T_j^{new}$ is rescaled to maintain statistical exactness:
 	      \begin{equation}\label{eq:rand_reuse}
 		      T_j^{new} = t + \frac{a_j}{a_j^{new}} (T_j^{old} - t)
 	      \end{equation}
@@ -542,27 +530,28 @@ static structure. In standard NRM implementations, the dependency graph is
 derived from the stoichiometry of the chemical equations and remains immutable
 throughout the simulation.
 
-This static assumption breaks down in modern \emph{Multi-Agent Based
-Simulations} (\Cref{ssec:mabs}) and spatial computing environments. In these
-contexts, dependencies are often spatial and transient and adapting the static
-Gibson-Bruck graph to such dynamic topology requires frequent, expensive graph
-reconstruction or reverts the system to inefficient polling strategies. More on
-this in \Cref{ssec:alchemist_engine}.
+This static assumption breaks down in complex simulations that goes beyond
+chemistry, such as spatial computing environments or \emph{Multi-Agent Based
+Simulations} (\Cref{ssec:mabs}). In these contexts, dependencies are often
+spatial and transient and adapting the static Gibson-Bruck graph to such
+dynamic topology requires frequent, expensive graph reconstruction or reverts
+the system to inefficient polling strategies. More on this in
+\Cref{ssec:alchemist_engine}.
 
 \section{Dependency Management in Parallel and Distributed Simulations}
 \label{sec:pdes}
 
 While the Gibson-Bruck algorithm optimises the \emph{selection} of the next
-event by pruning redundant dependency checks, it remains fundamentally tethered
-to a \emph{centralised} execution mechanism. In this sequential paradigm, a
-single simulation engine maintains the global \ac{FEL} and processes events in
+event by pruning redundant dependency checks, it operates within a strictly
+\emph{centralised} execution environment. In this sequential paradigm, a single
+simulation engine maintains the global \ac{FEL} and processes events in
 strictly non-decreasing order. It is easy to assess this design's correctness,
 however it quickly becomes a scalability bottleneck as the number of model
 entities and scheduled events grows. \ac{PDES} addresses this problem by
 partitioning the model into a set of interacting components, each executed by a
 separate worker (a thread, a physical core or a networked process). With the
-common abstraction of \ac{LP} we indicate a computing owning a portion of the
-model state, maintaining its local \ac{FEL} while interacting with other
+common abstraction of \ac{LP} we indicate a computing unit owning a portion of
+the model state, maintaining its local \ac{FEL} while interacting with other
 \ac{LP}s by \emph{exchanging messages}. The simulation output of a parallel
 simulator should be the same as executing that model under the same assumptions
 with a sequential simulator, with the only difference being that parallel and
@@ -586,15 +575,16 @@ running time by the number of parallel events executed.
 
 This raises a critical implementation issue: how can parallel simulators
 determine whether two events can be executed concurrently, and if \ac{LP}s are
-allowed to temporarily violate the local causality constraint. Two opposite
-approaches have been developed over the years to resolve these distributed
-dependencies: \emph{Conservative} and \emph{Speculative} execution.
+allowed to temporarily violate the local causality constraint in order to
+maximise performance. Two opposite approaches have been developed over the
+years to resolve these distributed dependencies: \emph{Conservative} and
+\emph{Speculative} execution.
 
 \subsection{Conservative Execution}\label{ssec:conservative_pdes}
 \emph{Conservative execution} is a form of processes synchronisation which
 maintains correctness of a simulation by ensuring that an \ac{LP} \emph{never}
 processes an event that might later be preceded by an earlier incoming event.
-Having an event $E_t$ at time $t$, the \ac{LP} must prove it will neve arrive
+Having an event $E_t$ at time $t$, the \ac{LP} must prove it will never arrive
 an event $E_{t'}$ with $t' < t$ on any of its communication channel.
 
 \paragraph{Channel ordering and the importance of Lower Bounds:} Most
@@ -628,12 +618,19 @@ their input queues, a \emph{Deadlock} can occur.
 
 In order to overcome such problems, the \ac{CMB} algorithm
 ~\cite{chandyMisra1983DDD, bryant1977simulation} avoids deadlock by exchanging
-null messages. More specifically, each \ac{LP} periodically informs its
-neighbours of a safe lower bound on future messages by sending to each outgoing
-channel a null message advertising that it will not send any event with
-timestamp smaller than $t + L$, where $t$ is current simulation time and $L$ is
-the lookahead for that channel. Upon receiving null messages, an \ac{LP} can
-update its lower bound on that channel $LB_c$.
+null messages (\Cref{fig:cmb}). More specifically, each \ac{LP} periodically
+informs its neighbours of a safe lower bound on future messages by sending to
+each outgoing channel a null message advertising that it will not send any
+event with timestamp smaller than $t + L$, where $t$ is current simulation time
+and $L$ is the lookahead for that channel. Upon receiving null messages, an
+\ac{LP} can update its lower bound on that channel $LB_c$.
+
+\includediagram{figures/diagrams/cmb_conservativve.tex}{ Logical Processes A, B
+	and C (with Local Virtual Times (LVT) 10, 12 and 8) exchange timestamped
+	events (solid arrows), with $\texttt{lookahead} = 1$. Because B cannot
+	advance safely without information from C, C sends a NULL message (dashed
+	arrow) giving a lower bound on future timestamps, allowing B to process its
+	pending event incoming from A, without violating causality. }{fig:cmb}
 
 Thanks to this synchronisation mechanism, deadlocks are avoided by paying an
 extra communication overhead and potentially a large number of null messages
@@ -682,7 +679,7 @@ More specifically the \ac{LP}
 	\item re-inserts any locally processed events with timestamp $t \geq t'$
 	      back into the local event list and then
 	\item ``unsends'' any messages previously sent with timestamp $t \geq t'$
-		by sending \emph{anti-messages}, i.e. message cancellation notices.
+	      by sending \emph{anti-messages}, i.e. message cancellation notices.
 \end{enumerate*}
 %
 Finally, the LP resumes forward execution reprocessing events in correct time
@@ -705,7 +702,7 @@ keeping unbounded history is infeasible. Therefore the concept of \ac{GVT} is
 defined as a lower bound on the timestamp on any event that may still affect
 the future of the simulation (shown in greyed queues' contents in
 \Cref{fig:time_warp_rollbck}). Once \ac{GVT} has advanced to time $T$, no event
-with timestamp smaller that $T$ can ever be rolled back again; hence, state
+with timestamp smaller that $T$ can ever be rolled back again. Hence, state
 snapshots and logs older than $T$ can be safely discarded by the process of
 \emph{fossil collection}.
 \\
@@ -721,17 +718,14 @@ violations are rare.
 
 While both approaches enforce the same correctness criterion, namely the
 equivalence to a sequential timestamp-ordered \ac{DES}, the way they manage
-uncertainty about future incoming events is fundamentally different:
-\begin{itemize}
-	\item Conservative approaches pays by \emph{stalling} and by exchanging
-	      lower bounds (e.g. null messages) to avoid mistakes;
-	\item Optimistic methods pays by \emph{repairing} mistakes through
-	      rollbacks, anti-messages and periodic \ac{GVT}-based \emph{garbage
-		      collection}.
-\end{itemize}
+uncertainty about future incoming events is fundamentally different.
+Conservative approaches pays by \emph{stalling} and by exchanging lower bounds
+(e.g. null messages) to avoid mistakes, whereas optimistic methods pays by
+\emph{repairing} mistakes through rollbacks, anti-messages and periodic
+\ac{GVT}-based \emph{garbage collection}.
 As explained in \cite{Fujimoto1990PDES}, conservative approaches are faster in
 presence of models which have a high degree of predictability, having good
-lookahead and where the communication topology is static; conversely,
+lookahead and where the communication topology is static. Conversely,
 optimistic approaches are faster for dynamic topologies with irregular workload
 distribution or models with poor lookahead. On the other hand conservative
 approaches offer low memory overhead, whereas state-saving requirements for
@@ -755,7 +749,7 @@ model structure and the target platform.
 
 The analysis of the next reaction method and \ac{PDES} execution approaches
 reveals a common architectural dependency: the reliance on \emph{explicit
-structural definition} to manage event validity. As discussed in
+	structural definition} to manage event validity. As discussed in
 \Cref{ssec:ssa_optimisation}, the efficiency of the \ac{NRM} relied on an
 explicit dependency graph and a priority queue to avoid recalculating all
 system rates dependant on an event. However, this graph is derived from static
@@ -799,11 +793,11 @@ strategies to reactive primitives.
 established in \Cref{ssec:conservative_pdes}, conservative execution relies on
 \emph{blocking} when an \ac{LP} cannot guarantee the safety of executing an
 event. Within a reactive architecture, this can be naturally expressed through
-\emph{synchronous message passing}. In this setting, the propagation avents
+\emph{synchronous message passing}. In this setting, the propagation of events
 along subscriptions does not merely convey state changes, but also encodes
 temporal guarantees. More specifically, each notification $A \rightarrow B$ may
 carry information about the minimum admissible advancement in simulation time,
-effectively embedding lookahead constraints withing the data flow itself.
+effectively embedding lookahead constraints within the data flow itself.
 
 From this perspective, the coordination logic traditionally enforced by
 explicit synchronisation protocols emerges implicitly from the structure of the
@@ -817,14 +811,14 @@ messages, yielding a more declarative expression of safety.
 execution aims to maximise parallelism by allowing \ac{LP}s to process events
 optimistically, while retaining the ability to restore causal consistency
 through \emph{reversibility}. This maps naturally to \emph{asynchronous message
-passing} in a reactive architecture, where event propagation is decoupled from
+	passing} in a reactive architecture, where event propagation is decoupled from
 immediate global ordering guarantees. In this context, the arrival of an event
 that violates the local temporal assumptions plays a role analogous to that of
 a straggler message in Time Warp-based protocols.
 
 Rather than treating rollback as an explicit corrective procedure, a reactive
 formulation allows it to be interpreted as a consequence of \emph{temporal
-invalidation} withing a data stream. When an out-of-order event is introduced,
+	invalidation} within a data stream. When an out-of-order event is introduced,
 the derived state associated with later logical times becomes invalid and must
 be recomputed. This can be expressed through controlled buffering and replay of
 event streams from a previously consistent state, shifting the responsibility
@@ -840,7 +834,7 @@ state changes consistent with the \emph{future} of the simulation. In
 traditional simulation engines, this consistency is maintained by explicitly
 managing event dependencies: when part of the state changes, the model (or the
 engine) must determine which scheduled computations are now invalid, which new
-ones must be scheduled, and how to reconcile these updates without violating
+ones must be scheduled and how to reconcile these updates without violating
 causality. The problem becomes particularly evident in domains where the set of
 dependencies is \emph{structurally mutable}, such as in \ac{MABS}, where agents
 continuously change neighbourhoods, interactions appear and disappear, and the
@@ -848,7 +842,7 @@ resulting dependency structure must be tracked over time.
 
 The key idea explored in this work is that many of these bookkeeping tasks are
 not inherently part of the model, but rather part of the \emph{execution
-substrate}. Reactive programming provides a vocabulary and a set of
+	substrate}. Reactive programming provides a vocabulary and a set of
 abstractions to express dependencies as \emph{data flows} that update
 automatically as their sources change. If the execution engine can make
 dependencies explicit \emph{as they happen} by turning state observations into
@@ -857,14 +851,14 @@ framework and the model can focus on the domain logic.
 
 \subsection{Towards Automatic Dependency Resolution through Reactive Execution}
 
-\subsubsection{What is a reactive system?}
-Reactive systems organise computation around changes: values are observed and
-derived values are automatically updated when their sources change. From an
-implementation standpoint, this typically manifests as streams (or signals)
-that can be subscribed to and as combinators that build higher-level behaviour
-by composing these streams. Crucially, the dependency structure is not encoded
-as a separate artefact to be manually maintained; it is \emph{implicitly}
-represented by the set of active subscriptions created by the running program.
+\paragraph{What is a reactive system?} Reactive systems organise computation
+around changes: values are observed and derived values are automatically
+updated when their sources change. From an implementation standpoint, this
+typically manifests as streams (or signals) that can be subscribed to and as
+combinators that build higher-level behaviour by composing these streams.
+Crucially, the dependency structure is not encoded as a separate artefact to be
+manually maintained, because it is \emph{implicitly} represented by the set of
+active subscriptions created by the running program.
 
 Transposed to discrete-event simulation, this suggests a different execution
 style: rather than modelling interactions by creating and cancelling events
@@ -875,35 +869,35 @@ this way, the dependency graph is an emergent runtime structure that evolves
 with the model, instead of a static representation that must be reconstructed
 or patched as the simulation proceeds.
 
-\subsubsection{Benefits}
+\paragraph{Benefits}
 
 The adoption of a reactive execution substrate is motivated by three main
 expected benefits.
 %
 \begin{itemize}
-	\item \textbf{Reduction of cognitive load (developer productivity).} In
-		many \ac{DES} engines the model developer must reason about the
-		relationship between state changes and scheduled future work: which
-		events become invalid, which ones must be rescheduled and which
-		derived quantities must be recomputed. With a reactive engine, these
-		dependencies are expressed once (as subscriptions) and the framework is
-		responsible for propagating the consequences of changes, moving
-		bookkeeping from the human to the runtime.
+	\item \emph{Reduction of cognitive load (developer productivity).} In
+	      many \ac{DES} engines the model developer must reason about the
+	      relationship between state changes and scheduled future work: which
+	      events become invalid, which ones must be rescheduled and which
+	      derived quantities must be recomputed. With a reactive engine, these
+	      dependencies are expressed once (as subscriptions) and the framework is
+	      responsible for propagating the consequences of changes, moving
+	      bookkeeping from the human to the runtime.
 
-	\item \textbf{Consistency by construction.} If state-derived computations
-		are expressed as reactive derivations, then the engine can ensure that
-		they are updated according to a single propagation discipline. This
-		does not remove the need for correct model logic, but it reduces the
-		risk of \emph{accidental inconsistency} introduced by forgotten
-		cancellations, stale caches or ad-hoc invalidation rules scattered
-		across the model code.
+	\item \emph{Consistency by construction.} If state-derived computations
+	      are expressed as reactive derivations, then the engine can ensure that
+	      they are updated according to a single propagation discipline. This
+	      does not remove the need for correct model logic, but it reduces the
+	      risk of \emph{accidental inconsistency} introduced by forgotten
+	      cancellations, stale caches or ad-hoc invalidation rules scattered
+	      across the model code.
 
-	\item \textbf{Efficiency in high-density systems.} In high-density
-		scenarios (e.g. densely interacting \ac{MABS}), dependency management
-		itself can become a significant cost. A reactive approach aims at
-		limiting recomputation to the computations that actually depend
-		(directly or transitively) on changed state and at avoiding global
-		scans or coarse-grained rebuilds of interaction structures.
+	\item \emph{Efficiency in high-density systems.} In high-density
+	      scenarios (e.g. densely interacting \ac{MABS}), dependency management
+	      itself can become a significant cost. A reactive approach aims at
+	      limiting recomputation to the computations that actually depend
+	      (directly or transitively) on changed state and at avoiding global
+	      scans or coarse-grained rebuilds of interaction structures.
 \end{itemize}
 
 \subsection{Building a Fully-Reactive \ac{DES}}
@@ -911,7 +905,7 @@ The objective of this thesis is to design and implement a \emph{fully-reactive}
 discrete-event simulation engine, where dependency tracking and invalidation
 are handled through reactive data flows rather than through manually maintained
 dependency graphs or ad-hoc rescheduling logic. To make the contribution
-concrete and assessable, we pursue this objective by modifying an existing
+concrete and verifiable, we pursue this objective by modifying an existing
 simulator and evaluating the result against its existing test suite.
 
 This choice has two advantages. First, it provides a realistic baseline: the
@@ -921,7 +915,7 @@ passing the pre-existing tests provides evidence that the reactive execution
 preserves the observable behaviour of the original simulator while changing its
 internal dependency management strategy.
 
-\paragraph{Thesis roadmap.}
+\paragraph{Thesis roadmap}
 This chapter motivates the reactive approach and frames the problem. On
 \Cref{ch:reactvity_dep_mgmnt} reactive programming is explored by following the
 taxonomy of reactive frameworks and designs, highlighting pros and cons of

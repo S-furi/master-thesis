@@ -1,13 +1,13 @@
 %root = ../thesis-main.tex
 \chapter{Reactivity and Dependency Management}\label{ch:reactvity_dep_mgmnt}
 
-The previous chapter introduced what is a simulator, with an emphasis to
-the discrete-event formalism. Moreover, the key concept of dependency management
-is introduced in such systems with emphasis on complex systems with sparse
-dependencies such as biochemical systems kinetic. This chapter aims to introduce
-a complementary viewpoint in dependency management and resolution through
-\emph{reactivity} as a general-purpose technique for expressing and executing
-such dependency structures.
+The previous chapter introduced what is a simulator, with an emphasis to the
+discrete-event formalism. Moreover, the key concept of dependency management is
+introduced in such systems with an emphasis on complex systems with sparse
+dependencies such as biochemical systems kinetic. This chapter aims to
+introduce a complementary viewpoint in dependency management and resolution
+through \emph{reactivity} as a general-purpose technique for expressing and
+executing such dependency structures.
 
 Reactive programming is often present as a software-engineering style for
 building responsive user interfaces or streaming
@@ -23,50 +23,49 @@ scheduling of future work.
 In what follows, an extensive theoretical foundation is built around three
 complementary formalisms:
 \begin{itemize}
-	\item \emph{event-riven} and \emph{data-flow} models, which view
+	\item \emph{event-driven} and \emph{data-flow} models, which view
 	      computation as the propagation of tokens or events through a network of
 	      operations;
 	\item the \emph{observer} family of patterns, traditionally introduced in
 	      object-oriented design, which popularised callback-based push
 	      propagation and decoupled notification;
-	\item \emph{Functional Reactive Programming}, which provides specific
+	\item \emph{functional reactive programming}, which provides specific
 	      meanings and manipulation tools to time-varying values and event
 	      streams.
 \end{itemize}
-We then connect these ideas to modern reactive frameworks (with Project Reactor
-as a concrete reference point) and highlight the implications for designing
-reactive dependency management in a discrete-event simulation engine.
+We then connect these ideas to modern reactive frameworks and highlight the
+implications for designing reactive dependency management in a discrete-event
+simulation engine.
 
 \section{Theory of Reactive Systems}
 
 \subsection{Event-driven and Data-flow Computation}
 
 A natural conceptual root of reactive programming is \emph{event-driven}
-computation. In such systems, execution follows a data-driven model, where each
+computation. In such systems execution follows a data-driven model, where each
 instruction becomes executable only once all required operands have been
 preceding instructions~\cite{dennis1974PABDFP}. Applied to software systems,
 such formalism define a system organised as a graph of components whose
 dependencies are realised through the flow of messages. Systems developed under
 such assumptions are usually employed to exploit parallelism and concurrency,
-especially for distributed systems, which introduces a higher degree of
+especially for distributed systems, which introduce a higher degree of
 complexity due to how communication is handled among the nodes of the system.
 Typical event-driven applications rely on \emph{asynchronous communication},
-which avoids keeping nodes in hold when sending messages while using explicit
+which avoids keeping nodes on hold when sending messages while using explicit
 mechanism of synchronisation when needed (\Cref{ssec:sync_async}). A perfect
 exemplification of such architecture at the programming-language level, is the
-\emph{actor model} which is mainly based on message-passing. In the actor model
-each actor encapsulates state and behaviour, processes one message at a time,
-and interacts exclusively by sending messages to other actors. This yields a
+\emph{actor model} which is based on message-passing. In the actor model each
+actor encapsulates state and behaviour, processes one message at a time, and
+interacts exclusively by sending messages to other actors. This yields a
 compositional model where concurrency emerges from independent actors
-\emph{reacting} to incoming
-messages~\cite{agha1986AMCCDS}.
+\emph{reacting} to incoming messages~\cite{agha1986AMCCDS}.
 
-\subsubsection{Data-flow}
-A complementary tradition is \emph{data-flow} computation, where programs are
-expressed as networks of operators and edges represent the flow of values.
-Data-flow is especially relevant to reactivity because it makes dependencies
-\emph{explicit}: a node can run when its inputs are available and the graph
-structure provides a concrete representation of what depends on what.
+\subsubsection{Data-flow} A complementary tradition is \emph{data-flow}
+computation, where programs are expressed as networks of operators and edges
+represent the flow of values. Data-flow is especially relevant to reactivity
+because it makes dependencies \emph{explicit}: a node can run when its inputs
+are available and the graph structure provides a concrete representation of
+what depends on what.
 
 In \ac{SDF} production and consumption rates are fixed, enabling static
 scheduling and bounded buffer analysis~\cite{lee1987SDF}. Beyond \ac{SDF} as a
@@ -77,11 +76,6 @@ streams~\cite{wadge1985LUCID}. Moreover, \textsc{Lustre} targets reactive and
 embedded control systems, combining a synchronous interpretation of time with a
 data-flow notation that supports analysis and compilation to efficient
 sequential code~\cite{halbwachs1991LUSTRE}.
-
-In this thesis these language are not implementation targets, instead we
-extract a conceptual lesson: reactivity can be specified \emph{declaratively}
-as relationships over time-varying quantities and the runtime/compiler can
-exploit the explicit dependency structure for scheduling and optimisations.
 
 \subsection{Reactive systems}
 The term \emph{reactive systems} was originally coined to distinguish systems
@@ -123,7 +117,7 @@ turn update their own status.
 
 This approach is simple and effective, but it introduces well-known challenges
 to the point that some may argue to ``Deprecate the Observer pattern''~\cite{maier2010DOP}.
-Among some notable issues we find
+Among some notable issues we find that
 \begin{enumerate*}[label=(\roman*)]
 	\item the dependency graph is often implicit in registrations spread across
 	      the codebase
@@ -131,7 +125,7 @@ Among some notable issues we find
 	      another
 	\item feedback cycles and re-entrant notifications can create inconsistent
 	      intermediate state (\Cref{ssec:glitches}) and
-	  \item lifecycle management becomes critical (\Cref{ssec:react_lifecycle})
+	\item lifecycle management becomes critical (\Cref{ssec:react_lifecycle})
 \end{enumerate*}
 
 These issues motivate richer reactive abstractions where dependencies become
@@ -158,7 +152,7 @@ registering callbacks (e.g. as in the observer pattern), one defines behaviours
 and events by composing \emph{primitives} and \emph{combinators} and the
 runtime provides an operational interpretation. Moreover, further works as
 \cite{zhanyong2000FRP} shows even at a higher detail how continuous time could
-be derived from continuous sampling of event-streams, demonstrating that even
+be derived from periodic sampling of event-streams, demonstrating that even
 some intuitive \ac{FRP} primitives impose non-trivial constraints if one wants
 to preserve the intended semantics. This analysis is important because it
 clarifies that \ac{FRP} is not merely a set of \ac{API}s, but a semantic model whose
@@ -182,16 +176,16 @@ The theoretical models in the previous section agree on a common operational
 structure: a reactive application maintains some base state and a collection of
 derived computations whose results must remain consistent with that base. A
 non-trivial aspect of the design space of reactivity is about
-\emph{propagation} and more specifically what counts as an update, when it is
-delivered, in which order and under which flow-control and with which lifecycle
+\emph{propagation}, and more specifically, what counts as an update, when it is
+delivered, in which order, under which flow-control and with which lifecycle
 rules.
 
 \subsection{Synchronous vs. Asynchronous Propagation}\label{ssec:sync_async}
 
 In a \emph{synchronous} propagation model, a state change triggers immediate
 notification and recomputation in the \emph{same control flow} as the update.
-This is common in in-process observer setups an many UI frameworks. While it is
-very easy to reason about local synchronous communication, this approach can
+This is common in in-process observer setups as in many UI frameworks. While it
+is very easy to reason about local synchronous communication, this approach can
 lead to deep call chains, with re-entrancy hazard and most of the times with
 unpredictable latency when a single update fans out to many dependencies.
 
@@ -232,23 +226,25 @@ waste work if updates are produced faster than consumers can process. Pull
 reduces redundant work by making recomputation conditional on demand, but it
 requires a policy for cache invalidation and for ensuring that dependent
 computations observe a \emph{consistent} snapshot of inputs. Moreover, most
-functional programming implementations used sampling (i.e. pulling values)
-because it better fits the continuous-time semantics well, but is wasteful
-because recomputes even when inputs haven't changed, also introducing latency
-determined by the sample tick, namely the time gap from the occurrence of an
-event and its reaction's effects. While both these problems are avoided in a
-standard data-driven (push) system, the imperative nature of the programs and
-the difficulty to compose for continuous-time behaviours make a designer chose
-for alternative systems. Some hybrid approaches like \emph{push-pull}
-\ac{FRP}~\cite{elliott2009PPFRP} aim to achieve the ``best of both worlds'' by
-recomputing values only when input change (push), while maintaining the simple,
-composable semantics of continuous time (pull).
+functional programming implementations use sampling (i.e. pulling values)
+because it better translate to the continuous-time semantics well, but it is
+wasteful because it recomputes even when inputs haven't changed, introducing
+also a non-negligible latency determined by the sample tick (the time gap from
+the occurrence of an event and its reaction's effects). While both these
+problems are avoided in a standard data-driven (push) system, the imperative
+nature of the programs and the difficulty to compose for continuous-time
+behaviours make a designer chose for alternative systems. Some hybrid
+approaches like \emph{push-pull} \ac{FRP}~\cite{elliott2009PPFRP} aim to
+achieve the ``best of both worlds'' by recomputing values only when input
+change (push), while maintaining the simple, composable semantics of continuous
+time (pull).
 
 Generally, a designer may choose a pull-based model for parts of a reactive
 system where sampling is done on event values that change continuously over
-time and this is especially try in environments capable of lazy evaluation in
-order to minimise performance waste. On the other hand, a push-based evaluation
-model fits well in systems that require instantaneous reactions.
+time. This is especially true in environments capable of lazy evaluation (e.g.
+fully functional programming languages as Haskell) in order to minimise
+performance waste. On the other hand, a push-based evaluation model fits well
+in systems that require instantaneous reactions.
 
 \section{Challenges of Reactive Systems}
 Reactive solutions introduce a number of recurring issues that become central
@@ -274,16 +270,16 @@ and generally cause wasteful recomputation or, worse, they can cause program
 error and inconsistencies in the presence of side effects (which callback and
 push-based execution models encourage).
 
-Various solutions to this problem have been proposed, originally representing
-dependencies in a DAG and performing a topological sorting. Other approaches
-can tackle this problem by transactional batching where computations are
-ordered in a task queue modeled as a set and duplicated jobs gets re-inserted
-in the task queue. While several glitch-avoidance approaches have been
-successfully implemented in in single computers, distributed glitch avoidance
-is much more complicated because of network failures, delays and lack of global
-clock~\cite{bainomugisha2013SRP}, however current research is going towards
-efficient approaches with low communication overhead by means, for example, of
-\emph{Multiparty \ac{FRP}}~\cite{moriguchi2023DDSMFRP}.
+Various solutions to this problem have been proposed and above all,
+representing dependencies in a DAG and performing a topological sorting. Other
+approaches can tackle this problem by transactional batching where computations
+are ordered in a task queue modeled as a set and duplicated jobs gets
+re-inserted in the task queue. While several glitch-avoidance approaches have
+been successfully implemented in centralised approaches, distributed glitch
+freedom is much more complicated because of network failures, delays and lack
+of global clock~\cite{bainomugisha2013SRP}. However, current research is going
+towards efficient approaches with low communication overhead by means, for
+example, of \emph{Multiparty \ac{FRP}}~\cite{moriguchi2023DDSMFRP}.
 
 A special kind of glitch is the presence of feedback loops, namely cyclic
 dependencies among time-varying values which can be intentional or, most of the
@@ -294,18 +290,18 @@ intended semantics of the feedback.
 
 \subsection{Lifecycle and Resource Management}\label{ssec:react_lifecycle}
 While glitches and ordering concern the \emph{correctness} of active
-propagation, a separate class of challenges arises regarding the
-\emph{duration} and \emph{termination} of reactive dependencies. In traditional
-imperative programming, data lifespan is usually bounded by the scope of the
-variable holding it. In reactive systems, however, the \emph{inversion of
-	control} inherent in the observer pattern creates an \emph{inversion of
-	reference} that complicates garbage collection and resource management.
+propagation, a separate class of challenges concern the \emph{duration} and
+\emph{termination} of reactive dependencies. In traditional imperative
+programming, data lifespan is usually bounded by the scope of the variable
+holding it. In reactive systems, however, the \emph{inversion of control}
+inherent in the observer pattern creates an \emph{inversion of reference} that
+complicates garbage collection and resource management.
 
 \subsubsection{The Lapsed Listener Problem}
 The most prominent manifestation of this issue is the \emph{Lapsed Listener
-	Problem}, a term coined to describe memory leaks in observer-based systems.
-Fundamentally, for a subject to notify an observer, it must hold a reference to
-it. In many implementations (such as standard Java \texttt{Listener}s or C\#
+	Problem}, a term coined to describe memory leaks in observer-based systems. For
+a subject to notify an observer, it must hold a reference to it. In many
+implementations (such as standard Java \texttt{Listener}s or C\#
 \texttt{event}s), this is a \emph{strong reference}. This creates a
 reachability graph where the \emph{source} keeps the \emph{sink} alive.
 
@@ -313,50 +309,47 @@ Consider a short-lived component (e.g. a simulation agent or a UI widget) that
 subscribes to a long-lived global signal (e.g. a global clock or environment
 state). Even when the short-lived component is logically ``destroyed'' or
 removed from the scene, the global source retains a reference to it via the
-callback. Consequently, the \ac{GC} cannot reclaim the component's
-memory. Over time, these ``zombie'' listeners accumulate, leading to a
-monotonic increase in memory usage, representing a classic memory
-leak~\cite{maier2010DOP}.
+callback. Consequently, the \ac{GC} cannot reclaim the component's memory. Over
+time, these ``zombie'' listeners accumulate, leading to a ceaseless increase in
+memory usage, representing a classic memory leak~\cite{maier2010DOP}.
 
 \subsubsection{Unwanted Recomputation and Zombies}
 Beyond memory pressure, lapsed listeners introduce computational overhead. A
-``zombie'' node that remains attached to the graph continues to receive updates
+zombie node that remains attached to the graph continues to receive updates
 and perform recomputations, even though its result is ignored by the rest of
 the application.
 
 In \ac{FRP} and data-flow graphs, this issue is subtle. If a derived signal $C$
-depends on $A$ and $B$, but the application stops observing $C$, an eager
-evaluation engine might continue updating $C$ whenever $A$ changes. To prevent
-this, reactive runtimes must implement sophisticated \emph{dynamic graph
-	pruning} or Reference Counting strategies to ensure that only signals with
-active sinks (subscribers) are evaluated.
+depends on $A$ and $B$ but the application stops observing $C$, an eager
+evaluation might continue updating $C$ whenever $A$ changes. To prevent this,
+reactive runtimes must implement sophisticated \emph{dynamic graph pruning} or
+reference counting strategies to ensure that only signals with active
+subscribers are evaluated.
 
-\subsubsection{Management Strategies}
+\subsubsection{Resources Management Strategies}
 Frameworks address these lifecycle challenges through three primary strategies:
-\begin{enumerate}
-	\item \emph{Weak References:} The subject holds a weak reference to the
-	      observer, allowing the GC to reclaim it if no other objects reference
-	      it. While this solves the memory leak, it introduces non-deterministic
-	      cleanup and does not necessarily stop the ``unwanted recomputation''
-	      immediately, while also introducing some performance degradation issues
-	      due to the additional indirection checks that weak collections must
-	      perform on their elements;
-	\item \emph{Explicit Disposal (The Subscription Object):} Modern reactive
-	      implementation (like
+\begin{itemize}
+	\item The subject holds a \emph{weak reference} to the observer, allowing
+	      the \ac{GC} to reclaim it if no other objects reference it. While this
+	      solves the memory leak, it introduces non-deterministic cleanup and
+	      does not necessarily stop the ``unwanted recomputation'' immediately,
+	      while also introducing some performance degradation issues due to the
+	      additional indirection checks that weak collections must perform on
+	      their elements;
+	\item Modern reactive implementation (like
 	      \textsc{RxJava}\footnote{\url{https://github.com/ReactiveX/RxJava}},
 	      Project Reactor\footnote{\url{https://projectreactor.io/}}) return a
 	      \texttt{Disposable} or \texttt{Subscription} token upon registration.
 	      The consumer is responsible for explicitly calling \texttt{dispose()}
 	      to sever the link. This restores control to the consumer but
-	      re-introduces the manual resource management that GC-languages aim to
-	      eliminate.
-	\item \emph{Ownership Transfer and Scopes:} Structured concurrency and
-	      scoped reactivity (e.g. in Kotlin Coroutines or UI-bound lifecycles)
-	      bind the subscription to a parent context. When the parent scope
-	      terminates, all child subscriptions are automatically cancelled,
-	      ensuring both memory safety and computational efficiency by
-	      construction.
-\end{enumerate}
+	      re-introduces the manual resource management that \ac{GC}-languages aim
+	      to eliminate.
+	\item Structured concurrency and scoped reactivity (e.g. in Kotlin
+	      Coroutines or UI-bound lifecycles) bind the subscription to a parent
+	      context. When the parent scope terminates, all child subscriptions are
+	      automatically cancelled ensuring both memory safety and computational
+	      efficiency by construction.
+\end{itemize}
 
 \subsection{Performance considerations}\label{ssec:react_perf}
 Reactive \ac{API}s or fully-reactive programming languages like
@@ -405,31 +398,30 @@ across network boundaries. In local \ac{FRP}, a glitch is a temporary
 inconsistency where a node observers a mix of old and new values during an
 update propagation. On the other hand, in distributed settings this problem is
 exacerbated because updates travelling through different network paths can
-arrive out of order with significant delays, leading to ``spurious execution''
+arrive out of order with significant delays, leading to spurious execution
 where the system reacts to an invalid intermediate
 state~\cite{salvaneschi2013TDRP}.
 
 \subsubsection{Consistency Trade-offs}
 Achieving glitch freedom in a distributed setting imposes a heavy performance
-penalty; this is especially true when enforcing a strict topological order
+penalty, and this is especially true when enforcing a strict topological order
 across nodes due to the need of distributed transactions or locking mechanism,
-acting as a bottleneck reducing availability~\cite{margara2014DREAM}.
-Consequently, distributed reactive frameworks often force developers to choose
-between consistency and performance
-
-Research suggests a taxonomy of propagation semantics for distributed
-middleware:
+constituting the main bottleneck and reducing
+availability~\cite{margara2014DREAM}. Consequently, distributed reactive
+frameworks often force developers to choose between consistency and
+performance. Generally, research suggests a taxonomy of propagation semantics
+for distributed middleware:
 \begin{itemize}
 	\item \emph{Causal Consistency:} Ensures that updates that are causally
 	      related are observed in the correct order. This is efficient and
 	      minimises network traffic but does not prevent glitches (partial
-	      updates).
+	      updates);
 	\item \emph{Glitch Freedom:} Guarantees that a node only recomputes when
 	      \emph{all} relevant inputs for a specific logical time-step have
 	      arrived. This requires the middleware to track the dependency graph and
-	      buffer messages, increasing latency.
+	      buffer messages, most of the times increasing latency;
 	\item \emph{Atomic Consistency:} Ensures a total ordering of updates across
-	      the system, preventing concurrent propagation but incurring the highest
+	      the system, preventing concurrent propagation but paying the highest
 	      synchronisation cost.
 \end{itemize}
 
@@ -444,28 +436,29 @@ tolerate node failures and network partitions~\cite{bainomugisha2013SRP}.
 Maintaining a precise dependency graph across a distributed system creates a
 fragile architecture where a single node failure can halt propagation or leave
 dependents in an undefined state. Consequently, the research landscape has
-fragmented into various distinct paradigms to address this trade-off such as:
-middleware approaches like \textsc{DREAM}~\cite{margara2014DREAM} which enforce
-strict \emph{glitch freedom} through heavy coordination; industrial actor
-frameworks like \textsc{Akka} which prioritise availability by accepting
+fragmented into various distinct paradigms to address this trade-off.
+Middleware approaches like \textsc{DREAM}~\cite{margara2014DREAM} enforce
+strict \emph{glitch freedom} through heavy coordination, whereas industrial
+actor frameworks like \textsc{Akka} prioritise availability by accepting
 \emph{nondeterminism} and \emph{eventual consistency} and recently
-\textsc{Lingua Franca}~\cite{menard2023LF}, which utilises \emph{logical time}
-to recover deterministic, glitch-free execution without the centralised
+\textsc{Lingua Franca}~\cite{menard2023LF} utilises \emph{logical time} to
+recover deterministic, glitch-free execution without the centralised
 bottlenecks of traditional middleware.
 
 \section{Overview of Reactive Frameworks in JVM languages}
 
-The \ac{JVM} ecosystem hosts a rich variety of reactive
-libraries and frameworks. To contextualise the architectural decisions behind
-the proposed simulation engine, we first categorise existing solutions based on
-their propagation models, consistency guarantees and primary industrial
-applications. \Cref{tab:reactive_frameworks_comparison} summarises these
-attributes, highlighting the distinction between general-purpose asynchronous
-tools and those prioritising strict consistency.
+The \ac{JVM} ecosystem hosts a rich variety of reactive libraries and
+frameworks. To contextualise the architectural decisions behind the proposed
+simulation engine presented in later chapters, we first need to categorise
+existing solutions based on their propagation models, consistency guarantees
+and primary industrial applications. Due to the developed prototype platform's
+constraint, we analyse JVM-based solutions.
+\Cref{tab:reactive_frameworks_comparison} summarises these attributes,
+highlighting the distinction between general-purpose asynchronous tools and
+those prioritising strict consistency.
 
 \begin{table}[ht]
 	\centering
-	\label{tab:reactive_frameworks_comparison}
 	\renewcommand{\arraystretch}{1.2}
 	\begin{tabularx}{\textwidth}{@{} l X l X @{}}
 		\toprule
@@ -482,20 +475,21 @@ tools and those prioritising strict consistency.
 		\bottomrule
 	\end{tabularx}
 	\caption{Comparison of Major JVM Reactive Frameworks vs. Simulation Requirements}
+	\label{tab:reactive_frameworks_comparison}
 \end{table}
 
 \subsection{Industry Standards}
 
 \subsubsection{RxJava (Reactive Extensions)}
-RxJava represents the widespread adoption of the \emph{ReactiveX} \ac{API}, which
-combines the Observer pattern with the Iterator pattern and functional
-programming paradigms. It employs a push-based propagation model where a source
-(\texttt{Observable}) emits items to subscribers, offering an extensive
-operator library for transforming, filtering and combining asynchronous
-streams. However, its design prioritises the handling of asynchronous data
-pipelines over strict state consistency, providing no strict deterministic
-ordering often necessitating complex external synchronisation to prevent race
-conditions during state updates.
+RxJava represents the widespread adoption of the \emph{ReactiveX} \ac{API},
+which combines the Observer pattern with the \emph{Iterator} pattern and
+functional programming paradigms. It employs a push-based propagation model
+where a source (\texttt{Observable}) emits items to subscribers, offering an
+extensive operator library for transforming, filtering and combining
+asynchronous streams. However, its design prioritises the handling of
+asynchronous data pipelines over strict state consistency, providing no strict
+deterministic ordering often necessitating complex external synchronisation to
+prevent race conditions during state updates.
 
 \subsubsection{Scala.React}
 Emerging from the academic effort to deprecate the Observer pattern,
@@ -504,19 +498,25 @@ Unlike the manual callback management found in standard libraries, it
 introduces first-class signals and events that automatically manage
 dependencies. Its primary contribution is the enforcement of strong consistency
 through algorithms that guarantee topological order during updates, effectively
-eliminating glitches. Moreover it emphasises strong consistency and
-composability taking inspiration from Reactor's core ideas.
+eliminating glitches. Moreover, it emphasises strong consistency and
+composability taking inspiration from Reactor's core ideas. While the rationale
+behind this framework is solid, its implementation lacks the performance
+concerns and maturity of other frameworks analysed in this section,
+highlighting its strong academic origins and UI-first focus in the context of
+Scala.
 
 \subsubsection{Akka}
 Akka is the industry reference for building highly concurrent, distributed and
 resilient message-driven applications via the \emph{Actor Model}. Actors
-encapsulate state and behavior, communicating exclusively through asynchronous
-message passing, a model that excels at ``Location Transparency'' and
-self-healing architectures. Despite these strengths, Akka exposes developers to
-non-determinism and high-level race conditions~\cite{menard2023LF}. For a
-software programs where reproducibility is paramount, relying on Akka's default
-eventual consistency model often requires implementing complex virtual time
-barriers to ensure that events are processed in the correct causal order.
+encapsulate state and behavior communicating exclusively through asynchronous
+message passing, achieving what is referred to as ``location transparency''
+thanks to how the framework is implemented internally, making it very suitable
+for programming in distributed systems. Despite these strengths, Akka exposes
+developers to non-determinism and high-level race
+conditions~\cite{menard2023LF}. For a software programs where reproducibility
+is paramount, relying on Akka's default eventual consistency model often
+requires implementing complex virtual time barriers to ensure that events are
+processed in the correct causal order.
 
 \subsubsection{Kotlin Flows}
 As a component of the Kotlin Coroutines library, Flows offer a modern
@@ -538,10 +538,10 @@ Conversely, a simulation engine requires strict causal ordering and glitch
 freedom to accurately calculate system dynamics and relying on eventual
 consistency is insufficient for physical correctness. To address these
 limitations, we will propose an in-house reactive engine. This solution adopts
-the expressive vocabulary of RxJava (Observables, Signals) and the
-deterministic rigor of academic models like Lingua Franca or Scala.React,
-implementing a propagation strategy specifically tailored to the discrete-event
-lifecycle.
+the expressive vocabulary of RxJava (Observables, operators) and the
+deterministic rigor of academic models like \textsc{Lingua Franca} or
+Scala.React, implementing a propagation strategy specifically tailored to the
+discrete-event lifecycle.
 
 \section{Summary}
 
@@ -563,11 +563,11 @@ occurrences (Events) to first-class citizens.
 
 The mechanics of propagation were analysed along two critical axes:
 \begin{itemize}
-	\item \emph{Push vs. Pull:} Where push-based systems offer low latency for
+	\item \emph{Push vs. Pull}, where push-based systems offer low latency for
 	      sporadic events and pull-based (sampling) systems align better with
 	      continuous-time simulation but require careful handling of idle
 	      recomputation.
-	\item \emph{Sync vs. Async:} Where synchronous execution simplifies
+	\item \emph{Sync vs. Async}, where synchronous execution simplifies
 	      reasoning about ordering and consistency (essential for strictly
 	      ordered simulations), while asynchronous execution is necessary for
 	      decoupling and scalability, albeit at the cost of non-determinism.
@@ -579,19 +579,9 @@ through topological sorting in local environments.
 
 Extended to distributed environments, where the lack of a global clock renders
 local glitch-freedom techniques insufficient, we categorised the solution space
-into three distinct paradigms:
-\begin{enumerate}
-	\item \emph{Strong Consistency}: Classical middleware (like
-	      \textsc{DREAM}) which enforces glitch freedom via heavy
-	      coordination transactions.
-	\item \emph{Eventual Consistency}: Industrial actor frameworks (like
-	      \textsc{Akka}) which prioritise availability and scalability by
-	      accepting temporary inconsistencies and utilising flow control.
-	\item \emph{Deterministic Concurrency}: Emergent models (like
-	      \textsc{Lingua Franca}) which leverage \emph{logical time} to
-	      restore deterministic execution order without the bottlenecks
-	      of centralised locking.
-\end{enumerate}
+into three distinct paradigms, from strong to eventual consistency models to
+\emph{deterministic concurrency} in emergent models which leverage logical
+time.
 
 Finally, we surveyed the current landscape of \ac{JVM}-based reactive
 frameworks to evaluate their suitability for the objectives of this thesis,
