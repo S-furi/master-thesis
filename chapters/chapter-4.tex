@@ -23,8 +23,9 @@ design choice decouples the identity of the subscriber (herein referred to
 interchangeably as \emph{subscriber}, \emph{registrant}, \emph{observer} or
 \emph{listener}) from the behaviour defined in the callback, allowing any
 component to manage its subscriptions explicitly without implementing specific
-listener interfaces. While the interface extends \kotlin{Disposable} to support
-resource management, the implications of lifecycle management and the
+listener interfaces, as suggested in the original observer pattern in
+\cite{gamma1994design}. While the interface extends \kotlin{Disposable} to
+support resource management, the implications of lifecycle management and the
 prevention of memory leaks will be detailed in \Cref{ssec:disposability}.
 
 To enforce strict control over state changes, the framework applies the
@@ -41,8 +42,8 @@ logic of a component to mutate state safely while exposing only the immutable
 \paragraph{Monadic Composition and Data Flow}
 A primary advantage of this reactive approach is the ability to model complex
 behaviours through the composition of simple event sources. Drawing inspiration
-from functional programming and category theory, the framework treats
-\kotlin{Observable} as a \emph{Monad}.
+from functional programming, the framework treats \kotlin{Observable} as a
+\emph{Monad}.
 
 Through the basic uplifting operation \kotlin{fun observe(value: T):
 	Observable<T>} and the set of extension functions defined in the framework,
@@ -74,7 +75,7 @@ perform \emph{complex aggregation} over dynamic content.
 
 \paragraph{Aggregating Dynamic Streams}
 In a simulation, an aggregate value (e.g. the total concentration of a
-molecule across all neighbours) depends on two distinct factors:
+molecule across all neighbours) can depend on two distinct factors:
 \begin{enumerate*}[label=(\roman*)]
 	\item \emph{structural changes} with neighbors entering or leaving the list
 	      and
@@ -84,13 +85,13 @@ molecule across all neighbours) depends on two distinct factors:
 
 To handle this dual dependency, the framework provides sophisticated operators
 such as \kotlin{combineLatest} for lists. This operator transforms an
-\kotlin{ObservableList<T>} into a single \kotlin{Observable<R>} by applying a
+\kotlin{ObservableList<T>} into a single \kotlin{Observable<S>} by applying a
 mapping function \kotlin{(T) -> Observable<S>} to each element and then
-aggregating the results. Crucially, the resulting stream emits a new value
-whenever the list structure changes \emph{or} whenever any of the inner
-observables emit a change. This allows to express through Alchemist global
-properties (e.g. field strength or crowd density) continuous signals
-derived purely from the local state of individual nodes.
+aggregating the results with the provided aggregator. Crucially, the resulting
+stream emits a new value whenever the list structure changes \emph{or} whenever
+any of the inner observables emit a change. This allows to express through
+Alchemist global properties (e.g. field strength or crowd density) as
+continuous signals derived purely from the local state of individual nodes.
 
 The names and behaviours of such operators is largely inspired by
 \textsc{ReactiveX}
@@ -99,7 +100,7 @@ operators\footnote{\url{https://reactivex.io/documentation/operators.html}}.
 \subsection{Handling Optionality: Native Null-Safety versus Monadic Options}
 A notable detail in the implementation of the reactive framework is the
 adoption of the \texttt{arrow.core.Option} type over Kotlin's built-in nullable
-types (\texttt{T?}).
+types (\texttt{T?}) for optionality.
 
 In a pure Kotlin environment, the language's native null-safety features (via
 the \texttt{?} operator and smart casts) are typically preferred for their
@@ -139,8 +140,8 @@ reasons:
 
 Consequently, while the use of an external library introduces a dependency
 overhead, the semantic precision and interoperability benefits of
-\texttt{arrow.core.Option} outweigh the simplicity of native nulls in this
-specific architectural context.
+\texttt{arrow.core.Option} outweigh the simplicity of \ac{JVM}'s native
+nullability in this specific architectural context.
 
 \subsection{Optimising derived-observable values}
 While the \kotlin{Observable<T>} interface defines the contract for data
@@ -175,13 +176,15 @@ To address this, the framework offers two strategies:
 	      set-up phase concludes and all components are stable;
 	\item \emph{Lazy Subscription:} Creating event streams in the constructor
 	      but deferring their activation. The stream remains inert during the
-	      set-up phase and begins emitting values only when the simulation starts.
+	      set-up phase and begins emitting values only when observed sources
+	      start emitting (i.e. the simulation starts).
 \end{enumerate}
 To support the latter approach, the \kotlin{onChange} signature includes an
 \kotlin{invokeOnRegistration} flag. When set to \kotlin{false}, it signals that
 the registration should not trigger an immediate propagation of the current
-value. This allows the dependency graph to be constructed safely during the
-set-up phase without triggering premature computations on uninitialised data.
+value. This allows the \emph{implicit} dependency graph to be constructed
+safely during the set-up phase without triggering premature computations on
+uninitialised data.
 
 \paragraph{Smart Activation in Derived Observables}
 The \kotlin{DerivedObservable<T>} class leverages this mechanism to implement a
@@ -234,12 +237,13 @@ available.
 In a reactive architecture heavily reliant on the observer pattern, memory
 management becomes a critical concern. As established in
 \Cref{ssec:reactive_alchemist_principles}, the simulation graph involves
-thousands of long-lived objects (Nodes, Molecules) and possibly short-lived
-reactive streams. If an observer registers a callback on a long-lived subject
-but fails to deregister when it is no longer needed, the subject \emph{retains}
-a strong reference to the observer, preventing garbage collection. In the
-context of Alchemist, this ``Lapsed Listener problem'' could quickly lead to
-the progressive memory exhaustion over the course of a simulation.
+thousands of long-lived objects (e.g. Nodes, Molecules) and possibly
+short-lived reactive streams (e.g. Neighborhood membership streams). If an
+observer registers a callback on a long-lived subject but fails to deregister
+when it is no longer needed, the subject \emph{retains} a strong reference to
+the observer, preventing garbage collection. In the context of Alchemist, this
+lapsed listener problem could quickly lead to the progressive memory
+exhaustion over the course of a simulation.
 
 To mitigate this, the framework introduces a structured \emph{lifecycle}
 management system largely inspired by the Android Jetpack
@@ -261,7 +265,7 @@ engine due to two primary constraints:
 \begin{enumerate}
 	\item \emph{Cross-Platform Consistency (Kotlin Multiplatform):} Alchemist
 	      is evolving towards a multi-platform ecosystem (targeting JVM,
-	      JavaScript and Native). The semantics and capabilities of weak
+	      Web, Native, \dots). The semantics and capabilities of weak
 	      references vary drastically across these targets:
 	      \begin{itemize}
 		      \item On the \ac{JVM}, \texttt{WeakHashMap} allows iteration over keys,
@@ -272,9 +276,11 @@ engine due to two primary constraints:
 		            garbage collection behavior. This makes it impossible to implement
 		            a standard \emph{Observer} pattern where the subject iterates over
 		            a collection of weak subscribers;
-		      \item In Kotlin/Native, support for weak references has historically
-		            been experimental or inconsistent with managed runtime
-		            expectations\footnote{\url{https://youtrack.jetbrains.com/issue/KT-48075}}.
+		      \item In Kotlin/Native the support for weak references has
+		            historically been experimental or inconsistent with managed
+		            runtime expectations, and current proposed solutions move
+		            toward a non-iterable collection
+		            \footnote{\url{https://youtrack.jetbrains.com/issue/KT-48075}}.
 	      \end{itemize}
 	\item \emph{Performance Predictability:} Weak references introduce
 	      non-negligible overhead to the \ac{GC} and reference access.
@@ -282,7 +288,8 @@ engine due to two primary constraints:
 	      a ``dead'' listener might continue to receive events (and consume CPU
 	      cycles) until the \ac{GC} actually runs. In a strictly deterministic
 	      simulation engine, resource release should be explicit and tied to the
-	      simulation model's lifecycle, not the \ac{JVM}'s memory pressure.
+	      simulation model's lifecycle, not delegate to the \ac{JVM}'s memory
+	      management mechanism.
 \end{enumerate}
 
 Consequently, we opted for the \emph{Lifecycle} pattern described below. While
@@ -310,10 +317,9 @@ abstractions:
 	      include finer-grained states both for better debugging purposes or
 	      better subscription's state management (see the \textsc{AndroidX}
 	      implementation for reference);
-	\item \kotlin{LifecycleOwner}'s contract is implemented by any class
-	      that has a defined lifecycle (e.g. \kotlin{Node},
-	      \kotlin{Actionable}). It exposes an explicit \kotlin{Lifecycle}
-	      object;
+	\item \kotlin{LifecycleOwner}'s contract is implemented by any class that
+	      has a defined lifecycle (e.g. \kotlin{Node}, \kotlin{Actionable}).
+	      Every lifecycle owner exposes an explicit \kotlin{Lifecycle} object;
 	\item \kotlin{Lifecycle} and \kotlin{LifecycleRegistry} are the actual
 	      state managers which notifies state observers when the state
 	      transitions occur.
@@ -322,7 +328,7 @@ abstractions:
 The most powerful feature of this system is the integration between
 \kotlin{Observable} streams and \kotlin{LifecycleOwner}s. The framework
 provides the extension method \kotlin{bindTo} which wraps a standard
-subscription in a lifecycle-aware ``safety harness''.
+subscription in a lifecycle-aware context.
 %
 \code{Kotlin}{listings/bindTo.kt}{Wrapping an observable's standard
 	subscription into a lifecycle-aware subscription}{bindTo}
@@ -331,8 +337,8 @@ The \kotlin{bindTo} (defined as in \Cref{lst:bindTo}) method performs three crit
 functions:
 \begin{enumerate}
 	\item \emph{Pre-check:} If the owner is already \kotlin{DESTROYED}, the
-	      subscription is ignored entirely, preventing ``zombie''
-	      callbacks on dead objects.
+	      subscription is ignored entirely, preventing zombie callbacks on dead
+	      objects.
 	\item \emph{Active State Gating:} The callback is invoked \emph{only}
 	      if the owner is in an active state (at least \kotlin{STARTED}).
 	      This prevents reactions from firing while a node is still
@@ -379,28 +385,25 @@ of existing model components.
 
 \subsection{Integration Strategy: The \texttt{current} Bridge}
 Refactoring the core \ac{API} of a simulator implies a fundamental shift in how
-data is accessed. The transition from a \emph{pull-based} \ac{API} (getters) to
-a \emph{push-based} \ac{API} (observables) introduces a dichotomy in
-implementation strategies:
+data is accessed. The transition from a pull-based paradigm using getters to a
+push-based architecture relying on observables creates a split in refactoring
+strategies. The first option involves rewriting all consuming logic to be fully
+asynchronous and driven by callbacks. While ideal for reactivity, this approach
+requires careful refactoring of the internal mechanisms of every condition,
+action, and incarnation, extending well beyond the scope of building a working
+prototype for this thesis. The alternative option consists of exposing reactive
+streams while retaining synchronous access to the current state.
 
-\begin{enumerate}
-	\item Rewriting all consuming logic to be fully asynchronous and
-	      callback-driven. While ideal for reactivity, this approach is
-	      infeasible for a codebase of Alchemist's size, as it would require
-	      rewriting the internal logic of every condition, action and incarnation
-	      interpreter simultaneously.
-	\item Exposing reactive streams while retaining synchronous access to the
-	      current state.
-\end{enumerate}
-
-We adopted the second strategy. As defined in the \texttt{Observable<T>}
-interface, every reactive stream exposes a \texttt{val current: T} property.
-This design choice serves as a crucial architectural bridge. It allows legacy
-components (such as the Protelis interpreter or existing unit tests) to
-continue ``polling'' the state by accessing te \texttt{current} property,
-maintaining semantic compatibility with the old \texttt{get()} methods.
-Simultaneously, it allows the Engine and new components to subscribe to
-\texttt{.onChange} to leverage the reactive capabilities.
+This second, more pragmatic approach is employed to introduce reactivity into
+Alchemist, and it is directly enabled by the \texttt{Observable<T>} contract.
+As defined in the interface, every reactive stream must expose a \texttt{val
+	current: T} property. This specific design choice serves as a crucial
+architectural bridge. It allows legacy components, such as the Protelis
+interpreter or existing unit tests, to continue polling the state by accessing
+the \texttt{current} property, thereby maintaining semantic compatibility with
+the old \texttt{get()} methods. Simultaneously, it enables the engine and any
+newly developed components to subscribe to \texttt{.onChange} events, fully
+leveraging the new reactive capabilities.
 
 \paragraph{Reactive Caching}
 Beyond simple state access via \kotlin{current}, this strategy enables a hybrid
@@ -433,9 +436,9 @@ engine subscribes to changes), but the \emph{internal logic} of reactions can
 still operate imperatively on the current state if needed.
 
 \subsection{The Engine Simplification}
-The most significant architectural benefit of this integration is the radical
-simplification of the \texttt{Engine}. In the legacy implementation, the engine
-was a monolithic supervisor responsible for
+The most significant architectural benefit of this reactive integration is the
+radical simplification of the \texttt{Engine}. In the original implementation,
+the engine was a monolithic supervisor responsible for
 \begin{enumerate*}[label=(\roman*)]
 	\item extracting the next event from the queue,
 	\item executing the reaction,
@@ -460,9 +463,9 @@ observed dependencies changes.
 The flow proceeds as follows:
 \begin{enumerate}
 	\item Upon initialisation, the Engine registers itself as a listener to the
-	      \kotlin{rescheduleRequest} of every reaction;
-	\item The scheduler pops the reaction with the minimum $\tau$ (time) and
-	      executes it;
+	      \kotlin{rescheduleRequest} stream of every reaction;
+	\item The scheduler pops from the \ac{FEL} the reaction with the minimum
+	      $\tau$ (time) and executes it;
 	\item The reaction execution modifies the environment (e.g. changing a
 	      concentration in a Node);
 	\item The modified Node notifies its observable contents and properties.
@@ -489,7 +492,7 @@ contents or global states.
 
 Specifically, a reaction's inbound dependencies are declared within its
 conditions, as these define which domain elements trigger a rescheduling. While
-this model fits the legacy Alchemist API, adapting it to a reactive
+this model fits the original Alchemist API, adapting it to a reactive
 implementation requires a shift in design.
 In particular, dependencies are now expressed in terms of the reactive streams
 a reaction is ``interested in''. Each condition exposes a set of dependencies
@@ -498,7 +501,7 @@ reaction. Through this mechanism, a reaction triggers a reschedule request
 whenever an update is emitted by this merged stream. By modeling dependencies
 as observables rather than static tokens, the system achieves the inversion of
 control typical of reactive architectures: updates propagate from data sources
-to the scheduler, rather than requiring the engine/scheduler to poll for
+to the scheduler, rather than requiring the engine to poll for
 changes.
 
 This approach extends naturally to wider dependency contexts, such as
@@ -519,12 +522,13 @@ effort.
 
 \subsection{Assessing Engine's Correctness}
 Implementing a reactive engine on top of an existing simulator like Alchemist
-offers significant advantages. Once a prototype is ready, it provides a direct
-method to assess its feasibility and benchmark its performance and efficiency
-against the traditional explicit dependency graph approach.
+offers significant advantages. In fact, once the reactive prototype is ready,
+it provides a direct method to assess its feasibility and benchmark its
+performance and efficiency against the traditional explicit dependency graph
+approach.
 
 Consequently, integrating the reactive engine and observable metamodel into
-Alchemist first required developing an engine separate from (yet largely
+Alchemist firstly required developing an engine separate from (yet largely
 inspired by) the standard one. This approach allowed the new engine to undergo
 the same test suite as the standard one, effectively demonstrating its
 capability to replace the existing implementation. Furthermore, comparative
@@ -536,10 +540,11 @@ Finally, the behaviour of the new engine was fully validated against
 Alchemist's entire simulation suite by modifying the engine loading mechanism.
 By setting an ad-hoc system property \kotlin{alchemist.engine = "reactive"},
 the Alchemist loader is directed to instantiate every simulation using the
-reactive engine.
+reactive engine. Thanks to this, the reactive engine correctness is also
+assessed against every incarnation available.
 
 Through these techniques, the entire reactive system was tested against
-Alchemist's extensive test suite. This confirms that the legacy engine is
+Alchemist's extensive test suite. This confirms that the original engine is
 indeed replaceable and demonstrates that Discrete Event Simulation can be
 effectively expressed through reactive programming.
 
@@ -570,32 +575,55 @@ $10\times 10$ grid of nodes in the context of aggregate programming. Since the
 gradient only updates when a neighbor provides a shorter path, many nodes
 remain ``stable'' for long periods. A reactive engine can skip re-evaluations
 for these stable nodes, whereas the classic approach polls them unnecessarily.
+In order to assess the engine performance in an incarnation-agnostic manner,
+the same scenario is additionally tested using ScaFi.
 
 The second scenario encodes a \emph{repressilator} using the
 \emph{Biochemistry} incarnation, simulating a genetic clock involving
-multi-step dependencies: protein production $\to$ dimerisation $\to$ gene
-repression. This counter-example targets potential weaknesses in reactivity.
-The high degree of interdependence (e.g. a single protein acting as the
-product of one reaction and the reactant for others) creates a dense dependency
-graph. A single change triggers a cascade of re-evaluations, potentially making
-the overhead of implicit dependency management higher than that of an explicit
-dependency graph.
+multi-step dependencies of the form: protein production $\to$ dimerisation
+$\to$ gene repression. This counter-example targets potential weaknesses in
+reactivity. The high degree of interdependence (e.g. a single protein acting as
+the product of one reaction and the reactant for others) creates a dense
+dependency graph. A single change triggers a cascade of re-evaluations,
+potentially making the overhead of implicit dependency management higher than
+that of an explicit dependency graph.
+
+The scenarios are simulated for 500, 10,000 and 500 steps respectively,
+collecting 10 samples on the same seeds for both the reactive and the original
+versions. The results are taken from the average and the median value of the
+samples for each scenario and for each version.
 
 \subsubsection{Analysis of Results}
 
-\paragraph{best case scenario}
-The test results confirm our hypothesis: in independent scenarios, where stable
-dependencies prevent re-computation, the reactive engine is approximately
-$4.65\times$ faster than the classic one, demonstrating substantial CPU cycle
-savings with negligible memory overhead.
+The test results currently does not entirely confirm the initial hypothesis.
+More in particular, in the independent scenario, the different incarnations led
+to substantially different outcomes. The SAPERE incarnation scenario performed
+considerably worse than the original, with the standard engine outperforming
+the new prototype by approximately 30\%. The main causes for this performance
+drop could be attributed to the complexity of the dependencies in the SAPERE
+model. The \kotlin{LsaCondition} and \kotlin{LsaNeighborhoodCondition} in fact,
+observe concentration based on complex recursive template matching. The
+reactive translation of such logic naively observes every change in such LSA
+space, making neighborhood dependencies extremely costly because every update
+forces the \kotlin{LsaNode} to rebuild its entire contents. Conversely, the
+ScaFi scenario shows significantly better results for the reactive
+architecture, which lagged behind the original implementation by only 3\%.
 
-Conversely, the results of the interdependent test align with expectations. The
-deep dependency chains and the high volume of links between reactions highlight
-the overhead of the framework. This resulted in an additional 300MB of memory
-usage (on a 2.5GB baseline) and a $0.75\%$ performance loss compared to the
-classic engine.
+On the other hand, the results of the interdependent test align with
+expectations. The deep dependency chains and the high volume of links between
+reactions highlight the overhead of the framework. This resulted in an average
+performance loss of 20\% to 30\%.
 
-In summary, the reactive framework appears highly suitable for aggregate
-programming tasks within Alchemist, enabling drastic reductions in execution
-time. Conversely, for chemical-inspired tasks and systems with high cohesion,
-the new architecture may incur a performance penalty.
+In summary, the results clearly show a regression when it comes to performance,
+mainly attributable to the contrast between the highly optimised Alchemist
+engine versus a reactive prototype. Several factors could explain the
+performance loss, most notably the lack of optimisations in the reactive
+architecture. In the current implementation in fact, reactions suffer from
+notification storms which, in many cases, include irrelevant updates due to
+coarse-grained dependencies that force a re-evaluation of the reaction state
+(as seen in SAPERE). Moreover, the sheer volume of objects created in the new
+framework introduces a non-negligible overhead, which is further exacerbated by
+the explicit lifecycle management explained in \Cref{ssec:disposability}.
+
+The next section covers future works which directly address the performance
+concerns highlighted by these tests results.
