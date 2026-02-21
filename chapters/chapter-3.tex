@@ -22,9 +22,10 @@ results in a powerful tool for exploring and conducting experiments on
 coordination strategies, autonomous adaptation, and independent management
 within pervasive systems involving multiple agents.
 
-\paragraph{Meta-model} The Alchemist meta-model represents the theoretical
-foundations which guides simulation modelers. The components of Alchemist are
-depicted in \Cref{fig:alchemist-metamodel}:
+\paragraph{Meta-model}
+The Alchemist meta-model represents the theoretical foundations which guides
+simulation modelers. The components of Alchemist are depicted in
+\Cref{fig:alchemist-metamodel}:
 %
 \centerimagesource{figures/alchemist-metamodel.png}{The Alchemist
 	meta-model}{alchemist-metamodel}{1}{https://alchemistsimulator.github.io/explanation/metamodel/}
@@ -315,7 +316,7 @@ strict \emph{synchronous propagation} model.
 As discussed in \Cref{ssec:sync_async}, asynchrony introduces non-determinism
 and complicates strict ordering. In the context of a sequential \ac{DES}, this
 is unacceptable for three reasons:
-\begin{enumerate}
+\begin{itemize}
 	\item The simulation clock must not advance until the system state is
 	      fully consistent. Asynchronous updates could lead to race
 	      conditions where an event is executed based on a stale state
@@ -337,7 +338,7 @@ is unacceptable for three reasons:
 	      schedulers could dominate the execution time. Synchronous
 	      method calls keep execution simple and also on the hot path of
 	      the CPU, maximising cache locality.
-\end{enumerate}
+\end{itemize}
 
 \subsection{Push-Based Notification for Sparsity}
 The second principle addresses the direction of data flow. We adopt a
@@ -387,4 +388,7 @@ streamlined scheduler driven by the reactions themselves.
 We have established the theoretical foundations for this new architecture,
 defined the necessary observable primitives and outlined the required
 principles to achieve correct simulation execution by means of precise
-execution strategies and data propagation.
+execution strategies and data propagation. In the next chapter the concrete
+realisation of those principles is presented in the context of the Alchemist
+simulator.
+
