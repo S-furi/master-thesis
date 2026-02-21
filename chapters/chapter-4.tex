@@ -591,28 +591,32 @@ that of an explicit dependency graph.
 The scenarios are simulated for 500, 10,000 and 500 steps respectively,
 collecting 10 samples on the same seeds for both the reactive and the original
 versions. The results are taken from the average and the median value of the
-samples for each scenario and for each version.
+samples for each scenario and for each version. The tests results are
+summarised in \Cref{tab:performance_comparison}
 
 \subsubsection{Analysis of Results}
 
-The test results currently does not entirely confirm the initial hypothesis.
-More in particular, in the independent scenario, the different incarnations led
+The tests results currently do not entirely confirm the initial hypothesis.
+In particular, in the independent scenario, the different incarnations led
 to substantially different outcomes. The SAPERE incarnation scenario performed
 considerably worse than the original, with the standard engine outperforming
-the new prototype by approximately 30\%. The main causes for this performance
-drop could be attributed to the complexity of the dependencies in the SAPERE
-model. The \kotlin{LsaCondition} and \kotlin{LsaNeighborhoodCondition} in fact,
-observe concentration based on complex recursive template matching. The
+the new prototype by more than 37\%. The main causes for this performance drop
+could be attributed to the complexity of the dependencies in the SAPERE model.
+The \kotlin{LsaCondition} and \kotlin{LsaNeighborhoodCondition} in fact,
+observe concentrations based on complex recursive template matching. The
 reactive translation of such logic naively observes every change in such LSA
 space, making neighborhood dependencies extremely costly because every update
-forces the \kotlin{LsaNode} to rebuild its entire contents. Conversely, the
-ScaFi scenario shows significantly better results for the reactive
-architecture, which lagged behind the original implementation by only 3\%.
+forces the \kotlin{LsaNode} to rebuild its entire contents. This is also
+mirrored by the higher memory usage. Conversely, the ScaFi scenario shows
+significantly better results for the reactive architecture, which lagged behind
+the original implementation by 10\% with a surprisingly slight reduction in memory
+usage.
 
 On the other hand, the results of the interdependent test align with
 expectations. The deep dependency chains and the high volume of links between
 reactions highlight the overhead of the framework. This resulted in an average
-performance loss of 20\% to 30\%.
+performance loss of approximately 18.6\%, while using the same amount of
+memory.
 
 In summary, the results clearly show a regression when it comes to performance,
 mainly attributable to the contrast between the highly optimised Alchemist
@@ -627,3 +631,33 @@ the explicit lifecycle management explained in \Cref{ssec:disposability}.
 
 The next section covers future works which directly address the performance
 concerns highlighted by these tests results.
+
+\begin{landscape}
+	\begin{table}[p]
+		\centering
+		\renewcommand{\arraystretch}{1.35}
+		\setlength{\tabcolsep}{6pt}
+		\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{4.2cm} l R R R R R || R}
+			\hline
+			\textbf{Scenario} & \textbf{Engine} & \textbf{Avg (s)} & \textbf{Median (s)} & \textbf{Best (s)} & \textbf{Worst (s)} & \textbf{Slowdown}                            & \textbf{Mem (avg)} \\
+			\hline
+
+			\multirow{2}{*}{independent.yml}
+			                  & Original        & 65.50            & 65.56               & 64.48             & 66.35              & \multirow{2}{*}{\color{red}\textbf{+60.1\%}} & 0.97 GB            \\
+			                  & Reactive        & 104.88           & 104.78              & 101.25            & 107.33             &                                              & 1.27 GB            \\
+			\hline
+			\multirow{2}{*}{independent\_scafi.yml}
+			                  & Original        & 178.96           & 176.17              & 166.40            & 191.85             & \multirow{2}{*}{\color{red}\textbf{+10.6\%}} & 1.01 GB            \\
+			                  & Reactive        & 197.97           & 197.09              & 178.91            & 217.65             &                                              & 0.93 GB            \\
+			\hline
+			\multirow{2}{*}{interdependent.yml}
+			                  & Original        & 387.79           & 385.98              & 372.45            & 406.28             & \multirow{2}{*}{\color{red}\textbf{+18.6\%}} & 1.05 GB            \\
+			                  & Reactive        & 459.80           & 460.52              & 442.79            & 472.40             &                                              & 1.01 GB            \\
+			\hline
+		\end{tabularx}
+		\caption{Execution time comparison between the original and reactive implementations for the \emph{independent} and \emph{interdependent} scenarios.
+			Each scenario was run 10 times with identical seeds across both implementations to ensure reproducibility.
+			The \textbf{Slowdown} column represents the execution time penalty of the Reactive version relative to the Original baseline ($\Delta = \frac{T_{\text{Reactive}} - T_{\text{Original}}}{T_{\text{Original}}} \times 100$).}
+		\label{tab:performance_comparison}
+	\end{table}
+\end{landscape}

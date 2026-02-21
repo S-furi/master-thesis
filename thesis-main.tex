@@ -11,6 +11,8 @@
 \usepackage{stackengine}
 \usepackage{standalone}
 \usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{pdflscape}
 \usepackage{pgf-umlsd}
 \usepackage{booktabs}
 \usepackage{array}
@@ -35,6 +37,10 @@
   },
   sysarrow/.style={->, thick}
 }
+
+% Right-aligned X column (for numbers that should stretch if needed)
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
 
 \school{\unibo}
 \programme{MSc in Computer Science and Engineering}
