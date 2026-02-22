@@ -303,7 +303,7 @@ push-based event propagation. However, as established in \Cref{ssec:devs}, a
 correctness that differ significantly from the requirements of responsive user
 interfaces or distributed web services.
 
-Consequently, the design of the Alchemist reactive engine is governed by three
+Consequently, the design of the Alchemist reactive engine is governed four
 fundamental architectural principles that map the general capabilities of
 reactive programming to the specific needs of stochastic simulation.
 
@@ -355,6 +355,45 @@ occurred. Conversely, a push-based model ensures that computation is performed
 \emph{only} when a relevant state change actually occurs, aligning perfectly
 with the discrete-event philosophy of skipping periods of inactivity.
 
+\subsection{The Reactive and Proactive Dualism}
+\label{ssec:reactive_proactive}
+A critical distinction in the design of the architecture is the separation of
+concerns between decision making and state execution. An analysis of the
+discrete event simulation domain reveals a fundamental tension between
+evaluating the next event and executing it. In this context, the simulator must
+operate across two distinct semantic modes: a \emph{reactive phase} responsible
+for scheduling and a \emph{proactive phase} responsible for state mutation.
+
+The components responsible for determining the schedule of the system, namely
+\emph{conditions} and \emph{reactions}, operate in a strictly reactive manner.
+Their primary role is to observe the environment and continuously update
+reactions accordingly. This phase responds dynamically to changes within the
+environment, such as a shift in molecule concentration or a modification in
+spatial topology. By adjusting the event's position on the \ac{FEL} as soon as
+their underlying dependencies change, the system fully embraces the reactive
+propagation paradigm.
+
+Conversely, the execution of \emph{actions} introduces an inherently imperative
+or \emph{proactive}, semantic. The action component is exclusively responsible
+for mutating the global state of the simulation. Unlike conditions, actions
+cannot function reactively. If an action were to execute autonomously the
+moment its input parameters became valid, the system would immediately violate
+the fundamental causality constraint of discrete event simulation. An action
+must not trigger simply because its preconditions are met, rather, it must
+execute only when the global simulation clock reaches its precisely scheduled
+time and hence, extracted from the top of the \ac{FEL}.
+
+Therefore, the architecture enforces a strict dualism to resolve this tension.
+The computational path leading from a state change to a propensity update, and
+subsequently to a modification in the priority queue, is entirely driven by
+reactive streams. However, the path from the extraction of the event from the
+queue to the execution of the action and the resulting state mutation remains a
+strictly imperative, centralised and synchronous procedure. This separation
+ensures that while the calculation of the next event is dynamic and distributed
+across the observable domain and reactions, the execution of that event and the
+consequent modification of the environment remains perfectly linear and
+deterministic.
+
 \subsection{Selective Eager Evaluation for Scheduling}
 The final principle resolves the tension between \emph{lazy} and \emph{eager}
 evaluation. While functional reactive programming often promotes laziness to
@@ -370,11 +409,13 @@ aggregation for logging, visualisation or the generation of heavy reaction
 products, can remain \emph{lazy}. These values are computed only when the
 reaction is actually selected for execution by the engine, or when a monitor
 explicitly requests them.
+\newline
+\\
 
-By adhering to these three principles, synchronous consistency, push-based
-sparsity and selective eagerness, the architecture bridges the gap between the
-flexible composability of reactive programming and the rigorous deterministic
-requirements of discrete-event simulation.
+By adhering to these principles, synchronous consistency, push-based sparsity,
+reactive-proactive distinction and selective eagerness, the architecture
+bridges the gap between the flexible composability of reactive programming and
+the rigorous deterministic requirements of discrete-event simulation.
 
 \section{Summary}
 In this chapter, we have critically analysed the limitations of the standard

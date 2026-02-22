@@ -405,7 +405,7 @@ the old \texttt{get()} methods. Simultaneously, it enables the engine and any
 newly developed components to subscribe to \texttt{.onChange} events, fully
 leveraging the new reactive capabilities.
 
-\paragraph{Reactive Caching}
+\paragraph{Reactive Caching}\label{par:reactive_caching}
 Beyond simple state access via \kotlin{current}, this strategy enables a hybrid
 implementation pattern where components maintain an internally reactive state
 while exposing a synchronous, poll-based \ac{API}. This is particularly
@@ -659,7 +659,7 @@ concerns highlighted by these tests results.
 		\end{tabularx}
 		\caption{Execution time comparison between the original and reactive implementations for the \emph{independent} and \emph{interdependent} scenarios.
 			Each scenario was run 10 times with identical seeds across both implementations to ensure reproducibility.
-			The \textbf{Slowdown} column represents the execution time penalty of the Reactive version relative to the Original baseline ($\Delta = \frac{T_{\text{Reactive}} - T_{\text{Original}}}{T_{\text{Original}}} \times 100$).}
+			The \textbf{Slowdown} column represents the execution time penalty of the Reactive version relative to the Original baseline ($\frac{T_{\text{Reactive}} - T_{\text{Original}}}{T_{\text{Original}}} \times 100$).}
 		\label{tab:performance_comparison}
 	\end{table}
 \end{landscape}

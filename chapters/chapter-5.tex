@@ -11,8 +11,8 @@ constructing or repairing explicit dependency graphs, the problem is redefined
 as maintaining consistent data flows. Accordingly, the central contribution is
 a reactive architectural perspective in which propensities and rates are
 treated as derived values. These values update automatically as soon as their
-underlying state changes, thereby reducing incidental complexity while
-preserving the eager consistency expected by a discrete-event scheduler.
+underlying state changes, thereby reducing complexity in updates management
+while preserving the eager consistency expected by a discrete-event scheduler.
 
 On this basis, a lightweight reactive framework tailored to Alchemist was
 designed and implemented around a minimal \kotlin{Observable<T>} contract. This
@@ -29,34 +29,33 @@ Furthermore, the work introduced reactive collections which support both
 structural changes and fine grained element updates, and consequently allow
 aggregate signals to remain consistent even as neighbourhoods evolve and local
 state changes propagate through dynamically assembled computations. Crucially,
-the proposed framework optimises derived value representation to minimise the
-memory overhead often associated with naive reactive implementations. The
-successful replacement of the Alchemist engine with its reactive counterpart
-demonstrates
+the proposed framework optimises derived value representation to both minimise
+the memory overhead often associated with naive reactive implementations and
+introduce the framework to laziness opportunities. The successful replacement
+of the Alchemist engine with its reactive counterpart demonstrates
 \begin{enumerate*}[label=(\roman*)]
 	\item the applicability of reactive programming principles to
 	      discrete-event simulation,
 	\item the expressive power gained from compositional reactive primitives
 	      and
-	\item the performance gains achievable in scenarios where component updates
-	      are sparse and loosely coupled.
+	\item the theoretical performance gains achievable in scenarios where
+	      component updates are sparse and loosely coupled.
 \end{enumerate*}
 
 \section{Limitations and Trade-offs}
 \label{sec:limitations}
 
 While the proposed reactive architecture successfully addresses the maintenance
-complexity of the dependency graph and improves performance in sparse
-scenarios, it is not without significant trade-offs. The shift from an
+complexity of the dependency graph and can theoretically improve performance in
+sparse scenarios, it is not without significant trade-offs. The shift from an
 explicit, centralised graph to a decentralised, event-driven model introduces
-specific limitations regarding memory consumption, performance in dense
-topologies and code comprehension and debugging complexity. Finally, even if
-the fully-reactive event driven simulator has been proven to be correct, it
-still have no means of of achieving glitch freedom.
+specific limitations regarding memory consumption and pressure, performance in
+dense topologies and code comprehension and debugging complexity. Finally, even
+if the fully-reactive event driven simulator has been proven to be correct, it
+still have no means of achieving glitch freedom.
 
 \subsection{Memory Footprint and Object Overhead}
-The most immediate drawback of the reactive approach is the increased memory
-footprint. In the classic Alchemist engine, a dependency is represented by a
+In the classic Alchemist engine, a dependency is represented by a
 lightweight edge in a graph. In the reactive framework, a dependency is
 materialised as a chain of objects:
 \begin{itemize}
@@ -68,11 +67,11 @@ materialised as a chain of objects:
 	      objects (lambdas) to capture the context, effectively doubling the
 	      object count for every link in the dependency chain.
 \end{itemize}
-As evidenced by the highly \emph{interdependent} benchmark, this object chain
-overhead can be substantial. In scenarios with millions of molecules and
-reactions, the sheer volume of \kotlin{Observable} wrappers and listener
-objects can pressure the \ac{JVM} garbage collector, leading to the major
-memory increase observed in our evaluation.
+Even if results in \Cref{ssec:benchmark} shows similar usage compared to the
+original implementation, in scenarios with millions of molecules and reactions,
+the sheer volume of \kotlin{Observable} wrappers and listener objects can
+pressure the \ac{JVM} garbage collector, leading to a possibly increasing
+performance degradation due to the high volume of memory operations.
 
 \subsection{Performance Penalty in Dense Graphs}
 The reactive model thrives on \emph{sparse} scenarios, where a change in one
@@ -89,17 +88,17 @@ chains.
 This function-call overhead is negligible for shallow chains but accumulates
 rapidly in deep dependency trees (e.g. the multi-step protein interactions in
 the Repressilator). Consequently, for simulations where the global state
-changes significantly at every step (i.e. low sparsity), the classic explicit-graph
-approach remains more efficient.
+changes significantly at every step (i.e. dense dependency graphs), the classic
+explicit-graph approach remains more efficient.
 
 \subsection{Inversion of Control and Debuggability issues}
-A well-known challenge in reactive programming is the ``Inversion of Control''
-problem. In the imperative engine, the flow of execution is explicit: the
-engine selects a reaction, checks its dependencies, and executes
+A well-known challenge in reactive programming is the set of problems derived
+by the inversion of control. In the original engine, the flow of execution is
+explicit: the engine selects a reaction, checks its dependencies, and executes
 it. This linear flow is familiar to most programmers and easy to trace with a
 standard debugger.
 
-In contract, the reactive architecture inverts parts of this flow. As argued in
+In contrast, the reactive architecture inverts parts of this flow. As argued in
 \cite{maier2010DOP}, this inversion forces developers to introduce side effects
 to express local state mutation upon the receipt of an event. This often
 violates encapsulation, leading to designs that are generally harder to reason
@@ -132,23 +131,23 @@ triggering a re-evaluation of the reaction's propensity based on this transient
 data.
 
 However, unlike systems where glitches can cause multiple modification of
-global, shared variables, in the presented architecture, these transient
+global, shared variables, in the presented architecture these transient
 inconsistencies do not corrupt the simulation correctness. The Alchemist engine
-acts as a consistency gatekeeper through its update logic, where reactions are
-effectively rescheduled if their newly computed scheduled time ($\tau$) is
-different from the previous value. This filters out transient fluctuations
-caused by glitches, ensuring that only the final, consistent state affects the
-simulation trajectory.
+in fact, acts as a consistency gatekeeper through its update logic, where
+reactions are effectively rescheduled if their newly computed scheduled time
+($\tau$) is different from the previous value. This filters out transient
+fluctuations caused by glitches, ensuring that only the final, consistent state
+affects the simulation trajectory.
 
-While correctness is preserved, the \emph{cost} of these glitches is non-zero.
-Every intermediate notification triggers a full re-computation of the
-reaction's conditions and rate equation. In dense dependency graphs where a
-single root change fans out to many intermediates before converging, this
-results in \emph{redundant computation}. The reaction might be re-evaluated $N$
-times for a single logical state change, wasting CPU cycles on $N-1$ invalid
-states. This computational waste is the primary trade-off accepted to avoid the
-complexity of a topological sort propagation engine, and will be subject of
-future works..
+While correctness is preserved, the \emph{cost} of these glitches is
+non-negligible. Every intermediate notification triggers a full re-computation
+of the reaction's conditions and rate equation. In dense dependency graphs
+where a single root change fans out to many intermediates before converging,
+this results in \emph{redundant computation}. The reaction might be
+re-evaluated $N$ times for a single logical state change, wasting CPU cycles on
+$N-1$ invalid states. This computational waste is the primary trade-off
+accepted to avoid the complexity of a topological sort propagation engine, and
+will be subject of future works..
 
 \subsection{Initialisation Fragility}
 Finally, the presence of the \emph{set-up phase} and the \emph{execution phase}
@@ -164,32 +163,33 @@ observing.
 \section{Future Works}
 The research presented in this thesis characterizes the reactive architecture
 as a high-potential prototype. While the current implementation demonstrates
-feasibility and performance gains in specific scenarios, the analysis of its
-limitations outlines a clear roadmap for future development. Future work will
-focus on optimising the core engine and enhancing the developer experience of
-the reactive framework.
+feasibility and theoretical performance gains in specific scenarios, the
+analysis of its limitations outlines a clear roadmap for future development.
+Future work will focus on optimising the core engine and enhancing the
+developer experience of the reactive framework.
 
 The primary objective is to mitigate the overhead observed in dense dependency
 graphs. Key directions include:
 \begin{itemize}
+	\item \emph{Incarnation}-specific optimisations should be carried out, with
+	      a deeper focus on the SAPERE project and its finer-grained dependencies
+	      and complex template matching logic.
+	\item Transitioning the Alchemist standard library (Reactions, Conditions)
+	      from the current hybrid adapter pattern to a \emph{native reactive
+		      implementation}. Removing the polling bridges would eliminate the
+	      synchronization overhead and fully exploit the push-based paradigm;
 	\item A comprehensive study on the \emph{resource usage} of the reactive
-		primitives. Future iterations could employ \emph{object pooling} or
-		specialized primitive streams (avoiding boxing) to reduce the pressure
-		on the \ac{GC}, thereby stabilizing performance in long-running
-		simulations;
-	\item Transitioning the Alchemist standard library (Incarnations,
-		Reactions, Conditions) from the current hybrid adapter pattern to a
-		\emph{native reactive implementation}. Removing the polling bridges
-		would eliminate the synchronization overhead and fully exploit the
-		push-based paradigm;
+	      primitives. Future iterations could employ \emph{object pooling} or
+	      specialized primitive streams (avoiding boxing) to reduce the pressure
+	      on the \ac{GC}, thereby stabilizing performance in long-running
+	      simulations;
 	\item Introducing a \emph{transaction manager} to support atomic state
-		updates. As discussed, this is crucial not only for theoretical glitch
-		freedom but for performance: by coalescing multiple updates into a
-		single notification, the engine can eliminate the redundant
-		computations caused by transient intermediate states. Moreover, the
-		capability of performing batch modifications atomically is added to the
-		domain, where updates to dependencies are propagated only at the end of
-		the transaction.
+	      updates. This is crucial not only for glitch freedom but for
+	      performance: by coalescing multiple updates into a single notification,
+	      the engine can eliminate the redundant computations caused by transient
+	      intermediate states. Moreover, the capability of performing batch
+	      modifications atomically is added to the domain, where updates to
+	      dependencies are propagated only at the end of the transaction.
 \end{itemize}
 
 Similarly, the \emph{framework} itself could undergo a series of revision to
