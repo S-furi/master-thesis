@@ -1,4 +1,33 @@
 %!TEX root = ../thesis-main.tex
 \begin{abstract}
-    Max 2000 characters, strict.
+    \emph{Discrete Event Simulation} constitutes a fundamental technique for
+    analysing the behaviour of complex and dynamic systems. However, the
+    architectural efficiency of a simulator is frequently constrained by the
+    mechanisms employed to manage the dependencies among the simulated
+    entities. Traditional approaches typically rely on state polling through
+    the maintenance of explicit dependency graphs. These methods, while
+    performant, often result in monolithic engines where the logic for tracking
+    interactions could potentially obscure simulation dynamics, leading to
+    fragility in highly dynamic scenarios where the network topology changes
+    frequently.
+
+    This thesis addresses these challenges by proposing a reactive architecture
+    for the \emph{Alchemist} simulator, through the analysis, the design and
+    implementation of a custom, reactive framework tailored to the strict
+    \emph{causality constraint} of discrete-event, stochastic simulation. By
+    making the simulation environment observable, the responsibility of
+    dependency tracking is shifted from the central engine to reactions
+    themselves, effectively delegating to reactions themselves the job of
+    rescheduling when updates from their dependencies are detected.
+
+    This architecture is validated through a fully functional prototype,
+    verifying its correctness against current Alchemist engine. Evaluation
+    demonstrates that while the reactive approach improves modularity and
+    expressiveness, it introduces performance compromises. Benchmarking reveals
+    that object allocation and notification overheads currently result in lower
+    execution speeds compared to the highly optimised original engine,
+    particularly in dense dependency graphs. Despite these limitations, this
+    work establishes a proof of concept demonstrating that discrete event
+    simulation can be effectively modelled through reactive paradigms,
+    outlining clear directions for future optimisation.
 \end{abstract}
