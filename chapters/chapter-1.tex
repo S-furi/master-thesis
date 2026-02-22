@@ -745,7 +745,8 @@ optimism, window-based execution, adaptive throttling, \dots) as
 \cite{piccione2023HSSPDES} which balances waiting and rollback depending on the
 model structure and the target platform.
 
-\section{Reactive Dependency Management: a proposal}
+\section{Motivations and Proposed Approach}
+\label{sec:motivations_and_proposal}
 
 The analysis of the next reaction method and \ac{PDES} execution approaches
 reveals a common architectural dependency: the reliance on \emph{explicit
@@ -760,6 +761,13 @@ propensities) defy static assumptions, standard optimisation fail, potentially
 forcing a fallback to inefficient methods (i.e. the direct method).
 This is also true in works where the \ac{SSA} is applied in distributed
 discrete event simulation such as \cite{bauco2025MDPDSSCRN}.
+
+While distributed simulation protocols attempt to solve the scalability of
+these systems through spatial or logical partitioning, their synchronisation
+mechanisms still fundamentally rely on explicit message tracking and rigid
+causal boundaries. When system dynamics defy static assumptions,
+standard optimisations fail, potentially forcing a fallback to highly
+inefficient polling strategies.
 
 This thesis proposes a transformation in how event dependencies are
 represented, through an \emph{implicit reactive dependency graph}. Instead of
@@ -776,144 +784,26 @@ data is established between the two, which let them know about each other at
 any state change. When the interaction ends, the data flow (i.e. the
 subscription to each other's observable state) is simply cancelled.
 
-With this approach, an \emph{implicit} dependency graph is generated among
-observers and observables, which exists only as long as the data flows,
-effectively solving the structural mutability problems of \ac{MABS} without the
-overhead of manual graph reconstruction. Moreover, the scope of a reactive
-pattern not only helps with agent-based models, but can be employed in discrete
-event simulation in general.
+By making dependencies explicit as they happen, the framework assumes the
+responsibility of propagating causal consequences. This approach ensures
+consistency by construction, drastically reduces the cognitive load required to
+model complex interactions, and aims to limit recomputation strictly to the
+components affected by a state change, avoiding the need for global scans or
+coarse-grained rebuilds of the interaction topology.
 
-\subsection{Reactive \ac{PDES}}
-\ac{PDES} synchronisation protocols could furthermore benefit from a modern
-architectural substrate implemented by means of reactive structures. In fact,
-by abstracting communication as data flows, we can map the two main \ac{PDES}
-strategies to reactive primitives.
+\subsection{Objectives and Thesis Roadmap}
+The primary objective of this thesis is to design and implement a \emph{fully
+reactive} discrete-event simulation engine, where dependency tracking and
+invalidation are handled entirely through reactive data flows. 
 
-\paragraph{Reactive Conservative Execution by Synchronous Flows:} as
-established in \Cref{ssec:conservative_pdes}, conservative execution relies on
-\emph{blocking} when an \ac{LP} cannot guarantee the safety of executing an
-event. Within a reactive architecture, this can be naturally expressed through
-\emph{synchronous message passing}. In this setting, the propagation of events
-along subscriptions does not merely convey state changes, but also encodes
-temporal guarantees. More specifically, each notification $A \rightarrow B$ may
-carry information about the minimum admissible advancement in simulation time,
-effectively embedding lookahead constraints within the data flow itself.
-
-From this perspective, the coordination logic traditionally enforced by
-explicit synchronisation protocols emerges implicitly from the structure of the
-reactive chain. The notion of \emph{backpressure}, whereby a subscriber signals
-its temporary inability to process further notifications, provides a semantic
-analogue to conservative blocking. However, this mechanism handled at the
-data-flow coordination level, rather than through explicit wait or control
-messages, yielding a more declarative expression of safety.
-
-\paragraph{Reactive Speculative Execution by Asynchronous Flows:} speculative
-execution aims to maximise parallelism by allowing \ac{LP}s to process events
-optimistically, while retaining the ability to restore causal consistency
-through \emph{reversibility}. This maps naturally to \emph{asynchronous message
-	passing} in a reactive architecture, where event propagation is decoupled from
-immediate global ordering guarantees. In this context, the arrival of an event
-that violates the local temporal assumptions plays a role analogous to that of
-a straggler message in Time Warp-based protocols.
-
-Rather than treating rollback as an explicit corrective procedure, a reactive
-formulation allows it to be interpreted as a consequence of \emph{temporal
-	invalidation} within a data stream. When an out-of-order event is introduced,
-the derived state associated with later logical times becomes invalid and must
-be recomputed. This can be expressed through controlled buffering and replay of
-event streams from a previously consistent state, shifting the responsibility
-for state restoration and re-propagation from the simulation model to the
-execution substrate. As a result, speculative execution is formulated as a form
-of incremental, reactive re-computation over time-ordered event flows.
-
-\section{Motivations and Objectives}
-
-This thesis is motivated by a recurring source of complexity in modern
-discrete-event simulation: the need to keep the \emph{causal consequences} of
-state changes consistent with the \emph{future} of the simulation. In
-traditional simulation engines, this consistency is maintained by explicitly
-managing event dependencies: when part of the state changes, the model (or the
-engine) must determine which scheduled computations are now invalid, which new
-ones must be scheduled and how to reconcile these updates without violating
-causality. The problem becomes particularly evident in domains where the set of
-dependencies is \emph{structurally mutable}, such as in \ac{MABS}, where agents
-continuously change neighbourhoods, interactions appear and disappear, and the
-resulting dependency structure must be tracked over time.
-
-The key idea explored in this work is that many of these bookkeeping tasks are
-not inherently part of the model, but rather part of the \emph{execution
-	substrate}. Reactive programming provides a vocabulary and a set of
-abstractions to express dependencies as \emph{data flows} that update
-automatically as their sources change. If the execution engine can make
-dependencies explicit \emph{as they happen} by turning state observations into
-subscriptions, then the propagation of consequences can be handled by the
-framework and the model can focus on the domain logic.
-
-\subsection{Towards Automatic Dependency Resolution through Reactive Execution}
-
-\paragraph{What is a reactive system?} Reactive systems organise computation
-around changes: values are observed and derived values are automatically
-updated when their sources change. From an implementation standpoint, this
-typically manifests as streams (or signals) that can be subscribed to and as
-combinators that build higher-level behaviour by composing these streams.
-Crucially, the dependency structure is not encoded as a separate artefact to be
-manually maintained, because it is \emph{implicitly} represented by the set of
-active subscriptions created by the running program.
-
-Transposed to discrete-event simulation, this suggests a different execution
-style: rather than modelling interactions by creating and cancelling events
-explicitly, a model can express \emph{who depends on what} by subscribing to
-observable portions of the simulation state. When an interaction starts, the
-corresponding subscriptions are created; when it ends, they are disposed. In
-this way, the dependency graph is an emergent runtime structure that evolves
-with the model, instead of a static representation that must be reconstructed
-or patched as the simulation proceeds.
-
-\paragraph{Benefits}
-
-The adoption of a reactive execution substrate is motivated by three main
-expected benefits.
-%
-\begin{itemize}
-	\item \emph{Reduction of cognitive load (developer productivity).} In
-	      many \ac{DES} engines the model developer must reason about the
-	      relationship between state changes and scheduled future work: which
-	      events become invalid, which ones must be rescheduled and which
-	      derived quantities must be recomputed. With a reactive engine, these
-	      dependencies are expressed once (as subscriptions) and the framework is
-	      responsible for propagating the consequences of changes, moving
-	      bookkeeping from the human to the runtime.
-
-	\item \emph{Consistency by construction.} If state-derived computations
-	      are expressed as reactive derivations, then the engine can ensure that
-	      they are updated according to a single propagation discipline. This
-	      does not remove the need for correct model logic, but it reduces the
-	      risk of \emph{accidental inconsistency} introduced by forgotten
-	      cancellations, stale caches or ad-hoc invalidation rules scattered
-	      across the model code.
-
-	\item \emph{Efficiency in high-density systems.} In high-density
-	      scenarios (e.g. densely interacting \ac{MABS}), dependency management
-	      itself can become a significant cost. A reactive approach aims at
-	      limiting recomputation to the computations that actually depend
-	      (directly or transitively) on changed state and at avoiding global
-	      scans or coarse-grained rebuilds of interaction structures.
-\end{itemize}
-
-\subsection{Building a Fully-Reactive \ac{DES}}
-The objective of this thesis is to design and implement a \emph{fully-reactive}
-discrete-event simulation engine, where dependency tracking and invalidation
-are handled through reactive data flows rather than through manually maintained
-dependency graphs or ad-hoc rescheduling logic. To make the contribution
-concrete and verifiable, we pursue this objective by modifying an existing
-simulator and evaluating the result against its existing test suite.
-
-This choice has two advantages. First, it provides a realistic baseline: the
-new execution model must coexist with the expectations, \ac{API}s and invariants of
-a mature codebase. Second, it offers an empirical notion of correctness:
-passing the pre-existing tests provides evidence that the reactive execution
-preserves the observable behaviour of the original simulator while changing its
-internal dependency management strategy.
+To make this contribution concrete and verifiable, we pursue this objective by
+modifying \emph{Alchemist}, a mature, production-grade simulator. This choice
+provides a realistic baseline, forcing the new execution model to coexist with
+the established expectations and invariants of a complex codebase. Furthermore,
+it offers an empirical measure of correctness: passing the pre-existing
+extensive test suite provides concrete evidence that the reactive execution
+preserves the observable behaviour of the original simulator while completely
+replacing its internal dependency management strategy.
 
 \paragraph{Thesis roadmap}
 This chapter motivates the reactive approach and frames the problem. On
@@ -925,4 +815,3 @@ implementation details of the proposed solution presented in
 \Cref{ch:design_alchemist,ch:impl_eval}, where we introduce the reactive
 abstractions employed by the simulator and discuss how they are integrated in
 the execution pipeline.
-
