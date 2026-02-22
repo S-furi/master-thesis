@@ -190,6 +190,11 @@ graphs. Key directions include:
 	      intermediate states. Moreover, the capability of performing batch
 	      modifications atomically is added to the domain, where updates to
 	      dependencies are propagated only at the end of the transaction.
+	\item As explained in \Cref{ssec:eager_lazy}, a reactive \ac{DES} must be
+	      eager when scheduling and rescheduling reactions. On the rest of the
+	      system (e.g. complex reactions propensities re-evaluation), the
+	      system could exploit laziness to reduce the CPU usage for future
+	      reactions that will be re-evaluated when needed.
 \end{itemize}
 
 Similarly, the \emph{framework} itself could undergo a series of revision to
