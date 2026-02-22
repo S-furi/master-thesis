@@ -357,42 +357,32 @@ with the discrete-event philosophy of skipping periods of inactivity.
 
 \subsection{The Reactive and Proactive Dualism}
 \label{ssec:reactive_proactive}
-A critical distinction in the design of the architecture is the separation of
-concerns between decision making and state execution. An analysis of the
-discrete event simulation domain reveals a fundamental tension between
-evaluating the next event and executing it. In this context, the simulator must
-operate across two distinct semantic modes: a \emph{reactive phase} responsible
-for scheduling and a \emph{proactive phase} responsible for state mutation.
+A critical distinction in the architecture is the separation of concerns
+between decision making and state execution, creating a fundamental dualism
+between the path leading to the scheduler and the path returning to the
+environment. In this context, the simulator operates across two distinct
+semantic modes: a \emph{reactive} phase responsible for scheduling and a
+\emph{proactive} phase responsible for state mutation.
 
-The components responsible for determining the schedule of the system, namely
-\emph{conditions} and \emph{reactions}, operate in a strictly reactive manner.
-Their primary role is to observe the environment and continuously update
-reactions accordingly. This phase responds dynamically to changes within the
-environment, such as a shift in molecule concentration or a modification in
-spatial topology. By adjusting the event's position on the \ac{FEL} as soon as
-their underlying dependencies change, the system fully embraces the reactive
-propagation paradigm.
+The computational path from the environment to the scheduler is entirely driven
+by reactive streams. Components responsible for determining the schedule,
+namely \emph{conditions} and \emph{reactions}, operate by observing the
+environment and dynamically adjusting their position on the \ac{FEL} as soon as
+their underlying dependencies change. By propagating updates such as shifts in
+molecule concentration or spatial topology directly to the scheduler, the
+system fully embraces the reactive propagation paradigm.
 
-Conversely, the execution of \emph{actions} introduces an inherently imperative
-or \emph{proactive}, semantic. The action component is exclusively responsible
-for mutating the global state of the simulation. Unlike conditions, actions
-cannot function reactively. If an action were to execute autonomously the
-moment its input parameters became valid, the system would immediately violate
-the fundamental causality constraint of discrete event simulation. An action
-must not trigger simply because its preconditions are met, rather, it must
-execute only when the global simulation clock reaches its precisely scheduled
-time and hence, extracted from the top of the \ac{FEL}.
-
-Therefore, the architecture enforces a strict dualism to resolve this tension.
-The computational path leading from a state change to a propensity update, and
-subsequently to a modification in the priority queue, is entirely driven by
-reactive streams. However, the path from the extraction of the event from the
-queue to the execution of the action and the resulting state mutation remains a
-strictly imperative, centralised and synchronous procedure. This separation
-ensures that while the calculation of the next event is dynamic and distributed
-across the observable domain and reactions, the execution of that event and the
-consequent modification of the environment remains perfectly linear and
-deterministic.
+Conversely, the opposite path from the scheduler back to the environment
+introduces an inherently imperative, or \emph{proactive}, semantic. The
+execution of \emph{actions} is exclusively responsible for mutating the global
+state of the simulation and cannot function reactively. If an action were to
+execute autonomously the moment its input parameters became valid, the system
+would violate the fundamental causality constraint of discrete event
+simulation. Therefore, an action executes only when extracted from the top of
+the \ac{FEL} at its preconditions are met. This separation ensures that while
+the calculation of the next event is dynamic and distributed, the execution of
+that event and the consequent modification of the environment remains perfectly
+linear and deterministic.
 
 \subsection{Selective Eager Evaluation for Scheduling}
 The final principle resolves the tension between \emph{lazy} and \emph{eager}
