@@ -223,18 +223,41 @@ queue
 \end{enumerate*}
 
 This architectural choice dictates the definition of the \emph{observable
-	domain}. Because the engine must be able to compute propensities and check
+	domain} (\Cref{fig:arch_old}). Because the engine must be able to compute propensities and check
 conditions at any arbitrary step, a reaction must explicitly define the input
 context it needs to ``observe.'' This rigid definition is necessary for the
 engine to construct the dependency graph $\mathcal{G}$ and determine which
 reactions to poll after a change.
 
-Conversely, in a \emph{reactive} system, the domain itself is observable.
+Conversely, in a \emph{reactive} system (\Cref{fig:arch_new}), the domain itself is observable.
 Changes are directly notified to observers, which can immediately update their
 state whenever the environment changes. In this model, the engine is no longer
 responsible for tracking and determining which reactions may have been
 influenced or need rescheduling. Instead, this information flows dynamically
 from reaction to reaction, or from domain changes to observable states.
+%
+\begin{figure}[htpb]
+	\centering
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{figures/diagrams/arch_old.pdf}
+		\caption{Standard Engine}
+		\label{fig:arch_old}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{figures/diagrams/arch_new.pdf}
+		\caption{Reactive Engine}
+		\label{fig:arch_new}
+	\end{subfigure}
+	\caption{Architectural comparison between the standard Alchemist engine, a
+		centralized supervisor managing an explicit dependency graph, and the
+		proposed reactive engine, a decoupled, event-driven pipeline where actions
+		trigger reactive streams.}
+	\label{fig:arch_comparison}
+\end{figure}
+%
 \Cref{fig:sd_obs_engine} depicts the possibile change in responsibilities of
 the Alchemist's engine when introducing an observable environment state and a
 reactive set of observers.
@@ -272,11 +295,16 @@ In this view, a \emph{Condition} is no longer a static predicate to be polled,
 but a derived event stream obtained by filtering and mapping the state of
 nodes, neighborhoods and distances. Operators such as \texttt{map},
 \texttt{filter} and \texttt{merge} allow us to lift the low-level observables
-into high-level semantic events~\cite{bainomugisha2013SRP}. For instance, a
-condition requiring ``at least three neighbors within 10 meters'' is simply a
-composition of the \emph{Node's position} and \emph{Node's neighborhood}
-streams, transformed into a boolean stream that emits events only when the
-predicate status changes.
+into high-level semantic events~\cite{bainomugisha2013SRP}. For instance, as
+illustrated in \Cref{fig:stream_composition}a condition requiring ``at least
+three neighbors within 10 meters'' is simply a composition of the \emph{Node's
+	position} and \emph{Node's neighborhood} streams, transformed into a boolean
+stream that emits events only when the predicate status changes.
+
+\includediagram[0.85\linewidth]{figures/diagrams/stream_composition.tex}{Example
+	of functional stream composition: atomic observables like position and
+	neighborhood are combined via monadic operators to form a complex, derived
+	boolean condition.}{fig:stream_composition}
 
 This shift redefines the engine's role from an active supervisor to a
 streamlined scheduler. While the engine retains the responsibility of polling
@@ -379,10 +407,16 @@ state of the simulation and cannot function reactively. If an action were to
 execute autonomously the moment its input parameters became valid, the system
 would violate the fundamental causality constraint of discrete event
 simulation. Therefore, an action executes only when extracted from the top of
-the \ac{FEL} at its preconditions are met. This separation ensures that while
-the calculation of the next event is dynamic and distributed, the execution of
-that event and the consequent modification of the environment remains perfectly
-linear and deterministic.
+the \ac{FEL} at its preconditions are met.
+%
+\includediagram[0.8\linewidth]{figures/diagrams/reactive_proactive_loop.tex}{The
+	reactive and proactive dualism in the simulation loop. Scheduling is handled
+	via upward reactive data-flows, while state mutation is strictly proactive and
+	sequential.}{fig:reactive_proactive_loop}
+%
+This separation ensures that while the calculation of the next event is dynamic
+and distributed, the execution of that event and the consequent modification of
+the environment remains perfectly linear and deterministic.
 
 \subsection{Selective Eager Evaluation for Scheduling}\label{ssec:eager_lazy}
 The final principle resolves the tension between \emph{lazy} and \emph{eager}
