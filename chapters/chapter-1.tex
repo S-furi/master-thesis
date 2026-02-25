@@ -797,13 +797,21 @@ reactive} discrete-event simulation engine, where dependency tracking and
 invalidation are handled entirely through reactive data flows. 
 
 To make this contribution concrete and verifiable, we pursue this objective by
-modifying \emph{Alchemist}, a mature, production-grade simulator. This choice
-provides a realistic baseline, forcing the new execution model to coexist with
-the established expectations and invariants of a complex codebase. Furthermore,
-it offers an empirical measure of correctness: passing the pre-existing
-extensive test suite provides concrete evidence that the reactive execution
-preserves the observable behaviour of the original simulator while completely
-replacing its internal dependency management strategy.
+modifying \emph{Alchemist}, a \emph{stochastic} \emph{discrete-event simulator}
+tailored for \ac{MABS} in \emph{pervasive computing} environments. Because it
+can model autonomous agents moving and interacting in continuous space, its
+causal dependencies are inherently spatial and highly transient. This make
+Alchemist the perfect candidate to illustrate the limitation of static,
+explicit dependency graphs (\Cref{ssec:ssa_optimisation}) when applied to
+dynamic systems and consequently, an ideal ground for the proposed reactive
+approach.
+
+This choice provides a realistic baseline, forcing the new execution model to
+coexist with the established expectations and invariants of a complex codebase.
+Furthermore, it offers an empirical measure of correctness: passing the
+pre-existing extensive test suite provides concrete evidence that the reactive
+execution preserves the observable behaviour of the original simulator while
+completely replacing its internal dependency management strategy.
 
 \paragraph{Thesis roadmap}
 This chapter motivates the reactive approach and frames the problem. On
