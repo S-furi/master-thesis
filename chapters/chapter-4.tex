@@ -45,9 +45,9 @@ behaviours through the composition of simple event sources. Drawing inspiration
 from functional programming, the framework treats \kotlin{Observable} as a
 \emph{Monad}.
 
-Through the basic uplifting operation \kotlin{fun observe(value: T):
-	Observable<T>} and the set of extension functions defined in the framework,
-developers can chain operations using standard functional operators:
+Through the basic uplifting operation \kotlin{observe} and the set of extension
+functions defined in the framework, developers can chain operations using
+standard functional operators:
 \begin{itemize}
 	\item \texttt{map} which transforms the emitted values of an observable,
 	      creating a new derived stream;
@@ -66,9 +66,9 @@ While standard observables handle scalar values efficiently, simulating a
 pervasive ecosystem requires tracking aggregates, such as the list of
 neighbours or the map of molecules within a node. To address this, the
 framework introduces specific reactive collections: \kotlin{ObservableList},
-\kotlin{ObservableSet} and \kotlin{ObservableMap}.
+\kotlin{ObservableSet} and \texttt{ObservableMap}.
 These interfaces provide granular observation capabilities. For instance,
-\kotlin{ObservableMap} allows observing the value of a specific key, while
+\mbox{\texttt{ObservableMap}} allows observing the value of a specific key, while
 \kotlin{ObservableSet} allows observing the membership status of a specific
 element. However, the true power of these collections lies in their ability to
 perform \emph{complex aggregation} over dynamic content.
@@ -85,13 +85,13 @@ molecule across all neighbours) can depend on two distinct factors:
 
 To handle this dual dependency, the framework provides sophisticated operators
 such as \kotlin{combineLatest} for lists. This operator transforms an
-\kotlin{ObservableList<T>} into a single \kotlin{Observable<S>} by applying a
-mapping function \kotlin{(T) -> Observable<S>} to each element and then
-aggregating the results with the provided aggregator. Crucially, the resulting
-stream emits a new value whenever the list structure changes \emph{or} whenever
-any of the inner observables emit a change. This allows to express through
-Alchemist global properties (e.g. field strength or crowd density) as
-continuous signals derived purely from the local state of individual nodes.
+\linebreak\kotlin{ObservableList<T>} into a single
+\kotlin{Observable<S>} by applying a mapping function \texttt{(T) -> Observable<S>} to each element and then aggregating the results with the
+provided aggregator. Crucially, the resulting stream emits a new value whenever
+the list structure changes \emph{or} whenever any of the inner observables emit
+a change. This allows to express through Alchemist global properties (e.g.
+field strength or crowd density) as continuous signals derived purely from the
+local state of individual nodes.
 
 The names and behaviours of such operators is largely inspired by
 \textsc{ReactiveX}
@@ -130,7 +130,7 @@ reasons:
 	      references (with metadata annotations) at the bytecode level. When
 	      accessed from Java or Scala, the strict compile-time safety guarantees
 	      are often lost or require verbose defensive programming. By using an
-	      explicit monadic wrapper like \kotlin{arrow.core.Option}, we expose a
+	      explicit monadic wrapper like \linebreak\kotlin{arrow.core.Option}, we expose a
 	      consistent \ac{API} across all \ac{JVM} languages. This aligns with the
 	      functional paradigms of Scala (which relies heavily on its own
 	      \texttt{Option}) and provides a richer, composable interface (e.g.
@@ -140,14 +140,14 @@ reasons:
 
 Consequently, while the use of an external library introduces a dependency
 overhead, the semantic precision and interoperability benefits of
-\texttt{arrow.core.Option} outweigh the simplicity of \ac{JVM}'s native
+\linebreak\kotlin{arrow.core.Option} outweigh the simplicity of \ac{JVM}'s native
 nullability in this specific architectural context.
 
 \subsection{Optimising derived-observable values}
 While the \kotlin{Observable<T>} interface defines the contract for data
 consumption, the framework's efficiency lies in how these streams are
 transformed and combined. The implementation of the aforementioned operators
-like \kotlin{map}, \kotlin{filter} and \kotlin{mergeWith} relies on the
+like \kotlin{map}, \kotlin{filter} and \linebreak\kotlin{mergeWith} relies on the
 abstraction of \kotlin{DerivedObservable<T>}. This class manages the complexity
 of state synchronisation and lifecycle management specifically addressing the
 tension between the \emph{eager} consistency required by the \ac{DES} scheduler
@@ -171,7 +171,7 @@ eagerly.
 To address this, the framework offers two strategies:
 \begin{enumerate}
 	\item \emph{Deferred Creation:} Creating eager event streams only within
-	      the \kotlin{initializationComplete} method of the \kotlin{Actionable}
+	      the \linebreak\kotlin{initializationComplete} method of the \kotlin{Actionable}
 	      interface. This guarantees that the stream is constructed only after the
 	      set-up phase concludes and all components are stable;
 	\item \emph{Lazy Subscription:} Creating event streams in the constructor
@@ -180,7 +180,7 @@ To address this, the framework offers two strategies:
 	      start emitting (i.e. the simulation starts).
 \end{enumerate}
 To support the latter approach, the \kotlin{onChange} signature includes an
-\kotlin{invokeOnRegistration} flag. When set to \kotlin{false}, it signals that
+\linebreak\kotlin{invokeOnRegistration} flag. When set to \kotlin{false}, it signals that
 the registration should not trigger an immediate propagation of the current
 value. This allows the \emph{implicit} dependency graph to be constructed
 safely during the set-up phase without triggering premature computations on
@@ -255,7 +255,7 @@ end of their lifecycle.
 \paragraph{Design Rationale: Explicit Disposal versus Weak References} In
 standard software architecture, a common countermeasure to the Lapsed Listener
 problem is the employment of \emph{weak references}. By holding observers via a
-\texttt{WeakReference} or storing them in a \texttt{WeakMap}, a system allows
+\linebreak\texttt{WeakReference} or storing them in a \texttt{WeakMap}, a system allows
 the \ac{GC} to reclaim the subscriber if no other strong references
 to it exist, effectively automating the cleanup process.
 
@@ -326,7 +326,7 @@ abstractions:
 \end{itemize}
 
 The most powerful feature of this system is the integration between
-\kotlin{Observable} streams and \kotlin{LifecycleOwner}s. The framework
+\linebreak\kotlin{Observable} streams and \kotlin{LifecycleOwner}s. The framework
 provides the extension method \kotlin{bindTo} which wraps a standard
 subscription in a lifecycle-aware context.
 %
@@ -351,7 +351,7 @@ functions:
 
 \paragraph{Application in the Engine}
 This mechanism is ubiquitous in the new engine implementation. For example,
-\kotlin{Actionable} (Reactions) implements \kotlin{LifecycleOwner}. When a
+\kotlin{Actionable} (Reactions) implements \linebreak\kotlin{LifecycleOwner}. When a
 reaction subscribes to a condition (e.g. a molecule concentration), it uses
 \kotlin{bindTo(this)}.
 
@@ -410,7 +410,7 @@ Beyond simple state access via \kotlin{current}, this strategy enables a hybrid
 implementation pattern where components maintain an internally reactive state
 while exposing a synchronous, poll-based \ac{API}. This is particularly
 valuable for retrofitting conditions which required a synchronous
-\kotlin{isValid(): Boolean} method.
+\linebreak\kotlin{isValid(): Boolean} method.
 
 Consider a standard polling implementation where validity is computed on-demand:
 
@@ -449,10 +449,10 @@ the engine was a monolithic supervisor responsible for
 In the new reactive implementation, the Engine's responsibilities are reduced
 strictly to \emph{scheduling} and \emph{execution}. The logic for
 dependency tracking and invalidation is entirely offloaded to the reactions
-themselves via the \kotlin{rescheduleRequest} stream.
+themselves via the \linebreak\kotlin{rescheduleRequest} stream.
 
 The simplified logic of the reactive engine can be summarised in the
-\kotlin{scheduleReaction} method, shown in \Cref{lst:engine_schedule}: the
+\linebreak\kotlin{scheduleReaction} method, shown in \Cref{lst:engine_schedule}: the
 Engine no longer queries the environment to see if a reaction needs an update.
 Instead, it subscribes to the reaction's \kotlin{rescheduleRequest} observable.
 This signal is emitted autonomously by the reaction whenever one of its
@@ -463,7 +463,7 @@ observed dependencies changes.
 The flow proceeds as follows:
 \begin{enumerate}
 	\item Upon initialisation, the Engine registers itself as a listener to the
-	      \kotlin{rescheduleRequest} stream of every reaction;
+	      \linebreak\kotlin{rescheduleRequest} stream of every reaction;
 	\item The scheduler pops from the \ac{FEL} the reaction with the minimum
 	      $\tau$ (time) and executes it;
 	\item The reaction execution modifies the environment (e.g. changing a
@@ -473,7 +473,7 @@ The flow proceeds as follows:
 	      defined by reactions' conditions;
 	\item Dependent reactions receive the update, re-evaluate their
 	      conditions/rates, and if a change in scheduling is required, they emit
-	      a signal on their \kotlin{rescheduleRequest} stream;
+	      a signal on their \linebreak\kotlin{rescheduleRequest} stream;
 	\item The Engine receives the signal and updates the reaction's position in
 	      the priority queue.
 \end{enumerate}
