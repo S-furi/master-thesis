@@ -86,7 +86,7 @@ molecule across all neighbours) can depend on two distinct factors:
 To handle this dual dependency, the framework provides sophisticated operators
 such as \kotlin{combineLatest} for lists. This operator transforms an
 \linebreak\kotlin{ObservableList<T>} into a single
-\kotlin{Observable<S>} by applying a mapping function \texttt{(T) -> Observable<S>} to each element and then aggregating the results with the
+\kotlin{Observable<S>} by applying a mapping function \linebreak\texttt{(T) -> Observable<S>} to each element and then aggregating the results with the
 provided aggregator. Crucially, the resulting stream emits a new value whenever
 the list structure changes \emph{or} whenever any of the inner observables emit
 a change. This allows to express through Alchemist global properties (e.g.
@@ -594,7 +594,13 @@ versions. The results are taken from the average and the median value of the
 samples for each scenario and for each version. The tests results are
 summarised in \Cref{tab:performance_comparison}. The benchmarks can be found in
 the author's personal fork of Alchemist on
-GitHub\footnote{\url{https://github.com/S-furi/Alchemist/tree/benchmark/reactive-engine/benchmark}}
+GitHub\footnote{\url{https://github.com/S-furi/Alchemist/tree/benchmark/reactive-engine/benchmark}},
+with the reproduction pack published on
+Zenodo\footnote{\url{https://doi.org/10.5281/zenodo.18785430}}. All tests are
+run on a Apple M1 Pro processor, with
+Temurin\textsuperscript{\tiny\textregistered} OpenJDK 24 with both with and
+without JEP 450\footnote{\url{https://openjdk.org/jeps/450}} (Compact Object
+Headers, JEP 519 with JDK version $\geq$ 25).
 
 \subsubsection{Analysis of Results}
 
@@ -620,6 +626,23 @@ reactions highlight the overhead of the framework. This resulted in an average
 performance loss of approximately 18.6\%, while using the same amount of
 memory.
 
+Executing the benchmarks under the \emph{Compact Object Headers} specification
+reduces the memory footprint of each object by 4 to 8 bytes through a more
+compact header structure. Consequently, the application of this optimisation
+yields no significant memory savings in the SAPERE independent scenario,
+whereas the ScaFi evaluation demonstrates a decrease in memory utilisation of
+up to 30\%. Within the interdependent scenario, overall memory consumption
+decreased by an average of 15\%. These results indicate that the reactive
+architecture benefits substantially from objects that have a smaller memory
+footprint. This advantage arises because the reactive paradigm inherently
+requires an exceedingly high density of allocations to maintain observable
+wrappers, intermediate stream representations and lambda closures. By
+minimising the base size of these frequently instantiated components, the
+framework not only conserves heap space but could also alleviates pressure on
+the garbage collector and improves data locality within the processor cache
+during rapid event propagation. Despite these theoretical advantages however,
+no substantial improvement in running times have been observed.
+
 In summary, the results clearly show a regression when it comes to performance,
 mainly attributable to the contrast between the highly optimised Alchemist
 engine versus a reactive prototype. Several factors could explain the
@@ -631,8 +654,41 @@ coarse-grained dependencies that force a re-evaluation of the reaction state
 framework introduces a non-negligible overhead, which is further exacerbated by
 the explicit lifecycle management explained in \Cref{ssec:disposability}.
 
-The next section covers future works which directly address the performance
-concerns highlighted by these tests results.
+A profiling analysis of both approaches corroborates these structural
+limitations, particularly regarding the observation infrastructure. In the
+standard engine, the time spent updating a reaction is strictly determined by
+the complexity of the domain logic and the precise number of dependencies
+extracted from the explicit graph following an environmental modification.
+Conversely, an analysis of the flame graph generated during the reactive
+execution reveals an exceedingly deep call stack. The execution flow is heavily
+fragmented by continuous iterations over collections and the sequential
+spawning and execution of inline lambdas. This fragmented control flow
+introduces significant method dispatch overhead, shifting the computational
+burden away from the engine and into the observation framework. This structural
+inefficiency manifests as an approximate five percent increase in the bare
+processing time required for the engine to execute a single simulation step.
+
+Furthermore, the reactive architecture is currently susceptible to duplicated
+notifications caused by recursive or cascading environmental modifications.
+When a single logical event triggers multiple updates within the environment,
+the observing reactions frequently receive redundant signals. This forces the
+engine to perform premature and entirely useless calculations of the reaction
+state before the spatial topology has fully settled. To mitigate this severe
+inefficiency, a debouncing mechanism at the reaction boundary is required. Such
+mechanism would delay the propensity calculation until the notification storm
+concludes, ensuring that the engine only acts upon the final consistent state.
+
+Finally, this performance disparity is compounded by the current implementation
+of the core spatial \ac{API}s. The internal mechanisms for retrieving spatial
+neighbourhoods and node positions have not yet received the optimisations
+present in the mature Alchemist engine. Profiling indicates that these specific
+spatial queries currently perform up to three times slower in the reactive
+prototype. When combined with the deep call stacks of the observation framework
+and the redundant updates, these unoptimised spatial queries reduce the overall
+event throughput of the simulation engine.
+
+The subsequent section details future works that directly address the
+performance limitations identified during this evaluation.
 
 \begin{landscape}
 	\begin{table}[p]
